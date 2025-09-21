@@ -29,9 +29,13 @@ public class Ball : MonoBehaviour
 
             Vector3 reflectedDirection = Vector3.Reflect(lastVelocity, contactNormal);
 
+            /*
             Vector3 upwardVector = Vector3.up * upwardModifier;
 
             Vector3 hitDirection = (reflectedDirection + upwardVector).normalized;
+            */
+
+            Vector3 hitDirection = new Vector3(reflectedDirection.x, upwardModifier, reflectedDirection.z).normalized;
 
             if(hitDirection.z < 0)
             {
