@@ -5,12 +5,19 @@ public class Ball : MonoBehaviour
     public float hitPower = 50f;
     public float upwardModifier = 0.5f;
 
+    // この値よりY方向の力が大きいとフライ判定になる
+    public float flyThreshold = 0.4f;
+    // この値よりZ方向の力が小さいと真上に打ち上げたフライ判定になる
+    public float verticalFlyThreshold = 0.15f;
+
     private Rigidbody rb;
     private Vector3 lastVelocity;
+    private CameraController CameraController;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        CameraController = FindObjectOfType<CameraController>();
     }
 
     private void FixedUpdate()
@@ -48,6 +55,31 @@ public class Ball : MonoBehaviour
                 rb.velocity = Vector3.zero;
                 // 新しい方向に力を加える
                 rb.AddForce(hitDirection * hitPower, ForceMode.Impulse);
+
+                if(CameraController != null)
+                {
+                    bool isFry = hitDirection.y > flyThreshold;
+
+                    if (isFry)
+                    {
+                        Vector2 horizontalDirection = new Vector2(hitDirection.x, hitDirection.z);
+
+                        if(horizontalDirection.magnitude < verticalFlyThreshold)
+                        {
+                            isFry = false;
+                        }
+                    }
+
+                    CameraController.StartTracking(transform, isFry);
+                }
+            }
+        }
+
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            if(CameraController != null)
+            {
+                CameraController.ResetCamera();
             }
         }
     }
