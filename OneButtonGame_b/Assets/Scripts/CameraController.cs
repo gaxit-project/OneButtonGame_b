@@ -4,7 +4,8 @@ using System.Collections;
 public class CameraController : MonoBehaviour
 {
     // 追いかける対象
-    private Transform target;
+    public Transform playerTarget;
+    private Transform ballTarget;
 
     // 見上げカメラのオフセット
     public Vector3 lookUpOffset = new Vector3(0, -2f, -4f);
@@ -19,15 +20,15 @@ public class CameraController : MonoBehaviour
     public float rotationSmoothness = 5f;
 
     // 状態管理
-    private bool isTracking = false;
+    private bool isTrackingBall = false;
     private float transitionTimer = 0f;
 
-    private Vector3 initialPosition;
+    private Vector3 cameraOffset;
     private Quaternion initialRotation;
 
     void Start()
     {
-        initialPosition = transform.position;
+        cameraOffset = transform.position - playerTarget.position;
         initialRotation = transform.rotation;
     }
 
@@ -38,7 +39,7 @@ public class CameraController : MonoBehaviour
 
     private void LateUpdate()
     {
-        if(isTracking && target != null)
+        if(isTrackingBall && ballTarget != null)
         {
             if(transitionTimer < transitionDuration)
             {
@@ -47,18 +48,24 @@ public class CameraController : MonoBehaviour
 
             float t = Mathf.Clamp01(transitionTimer / transitionDuration);
             Vector3 currentOffset = Vector3.Lerp(lookUpOffset, followOffset, t);
-            Vector3 desiredPosition = target.position + currentOffset;
+            Vector3 desiredPosition = ballTarget.position + currentOffset;
             transform.position = desiredPosition;
 
-            Quaternion targetRotation = Quaternion.LookRotation(target.position - transform.position);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSmoothness * Time.deltaTime);
+            Quaternion ballTargetRotation = Quaternion.LookRotation(ballTarget.position - transform.position);
+            transform.rotation = Quaternion.Slerp(transform.rotation, ballTargetRotation, rotationSmoothness * Time.deltaTime);
+        }
+        else if (playerTarget != null)
+        {
+            Vector3 desiredPosition = playerTarget.position + cameraOffset;
+            transform.position = desiredPosition;
+            transform.rotation = initialRotation;
         }
     }
 
     public void StartTracking(Transform ballTransform, bool isFry)
     {
-        target = ballTransform;
-        isTracking = true;
+        ballTarget = ballTransform;
+        isTrackingBall = true;
 
         if (isFry)
         {
@@ -72,9 +79,9 @@ public class CameraController : MonoBehaviour
 
     public void ResetCamera()
     {
-        isTracking = false;
-        target = null;
-        transform.position = initialPosition;
+        isTrackingBall = false;
+        ballTarget = null;
+        transform.position = cameraOffset;
         transform.rotation = initialRotation;
     }
 }

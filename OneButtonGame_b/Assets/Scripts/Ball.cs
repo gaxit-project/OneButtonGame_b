@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class Ball : MonoBehaviour
 {
@@ -9,6 +10,11 @@ public class Ball : MonoBehaviour
     public float flyThreshold = 0.4f;
     // この値よりZ方向の力が小さいと真上に打ち上げたフライ判定になる
     public float verticalFlyThreshold = 0.15f;
+
+    // 地面に触れてからカメラが戻るまでの時間
+    public float resetDelay = 1.0f;
+
+    public bool isGraunded = false;
 
     private Rigidbody rb;
     private Vector3 lastVelocity;
@@ -30,6 +36,8 @@ public class Ball : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Bat"))
         {
+            isGraunded = false;
+
             // 衝突した位置や相手の速度を取得
             ContactPoint contact = collision.contacts[0];
             Vector3 contactNormal = contact.normal;
@@ -75,12 +83,23 @@ public class Ball : MonoBehaviour
             }
         }
 
-        if (collision.gameObject.CompareTag("Ground"))
+        if (collision.gameObject.CompareTag("Ground") && !isGraunded)
         {
             if(CameraController != null)
             {
-                CameraController.ResetCamera();
+                isGraunded = true;
+                StartCoroutine(ResetCameraAfterDelay());
             }
+        }
+    }
+
+    IEnumerator ResetCameraAfterDelay()
+    {
+        yield return new WaitForSeconds(resetDelay);
+
+        if(CameraController != null)
+        {
+            CameraController.ResetCamera();
         }
     }
 }
