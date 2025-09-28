@@ -146,9 +146,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2eb308b6b39968f45858a9bab31e10f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitPower: 6
-  upwardModifier: 5
-  flyThreshold: 0.4
-  verticalFlyThreshold: 0.15
+  attackPower: 100
+  hitPower: 9
+  upwardModifier: 0.7
+  horizontalControl: 0.1
   resetDelay: 1
   isGraunded: 0
