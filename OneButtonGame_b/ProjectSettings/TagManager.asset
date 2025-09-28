@@ -6,6 +6,10 @@ TagManager:
   tags:
   - Bat
   - Ground
+  - Strike
+  - Foul
+  - Boss
+  - Wall
   layers:
   - Default
   - TransparentFX

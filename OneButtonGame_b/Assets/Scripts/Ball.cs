@@ -1,15 +1,22 @@
-9using UnityEngine;
+using UnityEngine;
+using System.Collections;
 
 public class Ball : MonoBehaviour
 {
+    [Header("攻撃力")]
+    public int attackPower = 100;
+
+    [Header("打撃設定")]
     public float hitPower = 50f;
     public float upwardModifier = 0.5f;
+    public float horizontalControl = 2.0f;
 
-    // この値よりY方向の力が大きいとフライ判定になる
-    public float flyThreshold = 0.4f;
-    // この値よりZ方向の力が小さいと真上に打ち上げたフライ判定になる
-    public float verticalFlyThreshold = 0.15f;
+    [Header("カメラリセット")]
+    // 地面に触れてからカメラが戻るまでの時間
+    public float resetDelay = 1.0f;
 
+    private float touchGround = 0;
+    public bool isGraunded = false;
     private Rigidbody rb;
     private Vector3 lastVelocity;
     private CameraController CameraController;
@@ -22,6 +29,7 @@ public class Ball : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // 衝突前の速度を保持
         lastVelocity = rb.velocity;
     }
 
@@ -30,24 +38,29 @@ public class Ball : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Bat"))
         {
+            isGraunded = false;
+
+            /*
             // 衝突した位置や相手の速度を取得
             ContactPoint contact = collision.contacts[0];
             Vector3 contactNormal = contact.normal;
 
+            // 衝突面の法線ベクトルを使って反射ベクトルを計算
             Vector3 reflectedDirection = Vector3.Reflect(lastVelocity, contactNormal);
-
-            /*
-            Vector3 upwardVector = Vector3.up * upwardModifier;
-
-            Vector3 hitDirection = (reflectedDirection + upwardVector).normalized;
-            */
 
             Vector3 hitDirection = new Vector3(reflectedDirection.x, upwardModifier, reflectedDirection.z).normalized;
 
+            // 打球が必ず前に飛ぶように補正
             if(hitDirection.z < 0)
             {
                 hitDirection.z = -hitDirection.z;
             }
+            */
+
+            float horizontalDifference = transform.position.z - collision.transform.position.z;
+            float horizontalForce = -horizontalDifference * horizontalControl;
+
+            Vector3 hitDirection = new Vector3(horizontalForce, upwardModifier, 1).normalized;
 
             if (rb != null)
             {
@@ -56,31 +69,83 @@ public class Ball : MonoBehaviour
                 // 新しい方向に力を加える
                 rb.AddForce(hitDirection * hitPower, ForceMode.Impulse);
 
+                
                 if(CameraController != null)
                 {
-                    bool isFry = hitDirection.y > flyThreshold;
-
-                    if (isFry)
-                    {
-                        Vector2 horizontalDirection = new Vector2(hitDirection.x, hitDirection.z);
-
-                        if(horizontalDirection.magnitude < verticalFlyThreshold)
-                        {
-                            isFry = false;
-                        }
-                    }
-
-                    CameraController.StartTracking(transform, isFry);
+                    CameraController.StartTracking(transform);
                 }
             }
-        }
 
-        if (collision.gameObject.CompareTag("Ground"))
+        }
+        else if (collision.gameObject.CompareTag("Ground") && !isGraunded)
         {
-            if(CameraController != null)
+            touchGround++;
+            if (CameraController != null && touchGround >= 3)
             {
-                CameraController.ResetCamera();
+                isGraunded = true;
+                StartCoroutine(ResetCameraAfterDelay());
+                Destroy(gameObject);
             }
         }
+        else if (collision.gameObject.CompareTag("Wall"))
+        {
+            if (CameraController != null)
+            {
+                isGraunded = true;
+                StartCoroutine(ResetCameraAfterDelay());
+            }
+            Destroy(gameObject);
+        }
+        else if (collision.gameObject.CompareTag("Boss"))
+        {
+            BossController boss = collision.gameObject.GetComponent<BossController>();
+
+            if(boss != null)
+            {
+                boss.TakeDamage(attackPower);
+            }
+
+            if (CameraController != null)
+            {
+                isGraunded = true;
+                StartCoroutine(ResetCameraAfterDelay());
+            }
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Strike"))
+        {
+            Debug.Log("ストライク");
+            if (CameraController != null && !isGraunded)
+            {
+                isGraunded = true;
+                StartCoroutine(ResetCameraAfterDelay());
+            }
+
+            Destroy(gameObject);
+        }
+        else if (other.gameObject.CompareTag("Foul"))
+        {
+            Debug.Log("ファール");
+            if (CameraController != null && !isGraunded)
+            {
+                isGraunded = true;
+                StartCoroutine(ResetCameraAfterDelay());
+            }
+        }
+    }
+
+    // 指定した時間だけ待ってから処理を再開するコルーチン
+    IEnumerator ResetCameraAfterDelay()
+    {
+        yield return new WaitForSeconds(resetDelay);
+
+        if(CameraController != null)
+        {
+            CameraController.ResetCamera();
+        }
+        Destroy(gameObject);
     }
 }
