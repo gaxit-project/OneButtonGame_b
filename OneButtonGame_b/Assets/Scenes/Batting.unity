@@ -604,8 +604,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ballPrefab: {fileID: 811886666185653579, guid: e98c72d9a7d46bb47af2d2683fc5259d, type: 3}
-  spawnPoint: {fileID: 2146816638}
-  launchPower: 11.5
+  spawnPoints:
+  - {fileID: 2146816638}
+  - {fileID: 1378908135}
+  launchPower: 11.4
 --- !u!4 &585022513
 Transform:
   m_ObjectHideFlags: 0
@@ -795,6 +797,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 557721280}
   m_LocalEulerAnglesHint: {x: 0, y: -49, z: 0}
+--- !u!1 &1378908134
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1378908135}
+  m_Layer: 0
+  m_Name: FirePoint (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1378908135
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1378908134}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.04213311, y: 0.25857276, z: -0.011289535, w: 0.9650065}
+  m_LocalPosition: {x: 100, y: 5, z: 95}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 5, y: 30, z: 0}
 --- !u!43 &1381010376
 Mesh:
   m_ObjectHideFlags: 0
@@ -2001,5 +2034,6 @@ SceneRoots:
   - {fileID: 1959465014}
   - {fileID: 859570224}
   - {fileID: 2146816638}
+  - {fileID: 1378908135}
   - {fileID: 1518171665}
   - {fileID: 585022513}
