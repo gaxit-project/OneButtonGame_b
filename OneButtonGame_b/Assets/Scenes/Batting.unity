@@ -606,7 +606,6 @@ MonoBehaviour:
   ballPrefab: {fileID: 811886666185653579, guid: e98c72d9a7d46bb47af2d2683fc5259d, type: 3}
   spawnPoints:
   - {fileID: 2146816638}
-  - {fileID: 1378908135}
   launchPower: 11.4
 --- !u!4 &585022513
 Transform:
