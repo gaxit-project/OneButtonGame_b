@@ -15,7 +15,15 @@ public class StartButton : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            EngGame();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            SwichTitleScene();
+        }
     }
 
     public void SwichBattingScene()
