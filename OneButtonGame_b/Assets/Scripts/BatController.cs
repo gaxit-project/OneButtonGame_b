@@ -17,7 +17,15 @@ public class BatController : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetMouseButton(0) && !isSwinging)
+        if (Input.GetMouseButtonDown(0))
+        {
+            PerformSwing();
+        }
+    }
+
+    public void PerformSwing()
+    {
+        if (!isSwinging)
         {
             StartCoroutine(Swing());
         }
