@@ -10,21 +10,27 @@ public class Ball : MonoBehaviour
     public float hitPower = 50f;
     public float upwardModifier = 0.5f;
     public float horizontalControl = 2.0f;
+    public float pushForce = 10f;
 
     [Header("カメラリセット")]
     // 地面に触れてからカメラが戻るまでの時間
     public float resetDelay = 1.0f;
+
+    [Header("難易度")]
+    [SerializeField] private bool hard = false;
 
     private float touchGround = 0;
     public bool isGraunded = false;
     private Rigidbody rb;
     private Vector3 lastVelocity;
     private CameraController CameraController;
+    private CanonController CanonController;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         CameraController = FindObjectOfType<CameraController>();
+        CanonController = FindObjectOfType<CanonController>();
     }
 
     private void FixedUpdate()
@@ -57,22 +63,51 @@ public class Ball : MonoBehaviour
             }
             */
 
-            float horizontalDifference = transform.position.z - collision.transform.position.z;
-            float horizontalForce = -horizontalDifference * horizontalControl;
-
-            Vector3 hitDirection = new Vector3(horizontalForce, upwardModifier, 1).normalized;
-
-            if (rb != null)
+            if (hard)
             {
-                // 現在の速度を一度リセット
-                rb.velocity = Vector3.zero;
-                // 新しい方向に力を加える
-                rb.AddForce(hitDirection * hitPower, ForceMode.Impulse);
+                ContactPoint contact = collision.contacts[0];
+                Vector3 contactNormal = contact.normal;
 
-                
-                if(CameraController != null)
+                Vector3 reflectedDirection = Vector3.Reflect(lastVelocity.normalized, contactNormal);
+
+                reflectedDirection.y = Mathf.Abs(reflectedDirection.y) * upwardModifier;
+
+                if(reflectedDirection.z > 0)
                 {
-                    CameraController.StartTracking(transform);
+                    reflectedDirection.z *= -1;
+                }
+
+                if (rb != null)
+                {
+                    rb.velocity = reflectedDirection.normalized * hitPower;
+                    rb.AddForce(rb.velocity.normalized * pushForce);
+
+                    if (CameraController != null)
+                    {
+                        CameraController.StartTracking(transform);
+                    }
+                }
+            }
+            else
+            {
+                float horizontalDifference = transform.position.x - collision.transform.position.x;
+
+                float horizontalForce = horizontalDifference * horizontalControl;
+
+                Vector3 hitDirection = new Vector3(horizontalForce, upwardModifier, 1).normalized;
+
+                if (rb != null)
+                {
+                    // 現在の速度を一度リセット
+                    rb.velocity = Vector3.zero;
+                    // 新しい方向に力を加える
+                    rb.AddForce(hitDirection * hitPower, ForceMode.Impulse);
+
+
+                    if (CameraController != null)
+                    {
+                        CameraController.StartTracking(transform);
+                    }
                 }
             }
 
@@ -145,6 +180,7 @@ public class Ball : MonoBehaviour
         if(CameraController != null)
         {
             CameraController.ResetCamera();
+            CanonController.FireCanon();
         }
         Destroy(gameObject);
     }

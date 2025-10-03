@@ -150,5 +150,7 @@ MonoBehaviour:
   hitPower: 9
   upwardModifier: 0.7
   horizontalControl: 0.1
+  pushForce: 100
   resetDelay: 1
+  hard: 0
   isGraunded: 0
