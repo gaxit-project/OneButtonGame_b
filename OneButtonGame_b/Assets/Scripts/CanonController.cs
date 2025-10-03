@@ -33,7 +33,7 @@ public class CanonController : MonoBehaviour
         }
     }
 
-    void FireCanon()
+    public void FireCanon()
     {
         if(ballPrefab == null || spawnPoints == null || spawnPoints.Count == 0)
         {
