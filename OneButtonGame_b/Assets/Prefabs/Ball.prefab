@@ -148,7 +148,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackPower: 100
   hitPower: 130
-  upwardModifier: 0.7
+  upwardModifier: 0.6
   horizontalControl: 0.1
   pushForce: 100
   resetDelay: 1

@@ -22,6 +22,7 @@ public class Ball : MonoBehaviour
 
     private float touchGround = 0;
     public bool isGraunded = false;
+    private bool isFaul = false;
     private bool isRecordingTrajectory = false;
     private List<Vector3> trajectoryPoints = new List<Vector3>();
     private Rigidbody rb;
@@ -160,6 +161,7 @@ public class Ball : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Strike"))
         {
+            isFaul = true;
             Debug.Log("ストライク");
             if (CameraController != null && !isGraunded)
             {
@@ -182,7 +184,11 @@ public class Ball : MonoBehaviour
     // 指定した時間だけ待ってから処理を再開するコルーチン
     IEnumerator ResetCameraAfterDelay()
     {
-        yield return new WaitForSeconds(resetDelay);
+        if (!isFaul)
+        {
+            yield return new WaitForSeconds(resetDelay);
+        }
+        isFaul = false;
 
         if(CameraController != null)
         {
