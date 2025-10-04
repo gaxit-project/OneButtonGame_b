@@ -127,7 +127,6 @@ public class Ball : MonoBehaviour
                 isGraunded = true;
                 StopAndSaveTrajectory();
                 StartCoroutine(ResetCameraAfterDelay());
-                //Destroy(gameObject);
             }
         }
         else if (collision.gameObject.CompareTag("Wall"))
@@ -138,7 +137,6 @@ public class Ball : MonoBehaviour
                 StopAndSaveTrajectory();
                 StartCoroutine(ResetCameraAfterDelay());
             }
-            Destroy(gameObject);
         }
         else if (collision.gameObject.CompareTag("Boss"))
         {
@@ -168,8 +166,6 @@ public class Ball : MonoBehaviour
                 isGraunded = true;
                 StartCoroutine(ResetCameraAfterDelay());
             }
-
-            Destroy(gameObject);
         }
         else if (other.gameObject.CompareTag("Foul"))
         {
@@ -177,6 +173,7 @@ public class Ball : MonoBehaviour
             if (CameraController != null && !isGraunded)
             {
                 isGraunded = true;
+                StopAndSaveTrajectory();
                 StartCoroutine(ResetCameraAfterDelay());
             }
         }
@@ -203,8 +200,14 @@ public class Ball : MonoBehaviour
     /// <param name="impactPoint">衝突した座標</param>
     void LogHitData(string difficulty, Vector3 velocity, Vector3 impactPoint)
     {
+        float horizontalMagnitude = new Vector2(velocity.x, velocity.z).magnitude;
+        float verticalMagnitude = velocity.y;
+        float launchAngleRed = Mathf.Atan2(verticalMagnitude, horizontalMagnitude);
+        float launchAngle = launchAngleRed * Mathf.Rad2Deg;
+        /*
         Vector3 flatVelocity = new Vector3(velocity.x, 0, velocity.z);
         float launchAngle = Vector3.Angle(velocity, flatVelocity);
+        */
 
         if (DataLogger.Instance != null)
         {
@@ -226,11 +229,21 @@ public class Ball : MonoBehaviour
             if (DataLogger.Instance != null)
             {
                 string difficulty = hard ? "ハード" : "ノーマル";
+                /*
                 Vector3 initialVelocity = rb.velocity;
                 Vector3 flatVelocity = new Vector3(initialVelocity.x, 0, initialVelocity.z);
                 float launchAngle = Vector3.Angle(initialVelocity, flatVelocity);
 
                 DataLogger.Instance.SaveTrajectory(difficulty, initialVelocity.magnitude, launchAngle, trajectoryPoints);
+                */
+
+                Vector3 finalVelocity = rb.velocity;
+                float horizontalMagnitude = new Vector2(finalVelocity.x, finalVelocity.z).magnitude;
+                float verticalMagnitude = finalVelocity.y;
+                float launchAngleRed = Mathf.Atan2(verticalMagnitude, horizontalMagnitude);
+                float launchAngle = launchAngleRed * Mathf.Rad2Deg;
+
+                DataLogger.Instance.SaveTrajectory(difficulty, finalVelocity.magnitude, launchAngle, trajectoryPoints);
             }
         }
     }
