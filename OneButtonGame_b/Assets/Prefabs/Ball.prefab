@@ -147,7 +147,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackPower: 100
-  hitPower: 9
+  hitPower: 130
   upwardModifier: 0.7
   horizontalControl: 0.1
   pushForce: 100
