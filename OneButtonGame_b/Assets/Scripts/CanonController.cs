@@ -7,7 +7,7 @@ public class CanonController : MonoBehaviour
     public GameObject ballPrefab;
 
     [Header("ボールを生成する場所")]
-    public Transform spawnPoint;
+    public List<Transform> spawnPoints;
 
     [Header("ボールの発射パワー")]
     public float launchPower = 50f;
@@ -33,28 +33,30 @@ public class CanonController : MonoBehaviour
         }
     }
 
-    void FireCanon()
+    public void FireCanon()
     {
-        if(ballPrefab == null || spawnPoint == null)
+        if(ballPrefab == null || spawnPoints == null || spawnPoints.Count == 0)
         {
-            Debug.Log("Ball PrefabまたはSpawn Positionが設定されてません");
+            Debug.Log("Ball PrefabまたはSpawn Pointsが設定されてません");
             return;
         }
 
         // spawnPointでボールを生成
-        GameObject newBall = Instantiate(ballPrefab, spawnPoint.position, spawnPoint.rotation);
+        int randomIndex = Random.Range(0, spawnPoints.Count);
+        Transform selectedSpawnPoint = spawnPoints[randomIndex];
+        GameObject newBall = Instantiate(ballPrefab, selectedSpawnPoint.position, selectedSpawnPoint.rotation);
 
         Rigidbody ballRigidbody = newBall.GetComponent<Rigidbody>();
 
         if(ballRigidbody != null )
         {
             // ボールに力を加える
-            Vector3 launchDirection = -spawnPoint.forward;
+            Vector3 launchDirection = -selectedSpawnPoint.forward;
             ballRigidbody.AddForce(launchDirection * launchPower, ForceMode.Impulse);
         }
 
         spawnedBalls.Add(newBall);
-        Debug.Log("大砲を発射しました");
+        Debug.Log(selectedSpawnPoint.name + " から大砲を発射しました");
     }
 
     void CleanerAllBalls()
