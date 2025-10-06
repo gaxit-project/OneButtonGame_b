@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -14,11 +15,12 @@ public class BatController : MonoBehaviour
     [Tooltip("左打ちのバットの位置と角度")]
     public Transform leftHandedStance;
 
+    public event Action<bool> OnStanceChanged;
 
     private bool isSwinging = false;
     private Quaternion initialLocalRotation;
     private Vector3 initialLocalPosition;
-    private bool isRightHanded = true; // true：右打ち false：左打ち
+    public bool isRightHanded { get; private set; } = true; // true：右打ち false：左打ち
 
 
     void Start()
@@ -46,10 +48,12 @@ public class BatController : MonoBehaviour
             SetStance(false);
         }
 
+        /*
         if (Input.GetMouseButtonDown(0))
         {
             PerformSwing();
         }
+        */
     }
 
     /// <summary>
@@ -81,14 +85,27 @@ public class BatController : MonoBehaviour
 
         initialLocalPosition = transform.localPosition;
         initialLocalRotation = transform.localRotation;
+
+        OnStanceChanged?.Invoke(isRightHanded);
     }
 
+    public void SetSwingingState(bool swinging)
+    {
+        isSwinging = swinging;
 
+        if (!swinging)
+        {
+            transform.localPosition = initialLocalPosition;
+            transform.localRotation = initialLocalRotation;
+        }
+    }
+
+    /*
     public void PerformSwing()
     {
         if (!isSwinging)
         {
-            StartCoroutine(Swing());
+            //StartCoroutine(Swing());
         }
     }
 
@@ -126,4 +143,7 @@ public class BatController : MonoBehaviour
 
         isSwinging =false;
     }
+    */
+
+
 }
