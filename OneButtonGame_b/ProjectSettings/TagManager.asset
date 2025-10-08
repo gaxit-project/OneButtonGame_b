@@ -11,6 +11,7 @@ TagManager:
   - Boss
   - Wall
   - Ball
+  - Enemy
   layers:
   - Default
   - TransparentFX

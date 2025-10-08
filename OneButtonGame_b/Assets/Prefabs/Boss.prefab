@@ -332,7 +332,7 @@ GameObject:
   - component: {fileID: 4988516785366354240}
   m_Layer: 0
   m_Name: Boss
-  m_TagString: Untagged
+  m_TagString: Boss
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -437,6 +437,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06a289e91c8fbef4e9fb15d32979c4c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canonController: {fileID: 0}
   HP: 1000
   Power: 1
   coolTime: 5

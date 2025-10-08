@@ -5,6 +5,7 @@ using UnityEngine;
 public class BossMain : MonoBehaviour
 {
     Animator anim;
+    public CanonController canonController;
 
     [Header("ボスのステータス")]
     public int HP = 1000;
@@ -13,7 +14,7 @@ public class BossMain : MonoBehaviour
     public int damage = 10;
 
     public bool attack = false;     //攻撃するかどうか
-    public bool gameStart = true;  //後でゲームマネージャーで設定
+    public bool gameStart = false;  //後でゲームマネージャーで設定
     public bool skill = false;      //必殺技を使うかどうか
     public bool getHit = false;     //ダメージを受けているかどうか
 
@@ -21,7 +22,7 @@ public class BossMain : MonoBehaviour
     {
         anim = GetComponent<Animator>();
         anim.Play("Idle");
-
+        gameStart = true;
         StartCoroutine(Attack());
 
     }
@@ -72,6 +73,8 @@ public class BossMain : MonoBehaviour
                     if (attack == true)
                     {
                         anim.SetTrigger("Attack");  //通常攻撃
+                        yield return new WaitForSeconds(2.3f);
+                        canonController.FireCanon();
                         yield return new WaitForSeconds(coolTime);
                     }
                     else

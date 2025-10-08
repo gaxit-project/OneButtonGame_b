@@ -7,6 +7,7 @@ public class EnemyMain : MonoBehaviour
 
     Animator anim;
     public BossMain bossMain;
+    public CanonController canonController;
 
     [Header("取り巻きのステータス")]
     public int HP = 250;
@@ -73,6 +74,8 @@ public class EnemyMain : MonoBehaviour
                     if (attack == true)
                     {
                         anim.SetTrigger("Attack");  //通常攻撃
+                        yield return new WaitForSeconds(2.3f);
+                        canonController.FireCanon();
                         yield return new WaitForSeconds(coolTime);
                     }
                     else
@@ -93,10 +96,10 @@ public class EnemyMain : MonoBehaviour
     IEnumerator Dead()
     {
         onece  = false;
-        bossMain.damage = 20;
+        bossMain.damage = bossMain.damage * 2;
         //エフェクト
         yield return new WaitForSeconds(30f);
-        bossMain.damage = 10;
+        bossMain.damage = bossMain.damage / 2;
 
     }
 }

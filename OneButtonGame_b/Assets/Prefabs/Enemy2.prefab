@@ -311,7 +311,7 @@ GameObject:
   - component: {fileID: 4772783571700663634}
   m_Layer: 0
   m_Name: Enemy2
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -417,6 +417,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bossMain: {fileID: 0}
+  canonController: {fileID: 0}
   HP: 250
   Power: 1
   coolTime: 10
