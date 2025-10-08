@@ -24,6 +24,10 @@ public class StartButton : MonoBehaviour
         {
             SwichTitleScene();
         }
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            SwichResultScene();
+        }
     }
 
     public void SwichBattingScene()
@@ -39,6 +43,11 @@ public class StartButton : MonoBehaviour
     public void SwichTitleScene()
     {
         SceneManager.LoadScene("Title");
+    }
+
+    public void SwichResultScene()
+    {
+        SceneManager.LoadScene("Result");
     }
 
     public void EngGame()
