@@ -15,6 +15,11 @@ public class FPSDisplay : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Time.timeScale == 0f)
+        {
+            return;
+        }
+
         deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
 
         float fps = 1.0f / deltaTime;
