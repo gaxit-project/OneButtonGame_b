@@ -2,20 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BossMain : MonoBehaviour
+public class EnemyMain : MonoBehaviour
 {
-    Animator anim;
 
-    [Header("ボスのステータス")]
-    public int HP = 1000;
+    Animator anim;
+    public BossMain bossMain;
+
+    [Header("取り巻きのステータス")]
+    public int HP = 250;
     public int Power = 1;
-    public float coolTime = 5f;
-    public int damage = 10;
+    public float coolTime = 10f;
 
     public bool attack = false;     //攻撃するかどうか
     public bool gameStart = true;  //後でゲームマネージャーで設定
-    public bool skill = false;      //必殺技を使うかどうか
     public bool getHit = false;     //ダメージを受けているかどうか
+    private bool dead = false;
+    private bool onece = true;
 
     void Start()
     {
@@ -28,9 +30,14 @@ public class BossMain : MonoBehaviour
 
     void Update()
     {
-        if (!attack && !skill && !getHit)
+        if (!attack && !getHit)
         {
             attack = true;  // 次の攻撃準備
+        }
+
+        if (dead == true && onece ==true)
+        {
+            StartCoroutine(Dead());
         }
     }
 
@@ -40,7 +47,7 @@ public class BossMain : MonoBehaviour
         if (collision.gameObject.CompareTag("Ball"))
         {
             anim.SetTrigger("GetHit");  //ダメージの演出
-            HP -= damage;
+            HP -= 10;
         }
     }
 
@@ -63,12 +70,6 @@ public class BossMain : MonoBehaviour
                         getHit = false;
                         yield return new WaitForSeconds(1f);
                     }
-                    if (skill == true)
-                    {
-                        anim.SetTrigger("Skill");   //必殺技を使うかどうか
-                        skill = false;
-                        yield return new WaitForSeconds(10f);
-                    }
                     if (attack == true)
                     {
                         anim.SetTrigger("Attack");  //通常攻撃
@@ -82,9 +83,20 @@ public class BossMain : MonoBehaviour
                 else
                 {
                     anim.SetTrigger("Die");         //死亡
+                    dead = true;
                     yield break;
                 }
             }
         }
+    }
+
+    IEnumerator Dead()
+    {
+        onece  = false;
+        bossMain.damage = 20;
+        //エフェクト
+        yield return new WaitForSeconds(30f);
+        bossMain.damage = 10;
+
     }
 }

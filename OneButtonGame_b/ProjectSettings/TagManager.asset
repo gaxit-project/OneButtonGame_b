@@ -10,6 +10,7 @@ TagManager:
   - Foul
   - Boss
   - Wall
+  - Ball
   layers:
   - Default
   - TransparentFX
