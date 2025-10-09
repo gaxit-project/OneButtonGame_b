@@ -27,6 +27,7 @@ public class Ball : MonoBehaviour
     private List<Vector3> trajectoryPoints = new List<Vector3>();
     private Rigidbody rb;
     private Vector3 lastVelocity;
+    private PlayerController playerController;
     private CameraController CameraController;
     private CanonController CanonController;
 
@@ -35,6 +36,7 @@ public class Ball : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         CameraController = FindObjectOfType<CameraController>();
         CanonController = FindObjectOfType<CanonController>();
+        playerController = FindObjectOfType<PlayerController>();
     }
 
     private void FixedUpdate()
@@ -53,6 +55,11 @@ public class Ball : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Bat"))
         {
+            if (playerController != null)
+            {
+                playerController.NotifyHit();
+            }
+
             isGraunded = false;
             isRecordingTrajectory = true;
             trajectoryPoints.Clear();
