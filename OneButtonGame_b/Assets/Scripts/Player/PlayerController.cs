@@ -85,6 +85,13 @@ public class PlayerController : MonoBehaviour
         if (!hitBat)
         {
             Debug.Log("ãÛêUÇË");
+
+            Ball currentBall = FindObjectOfType<Ball>();
+            if (currentBall != null)
+            {
+                currentBall.HideMarker();
+            }
+
             StartCoroutine(ResetStance());
         }
 
