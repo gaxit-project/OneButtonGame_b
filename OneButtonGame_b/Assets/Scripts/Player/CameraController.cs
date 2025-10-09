@@ -1,5 +1,5 @@
 using UnityEngine;
-using System.Collections;
+using System;
 
 public class CameraController : MonoBehaviour
 {
@@ -30,6 +30,8 @@ public class CameraController : MonoBehaviour
     // ó‘ÔŠÇ—
     private bool isTrackingBall = false;
     private float transitionTimer = 0f;
+
+    public event Action OnCameraReset;
 
     private Vector3 cameraOffset;
     private Quaternion initialRotation;
@@ -94,12 +96,16 @@ public class CameraController : MonoBehaviour
     // ƒJƒƒ‰‚ğ‰ŠúˆÊ’u‚É–ß‚·
     public void ResetCamera()
     {
+
         isTrackingBall = false;
         ballTarget = null;
+
         if (playerTarget != null)
         {
             transform.position = playerTarget.position + cameraOffset;
         }
+
         transform.rotation = initialRotation;
+        OnCameraReset?.Invoke();
     }
 }
