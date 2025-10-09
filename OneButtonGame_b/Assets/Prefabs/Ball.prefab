@@ -152,5 +152,7 @@ MonoBehaviour:
   horizontalControl: 0.1
   pushForce: 100
   resetDelay: 1
+  distanceScalingFactor: 0.003
+  impactMarkerPrefab: {fileID: 7842259405980243365, guid: 8eaca4b4b20bf5443a4336e6384b3b7b, type: 3}
   hard: 0
   isGraunded: 0

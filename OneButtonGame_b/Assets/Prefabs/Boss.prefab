@@ -328,7 +328,7 @@ GameObject:
   - component: {fileID: 7229781837121261636}
   - component: {fileID: 3136306587511174861}
   - component: {fileID: 4146626727097097548}
-  - component: {fileID: 4966449233183829325}
+  - component: {fileID: 3514589385971674633}
   - component: {fileID: 4988516785366354240}
   m_Layer: 0
   m_Name: Boss
@@ -402,8 +402,8 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
---- !u!136 &4966449233183829325
-CapsuleCollider:
+--- !u!65 &3514589385971674633
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -420,11 +420,9 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 2
-  m_Height: 5
-  m_Direction: 1
-  m_Center: {x: 0, y: 1, z: 0}
+  serializedVersion: 3
+  m_Size: {x: 2, y: 4, z: 2.7}
+  m_Center: {x: 0, y: 2, z: 0.2}
 --- !u!114 &4988516785366354240
 MonoBehaviour:
   m_ObjectHideFlags: 0

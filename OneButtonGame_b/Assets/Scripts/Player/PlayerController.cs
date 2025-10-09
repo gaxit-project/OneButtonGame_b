@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,8 +13,11 @@ public class PlayerController : MonoBehaviour
 
     [Header("コンポーネント")]
     public BatController batController;
+    public CameraController cameraController;
 
+    private bool hitBat = false;
     private bool isPlayerSwinging = false;
+    private Quaternion initialSwingRotation;
 
     void Start()
     {
@@ -22,6 +26,11 @@ public class PlayerController : MonoBehaviour
             batController.OnStanceChanged += HandlePlayerStanceChange;
 
             HandlePlayerStanceChange(batController.isRightHanded);
+        }
+
+        if (cameraController != null)
+        {
+            cameraController.OnCameraReset += HandleCameraReset;
         }
     }
 
@@ -52,9 +61,12 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator SwingAction()
     {
+        hitBat = false;
         isPlayerSwinging = true;
         batController.SetSwingingState(true);
         //batController.PerformSwing();
+
+        initialSwingRotation = transform.rotation;
 
         Quaternion initialRotation = transform.rotation;
 
@@ -68,20 +80,67 @@ public class PlayerController : MonoBehaviour
             yield return null;
         }
 
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.2f);
 
-        // 戻る
-        while (Quaternion.Angle(transform.rotation, initialRotation) > 0.1f)
+        if (!hitBat)
         {
-            transform.rotation = Quaternion.Slerp(transform.rotation, initialRotation, batController.swingSpeed * Time.deltaTime);
+            Debug.Log("空振り");
+
+            Ball currentBall = FindObjectOfType<Ball>();
+            if (currentBall != null)
+            {
+                currentBall.HideMarker();
+            }
+
+            StartCoroutine(ResetStance());
+        }
+
+        /*
+        if (!cameraController.useHomerunView)
+        {
+
+            // 戻る
+            while (Quaternion.Angle(transform.rotation, initialRotation) > 0.1f)
+            {
+                transform.rotation = Quaternion.Slerp(transform.rotation, initialRotation, batController.swingSpeed * Time.deltaTime);
+                yield return null;
+            }
+
+            transform.rotation = initialRotation;
+
+            batController.SetSwingingState(false);
+            isPlayerSwinging = false;
+        }
+        */
+         
+    }
+
+    public void NotifyHit()
+    {
+        hitBat = true;
+    }
+
+    private void HandleCameraReset()
+    {
+        if (hitBat)
+        {
+            StartCoroutine(ResetStance());
+        }
+    }
+
+    private IEnumerator ResetStance()
+    {
+        // 戻る
+        while (Quaternion.Angle(transform.rotation, initialSwingRotation) > 0.1f)
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, initialSwingRotation, batController.swingSpeed * Time.deltaTime);
             yield return null;
         }
 
-        transform.rotation = initialRotation;
+        transform.rotation = initialSwingRotation;
 
         batController.SetSwingingState(false);
         isPlayerSwinging = false;
-         
     }
 
     /// <summary>
@@ -107,6 +166,11 @@ public class PlayerController : MonoBehaviour
         if (batController != null)
         {
             batController.OnStanceChanged -= HandlePlayerStanceChange;
+        }
+
+        if (cameraController != null)
+        {
+            cameraController.OnCameraReset -= HandleCameraReset;
         }
     }
 }
