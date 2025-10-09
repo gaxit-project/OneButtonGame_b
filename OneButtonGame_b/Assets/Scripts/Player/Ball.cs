@@ -20,21 +20,30 @@ public class Ball : MonoBehaviour
     [Header("スケール調整")]
     public float distanceScalingFactor = 0.05f;
 
+    [Header("予測マーカー")]
+    public GameObject impactMarkerPrefab;
+
     [Header("難易度")]
     [SerializeField] private bool hard = false;
 
     private float touchGround = 0;
+
     public bool isGraunded = false;
     private bool isFaul = false;
     private bool isRecordingTrajectory = false;
+    private bool predictionDone = false;
+
     private List<Vector3> trajectoryPoints = new List<Vector3>();
-    private Rigidbody rb;
+    
     private Vector3 lastVelocity;
     private Vector3 initialScale;
+
+    private Rigidbody rb;
     private PlayerController playerController;
     private CameraController cameraController;
     private Camera mainCamera;
     private CanonController canonController;
+    private GameObject markerInstance;
 
     private void Awake()
     {
@@ -45,6 +54,12 @@ public class Ball : MonoBehaviour
 
         initialScale = transform.localScale;
         mainCamera = Camera.main;
+
+        if (impactMarkerPrefab != null)
+        {
+            markerInstance = Instantiate(impactMarkerPrefab);
+            markerInstance.SetActive(false);
+        }
     }
 
     private void Update()
@@ -64,6 +79,12 @@ public class Ball : MonoBehaviour
         // 衝突前の速度を保持
         lastVelocity = rb.velocity;
 
+        if (!predictionDone && rb.velocity.magnitude > 0.1f)
+        {
+            PredictAndPlaceMarker();
+            predictionDone = true;
+        }
+
         if (isRecordingTrajectory)
         {
             trajectoryPoints.Add(transform.position);
@@ -75,6 +96,9 @@ public class Ball : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Bat"))
         {
+            // ヒットしたらマーカーを消す
+            HideMarker();
+
             if (playerController != null)
             {
                 playerController.NotifyHit();
@@ -208,6 +232,32 @@ public class Ball : MonoBehaviour
         }
     }
 
+    private void PredictAndPlaceMarker()
+    {
+        if (markerInstance == null) return;
+
+        Vector3 initialVelocity = rb.velocity;
+        Vector3 initialPosition = transform.position;
+
+        float timeToImpact = -initialPosition.z / initialVelocity.z;
+
+        if (timeToImpact < 0 || Mathf.Abs(initialVelocity.z) < 0.1f) return;
+
+        float impactX = initialVelocity.x * timeToImpact + initialPosition.x;
+        float impactY = (0.5f * Physics.gravity.y * timeToImpact * timeToImpact) + (initialVelocity.y * timeToImpact) + initialPosition.y;
+
+        markerInstance.transform.position = new Vector3(impactX, impactY, 0);
+        markerInstance.SetActive(true);
+    } 
+
+    public void HideMarker()
+    {
+        if (markerInstance != null)
+        {
+            markerInstance.SetActive(false);
+        }
+    }
+
     // 指定した時間だけ待ってから処理を再開するコルーチン
     IEnumerator ResetCameraAfterDelay()
     {
@@ -216,6 +266,11 @@ public class Ball : MonoBehaviour
             yield return new WaitForSeconds(resetDelay);
         }
         isFaul = false;
+
+        if (markerInstance != null)
+        {
+            Destroy(markerInstance);
+        }
 
         if(cameraController != null)
         {
