@@ -17,6 +17,9 @@ public class Ball : MonoBehaviour
     // 地面に触れてからカメラが戻るまでの時間
     public float resetDelay = 1.0f;
 
+    [Header("スケール調整")]
+    public float distanceScalingFactor = 0.05f;
+
     [Header("難易度")]
     [SerializeField] private bool hard = false;
 
@@ -27,16 +30,33 @@ public class Ball : MonoBehaviour
     private List<Vector3> trajectoryPoints = new List<Vector3>();
     private Rigidbody rb;
     private Vector3 lastVelocity;
+    private Vector3 initialScale;
     private PlayerController playerController;
-    private CameraController CameraController;
-    private CanonController CanonController;
+    private CameraController cameraController;
+    private Camera mainCamera;
+    private CanonController canonController;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        CameraController = FindObjectOfType<CameraController>();
-        CanonController = FindObjectOfType<CanonController>();
+        cameraController = FindObjectOfType<CameraController>();
+        canonController = FindObjectOfType<CanonController>();
         playerController = FindObjectOfType<PlayerController>();
+
+        initialScale = transform.localScale;
+        mainCamera = Camera.main;
+    }
+
+    private void Update()
+    {
+        if (isRecordingTrajectory && mainCamera != null)
+        {
+            float distance = Vector3.Distance(transform.position, mainCamera.transform.position);
+
+            float scaleFactor = 1.0f + distance * distanceScalingFactor;
+
+            transform.localScale = initialScale * scaleFactor;
+        }
     }
 
     private void FixedUpdate()
@@ -90,9 +110,9 @@ public class Ball : MonoBehaviour
                     // ログを出力
                     LogHitData("ハード", newVelocity, impactPoint);
 
-                    if (CameraController != null)
+                    if (cameraController != null)
                     {
-                        CameraController.StartTracking(transform);
+                        cameraController.StartTracking(transform);
                     }
                 }
             }
@@ -119,9 +139,9 @@ public class Ball : MonoBehaviour
                     // ログを出力
                     LogHitData("ノーマル", newVelocity, impactPoint);
 
-                    if (CameraController != null)
+                    if (cameraController != null)
                     {
-                        CameraController.StartTracking(transform);
+                        cameraController.StartTracking(transform);
                     }
                 }
             }
@@ -130,7 +150,7 @@ public class Ball : MonoBehaviour
         else if (collision.gameObject.CompareTag("Ground") && !isGraunded)
         {
             touchGround++;
-            if (CameraController != null && touchGround >= 3)
+            if (cameraController != null && touchGround >= 3)
             {
                 isGraunded = true;
                 StopAndSaveTrajectory();
@@ -139,7 +159,7 @@ public class Ball : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Wall"))
         {
-            if (CameraController != null)
+            if (cameraController != null)
             {
                 isGraunded = true;
                 StopAndSaveTrajectory();
@@ -155,7 +175,7 @@ public class Ball : MonoBehaviour
                 boss.TakeDamage(attackPower);
             }
 
-            if (CameraController != null)
+            if (cameraController != null)
             {
                 isGraunded = true;
                 StopAndSaveTrajectory();
@@ -170,7 +190,7 @@ public class Ball : MonoBehaviour
         {
             isFaul = true;
             Debug.Log("ストライク");
-            if (CameraController != null && !isGraunded)
+            if (cameraController != null && !isGraunded)
             {
                 isGraunded = true;
                 StartCoroutine(ResetCameraAfterDelay());
@@ -179,7 +199,7 @@ public class Ball : MonoBehaviour
         else if (other.gameObject.CompareTag("Foul"))
         {
             Debug.Log("ファール");
-            if (CameraController != null && !isGraunded)
+            if (cameraController != null && !isGraunded)
             {
                 isGraunded = true;
                 StopAndSaveTrajectory();
@@ -197,10 +217,10 @@ public class Ball : MonoBehaviour
         }
         isFaul = false;
 
-        if(CameraController != null)
+        if(cameraController != null)
         {
-            CameraController.ResetCamera();
-            CanonController.FireCanon();
+            cameraController.ResetCamera();
+            canonController.FireCanon();
         }
         Destroy(gameObject);
     }
