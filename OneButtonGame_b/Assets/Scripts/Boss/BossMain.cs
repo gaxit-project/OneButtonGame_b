@@ -17,6 +17,7 @@ public class BossMain : MonoBehaviour
     public bool gameStart = false;  //後でゲームマネージャーで設定
     public bool skill = false;      //必殺技を使うかどうか
     public bool getHit = false;     //ダメージを受けているかどうか
+    private bool onece = false;     //死亡の回数制限
 
     void Start()
     {
@@ -33,7 +34,13 @@ public class BossMain : MonoBehaviour
         {
             attack = true;  // 次の攻撃準備
         }
-    }
+
+        if (HP <= 0 && onece == false)
+        {
+            anim.SetTrigger("Die");         //死亡
+            onece = true;
+        }
+       }
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -84,7 +91,6 @@ public class BossMain : MonoBehaviour
                 }
                 else
                 {
-                    anim.SetTrigger("Die");         //死亡
                     yield break;
                 }
             }

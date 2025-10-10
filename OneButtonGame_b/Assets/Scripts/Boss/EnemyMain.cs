@@ -8,6 +8,7 @@ public class EnemyMain : MonoBehaviour
     Animator anim;
     public BossMain bossMain;
     public CanonController canonController;
+    public GameObject Efect;
 
     [Header("取り巻きのステータス")]
     public int HP = 250;
@@ -36,7 +37,7 @@ public class EnemyMain : MonoBehaviour
             attack = true;  // 次の攻撃準備
         }
 
-        if (dead == true && onece ==true)
+        if (HP <= 0 && onece ==true)
         {
             StartCoroutine(Dead());
         }
@@ -51,6 +52,7 @@ public class EnemyMain : MonoBehaviour
             HP -= 10;
         }
     }
+
 
     IEnumerator Attack()
     {
@@ -85,9 +87,7 @@ public class EnemyMain : MonoBehaviour
                 }
                 else
                 {
-                    anim.SetTrigger("Die");         //死亡
-                    dead = true;
-                    yield break;
+                    yield return null;
                 }
             }
         }
@@ -95,11 +95,14 @@ public class EnemyMain : MonoBehaviour
 
     IEnumerator Dead()
     {
+        anim.SetTrigger("Die");         //死亡
         onece  = false;
         bossMain.damage = bossMain.damage * 2;
+        Efect.SetActive(true);
         //エフェクト
         yield return new WaitForSeconds(30f);
         bossMain.damage = bossMain.damage / 2;
+        Efect.SetActive(false);
 
     }
 }
