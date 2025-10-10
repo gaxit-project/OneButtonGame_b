@@ -14,6 +14,7 @@ public class SoundManager : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(this.gameObject);
+            LoadVolume();
         }
         else
         {
@@ -51,5 +52,22 @@ public class SoundManager : MonoBehaviour
     public void PlaySE(int index)
     {
         audioSourceSE.PlayOneShot(audioClipsSE[index]);
+    }
+
+    public void SetBGMVolume(float volume)
+    {
+        audioSourceBGM.volume = volume;
+    }
+
+    public void SetSEVolume(float volume)
+    {
+        audioSourceSE.volume = volume;
+    }
+
+    private void LoadVolume()
+    {
+        // PlayerPrefsから音量設定を読み込み、読み込めなかったらデフォルト値(1.0f)を設定
+        audioSourceBGM.volume = PlayerPrefs.GetFloat("BGMVolume_Key", 1.0f);
+        audioSourceSE.volume = PlayerPrefs.GetFloat("SEVolume_Key", 1.0f);
     }
 }
