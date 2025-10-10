@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Threading;
+
 
 public class AudioController : MonoBehaviour
 {
@@ -26,6 +28,7 @@ public class AudioController : MonoBehaviour
     public void ToTitle()
     {
         SoundManager.instance.PlaySE(0);
+        Thread.Sleep(200);
         SceneManager.LoadScene("Title");
         SoundManager.instance.PlayBGM("Title");
     }
@@ -33,6 +36,7 @@ public class AudioController : MonoBehaviour
     public void ToSetting()
     {
         SoundManager.instance.PlaySE(0);
+        Thread.Sleep(200);
         SceneManager.LoadScene("Setting");
         SoundManager.instance.PlayBGM("Setting");
     }
@@ -40,6 +44,7 @@ public class AudioController : MonoBehaviour
     public void ToBatting()
     {
         SoundManager.instance.PlaySE(0);
+        Thread.Sleep(200);
         SceneManager.LoadScene("Batting");
         SoundManager.instance.PlayBGM("Batting");
     }
