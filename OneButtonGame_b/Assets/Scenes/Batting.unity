@@ -1461,7 +1461,7 @@ MonoBehaviour:
   - {fileID: 2146816638}
   - {fileID: 1378908135}
   - {fileID: 1118154688}
-  launchPower: 10.2
+  launchPower: 10.3
 --- !u!4 &585022513
 Transform:
   m_ObjectHideFlags: 0
