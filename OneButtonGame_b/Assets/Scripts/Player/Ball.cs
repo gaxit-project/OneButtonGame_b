@@ -21,7 +21,14 @@ public class Ball : MonoBehaviour
     public float distanceScalingFactor = 0.05f;
 
     [Header("予測マーカー")]
-    public GameObject impactMarkerPrefab;
+    public GameObject targetMarkerPrefab;
+    public GameObject timingMarkerPrefab;
+
+    [Header("予測マーカーの初期スケール")]
+    public Vector3 initialMarkerScale = new Vector3(5f, 5f, 5f);
+
+    [Header("予測マーカーの最終スケール")]
+    public Vector3 finalMarkerScale = Vector3.one;
 
     [Header("難易度")]
     [SerializeField] private bool hard = false;
@@ -43,7 +50,9 @@ public class Ball : MonoBehaviour
     private CameraController cameraController;
     private Camera mainCamera;
     private CanonController canonController;
-    private GameObject markerInstance;
+    private GameObject targetMarkerInstance;
+    private GameObject timingMarkerInstance;
+    private Coroutine markerAnimationCoroutine;
 
     private void Awake()
     {
@@ -55,10 +64,16 @@ public class Ball : MonoBehaviour
         initialScale = transform.localScale;
         mainCamera = Camera.main;
 
-        if (impactMarkerPrefab != null)
+        if (targetMarkerPrefab != null)
         {
-            markerInstance = Instantiate(impactMarkerPrefab);
-            markerInstance.SetActive(false);
+            targetMarkerInstance = Instantiate(targetMarkerPrefab);
+            targetMarkerInstance.SetActive(false);
+        }
+
+        if (timingMarkerPrefab != null)
+        {
+            timingMarkerInstance = Instantiate(timingMarkerPrefab);
+            timingMarkerInstance.SetActive(false);
         }
     }
 
@@ -234,7 +249,7 @@ public class Ball : MonoBehaviour
 
     private void PredictAndPlaceMarker()
     {
-        if (markerInstance == null) return;
+        if (targetMarkerInstance == null || timingMarkerInstance == null) return;
 
         Vector3 initialVelocity = rb.velocity;
         Vector3 initialPosition = transform.position;
@@ -246,15 +261,45 @@ public class Ball : MonoBehaviour
         float impactX = initialVelocity.x * timeToImpact + initialPosition.x;
         float impactY = (0.5f * Physics.gravity.y * timeToImpact * timeToImpact) + (initialVelocity.y * timeToImpact) + initialPosition.y;
 
-        markerInstance.transform.position = new Vector3(impactX, impactY, 0);
-        markerInstance.SetActive(true);
+        Vector3 targetMarkerPosition = new Vector3(impactX, impactY, 0);
+        Vector3 timingMarkerPosition = new Vector3(impactX, impactY, 0.01f);
+
+        targetMarkerInstance.transform.position = targetMarkerPosition;
+        targetMarkerInstance.SetActive(true);
+
+        timingMarkerInstance.transform.position = timingMarkerPosition;
+        timingMarkerInstance.SetActive(true);
+
+        markerAnimationCoroutine = StartCoroutine(AnimateMarkerScale(timeToImpact));
     } 
 
     public void HideMarker()
     {
-        if (markerInstance != null)
+        if (targetMarkerInstance != null)
         {
-            markerInstance.SetActive(false);
+            targetMarkerInstance.SetActive(false);
+        }
+
+        if (timingMarkerInstance != null)
+        {
+            if (markerAnimationCoroutine != null)
+            {
+                StopCoroutine(markerAnimationCoroutine);
+                markerAnimationCoroutine = null;
+            }
+            timingMarkerInstance.SetActive(false);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (targetMarkerInstance != null)
+        {
+            Destroy(targetMarkerInstance);
+        }
+        if (timingMarkerInstance != null)
+        {
+            Destroy(timingMarkerInstance);
         }
     }
 
@@ -267,16 +312,12 @@ public class Ball : MonoBehaviour
         }
         isFaul = false;
 
-        if (markerInstance != null)
-        {
-            Destroy(markerInstance);
-        }
-
         if(cameraController != null)
         {
             cameraController.ResetCamera();
             canonController.FireCanon();
         }
+
         Destroy(gameObject);
     }
 
@@ -334,5 +375,27 @@ public class Ball : MonoBehaviour
                 DataLogger.Instance.SaveTrajectory(difficulty, finalVelocity.magnitude, launchAngle, trajectoryPoints);
             }
         }
+    }
+
+    private IEnumerator AnimateMarkerScale(float duration)
+    {
+        float elapsedTime = 0f;
+        if (duration <= 0)
+        {
+            timingMarkerInstance.transform.localScale = finalMarkerScale;
+            yield break;
+        }
+
+        while (elapsedTime < duration)
+        {
+            float t = elapsedTime / duration;
+            timingMarkerInstance.transform.localScale = Vector3.Lerp(initialScale, finalMarkerScale, t);
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        timingMarkerInstance.transform.localScale = finalMarkerScale;
+        markerAnimationCoroutine = null;
     }
 }
