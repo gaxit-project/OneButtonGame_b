@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6566212380468321225}
   - component: {fileID: 6504337547580998139}
   m_Layer: 0
-  m_Name: ImpactMarker
+  m_Name: targetMarker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
