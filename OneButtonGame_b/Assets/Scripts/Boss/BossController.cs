@@ -1,16 +1,20 @@
 using UnityEngine;
+using TMPro;
 
 public class BossController : MonoBehaviour
 {
     [Header("ボスの体力")]
-    public int health = 1000;
+    public int maxHealth = 1000;
+    private int currentHealth;
 
     [Header("UIコンポーネント")]
     public DamageDisplay damageDisplay;
+    public TextMeshProUGUI healthText;
 
     void Start()
     {
-        
+        currentHealth = maxHealth;
+        UpdateHealthUI();
     }
 
     void Update()
@@ -20,15 +24,23 @@ public class BossController : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        health -= damage;
-        Debug.Log("ボスが" +  damage + "ダメージ受けた！残りのHP: " + health);
+        currentHealth -= damage;
+
+        if (currentHealth < 0)
+        {
+            currentHealth = 0;
+        }
+
+        Debug.Log("ボスが" +  damage + "ダメージ受けた！残りのHP: " + currentHealth);
 
         if(damageDisplay != null)
         {
             damageDisplay.ShowDamage(damage);
         }
 
-        if(health <= 0)
+        UpdateHealthUI();
+
+        if(currentHealth <= 0)
         {
             Die();
         }
@@ -38,5 +50,13 @@ public class BossController : MonoBehaviour
     {
         Debug.Log("ボスを倒した！");
         Destroy(gameObject);
+    }
+
+    void UpdateHealthUI()
+    {
+        if(healthText != null)
+        {
+            healthText.text = $"{currentHealth} / {maxHealth}";
+        }
     }
 }
