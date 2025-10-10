@@ -32,17 +32,17 @@ public class StartButton : MonoBehaviour
 
     public void SwichBattingScene()
     {
-        SceneManager.LoadScene("Batting");
+        AudioController.instance.ToBatting();
     }
 
     public void SwichSettingScene()
     {
-        SceneManager.LoadScene("Setting");
+        AudioController.instance.ToSetting();
     }
 
     public void SwichTitleScene()
     {
-        SceneManager.LoadScene("Title");
+        AudioController.instance.ToTitle();
     }
 
     public void SwichResultScene()
