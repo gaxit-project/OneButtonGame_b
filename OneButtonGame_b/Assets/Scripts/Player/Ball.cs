@@ -1,6 +1,8 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class Ball : MonoBehaviour
 {
@@ -30,6 +32,10 @@ public class Ball : MonoBehaviour
     [Header("予測マーカーの最終スケール")]
     public Vector3 finalMarkerScale = Vector3.one;
 
+    [Header("画面外マーカーUI")]
+    public Image arrowLeftUI;
+    public Image arrowRightUI;
+
     [Header("難易度")]
     [SerializeField] private bool hard = false;
 
@@ -54,6 +60,8 @@ public class Ball : MonoBehaviour
     private GameObject timingMarkerInstance;
     private Coroutine markerAnimationCoroutine;
 
+    public static event Action OnBallDestroyed;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -75,6 +83,15 @@ public class Ball : MonoBehaviour
             timingMarkerInstance = Instantiate(timingMarkerPrefab);
             timingMarkerInstance.SetActive(false);
         }
+
+        if (arrowLeftUI != null)
+        {
+            arrowLeftUI.gameObject.SetActive(false);
+        }
+        if (arrowRightUI != null)
+        {
+            arrowRightUI.gameObject.SetActive(false);
+        }
     }
 
     private void Update()
@@ -87,6 +104,8 @@ public class Ball : MonoBehaviour
 
             transform.localScale = initialScale * scaleFactor;
         }
+
+        UpdateOffScreenArrows();
     }
 
     private void FixedUpdate()
@@ -229,6 +248,9 @@ public class Ball : MonoBehaviour
         {
             isFaul = true;
             Debug.Log("ストライク");
+
+            HideMarker();
+
             if (cameraController != null && !isGraunded)
             {
                 isGraunded = true;
@@ -238,6 +260,9 @@ public class Ball : MonoBehaviour
         else if (other.gameObject.CompareTag("Foul"))
         {
             Debug.Log("ファール");
+
+            HideMarker();
+
             if (cameraController != null && !isGraunded)
             {
                 isGraunded = true;
@@ -289,6 +314,46 @@ public class Ball : MonoBehaviour
             }
             timingMarkerInstance.SetActive(false);
         }
+
+        if (arrowLeftUI != null)
+        {
+            arrowLeftUI.gameObject.SetActive(false);
+        }
+        if (arrowRightUI != null)
+        {
+            arrowRightUI.gameObject.SetActive(false);
+        }
+    }
+
+    private void UpdateOffScreenArrows()
+    {
+        if (targetMarkerInstance == null || !targetMarkerInstance.activeSelf || arrowLeftUI == null || arrowRightUI == null)
+        {
+            return;
+        }
+
+        Vector3 screenPoint = mainCamera.WorldToScreenPoint(targetMarkerInstance.transform.position);
+
+        bool isVisible = screenPoint.z > 0 && screenPoint.x > 0 && screenPoint.x < Screen.width;
+
+        if (isVisible)
+        {
+            arrowLeftUI.gameObject.SetActive(false);
+            arrowRightUI.gameObject.SetActive(false);
+        }
+        else
+        {
+            if (screenPoint.x < Screen.width / 2)
+            {
+                arrowLeftUI.gameObject.SetActive(true);
+                arrowRightUI.gameObject.SetActive(false);
+            }
+            else
+            {
+                arrowLeftUI.gameObject.SetActive(false);
+                arrowRightUI.gameObject.SetActive(true);
+            }
+        }
     }
 
     private void OnDestroy()
@@ -315,8 +380,10 @@ public class Ball : MonoBehaviour
         if(cameraController != null)
         {
             cameraController.ResetCamera();
-            canonController.FireCanon();
+            //canonController.FireCanon();
         }
+
+        OnBallDestroyed?.Invoke();
 
         Destroy(gameObject);
     }

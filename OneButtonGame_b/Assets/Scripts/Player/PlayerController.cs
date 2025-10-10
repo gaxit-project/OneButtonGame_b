@@ -86,11 +86,11 @@ public class PlayerController : MonoBehaviour
         {
             Debug.Log("ãÛêUÇË");
 
-            Ball currentBall = FindObjectOfType<Ball>();
-            if (currentBall != null)
-            {
-                currentBall.HideMarker();
-            }
+            //Ball currentBall = FindObjectOfType<Ball>();
+            //if (currentBall != null)
+            //{
+            //    currentBall.HideMarker();
+            //}
 
             StartCoroutine(ResetStance());
         }

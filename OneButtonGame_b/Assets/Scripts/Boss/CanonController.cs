@@ -17,7 +17,7 @@ public class CanonController : MonoBehaviour
 
     void Start()
     {
-        
+        FireCanon();
     }
 
     void Update()
@@ -27,10 +27,20 @@ public class CanonController : MonoBehaviour
             FireCanon();
         }
 
-        if (Input.GetKeyUp(KeyCode.R))
-        {
-            CleanerAllBalls();
-        }
+        //if (Input.GetKeyUp(KeyCode.R))
+        //{
+        //    CleanerAllBalls();
+        //}
+    }
+
+    private void OnEnable()
+    {
+        Ball.OnBallDestroyed += FireCanon;
+    }
+
+    private void OnDisable()
+    {
+        Ball.OnBallDestroyed -= FireCanon;
     }
 
     public void FireCanon()

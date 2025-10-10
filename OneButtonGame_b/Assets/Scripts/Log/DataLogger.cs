@@ -31,6 +31,20 @@ public class TrajectoryData
     public List<Vector3> points;
 }
 
+[System.Serializable]
+public class TimeAttackRecord
+{
+    public string playerName = "Player";
+    public float clearTime;
+    public string date;
+}
+
+[System.Serializable]
+public class TimeAttackRanking
+{
+    public List<TimeAttackRecord> records = new List<TimeAttackRecord>();
+}
+
 public class DataLogger : MonoBehaviour
 {
     public static DataLogger Instance {  get; private set; }　// シングルトン
@@ -39,8 +53,10 @@ public class DataLogger : MonoBehaviour
     public string parentDirectoryName = "BattingLogs";
 
     private HitDataList hitDataList= new HitDataList();
+    private TimeAttackRanking timeAttackRanking = new TimeAttackRanking();
     private string savePath;
     private string trajectoryLogPath;
+    private string timeAttackLogPath;
 
     void Awake()
     {
@@ -58,16 +74,19 @@ public class DataLogger : MonoBehaviour
 
         string documentPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         string parentPath = Path.Combine(documentPath, parentFolderName);
+        string timeAttackFolderPath = Path.Combine(parentPath, "timeattack");
 
         string battingFolderPath = Path.Combine(parentPath, "batting");
         trajectoryLogPath = Path.Combine(parentPath, "trajectory");
 
         savePath = Path.Combine(battingFolderPath, "battingLog.json");
+        timeAttackLogPath = Path.Combine(timeAttackFolderPath, "timeAttackLog.json");
 
         try
         {
             Directory.CreateDirectory(battingFolderPath);
             Directory.CreateDirectory(trajectoryLogPath);
+            Directory.CreateDirectory(timeAttackFolderPath);
         }
         catch (Exception e)
         {
@@ -80,6 +99,7 @@ public class DataLogger : MonoBehaviour
 
         // 既存のログファイルがあれば読み込む
         LoadData();
+
     }
 
     // Start is called before the first frame update
@@ -160,5 +180,41 @@ public class DataLogger : MonoBehaviour
     private void OnApplicationQuit()
     {
         SaveData();
+    }
+
+    public void LogClearTime(float time)
+    {
+        TimeAttackRecord newRecord = new TimeAttackRecord
+        {
+            clearTime = time,
+            date = DateTime.Now.ToString("yyyy/MM/dd HH:mm")
+        };
+
+        timeAttackRanking.records.Add(newRecord);
+
+        timeAttackRanking.records.Sort((a, b) => a.clearTime.CompareTo(b.clearTime));
+
+        SaveTimeAttackData();
+    }
+
+    public List<TimeAttackRecord> GetRanking()
+    {
+        LoadTimeAttackData();
+        return timeAttackRanking.records;
+    }
+
+    private void SaveTimeAttackData()
+    {
+        string json = JsonUtility.ToJson(timeAttackRanking, true);
+        File.WriteAllText(timeAttackLogPath, json);
+    }
+
+    private void LoadTimeAttackData()
+    {
+        if (File.Exists(timeAttackLogPath))
+        {
+            string json = File.ReadAllText(timeAttackLogPath);
+            timeAttackRanking = JsonUtility.FromJson<TimeAttackRanking>(json);
+        }
     }
 }

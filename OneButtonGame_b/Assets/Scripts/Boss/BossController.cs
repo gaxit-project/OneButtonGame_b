@@ -49,6 +49,12 @@ public class BossController : MonoBehaviour
     private void Die()
     {
         Debug.Log("É{ÉXÇì|ÇµÇΩÅI");
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.BossDefeated();
+        }
+
         Destroy(gameObject);
     }
 
