@@ -26,9 +26,6 @@ public class RankingEntryUI : MonoBehaviour
         nameText.text = playerName;
 
         TimeSpan timeSpan = TimeSpan.FromSeconds(clearTime);
-        timeText.text = string.Format("{0:F2}:{1:F2}.{2:F2}",
-            timeSpan.Minutes,
-            timeSpan.Seconds,
-            timeSpan.Milliseconds / 10);
+        timeText.text = timeSpan.ToString(@"mm\:ss\.ff");
     }
 }
