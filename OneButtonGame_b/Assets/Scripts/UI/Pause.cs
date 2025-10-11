@@ -1,12 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Pause : MonoBehaviour
 {
     //　ポーズした時に表示するUI
     [SerializeField]
     private GameObject pauseUI;
+
+    [SerializeField]
+    private GameObject firstSelectedButton;
 
     // Update is called once per frame
     void Update()
@@ -21,6 +25,8 @@ public class Pause : MonoBehaviour
             {
                 Time.timeScale = 0f;
                 //　ポーズUIが表示されてなければ通常通り進行
+
+                EventSystem.current.SetSelectedGameObject(firstSelectedButton);
             }
             else
             {
