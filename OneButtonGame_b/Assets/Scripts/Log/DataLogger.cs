@@ -99,6 +99,7 @@ public class DataLogger : MonoBehaviour
 
         // 既存のログファイルがあれば読み込む
         LoadData();
+        LoadTimeAttackData();
 
     }
 

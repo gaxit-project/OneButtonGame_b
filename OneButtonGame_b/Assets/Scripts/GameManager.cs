@@ -1,9 +1,13 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+
+    [Header("UIコンポーネント")]
+    public TextMeshProUGUI timerText;
 
     [Header("リザルトシーン名")]
     public string resultSceneName = "Result";
@@ -17,6 +21,7 @@ public class GameManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -42,6 +47,7 @@ public class GameManager : MonoBehaviour
         if (isGameActive)
         {
             elapsedTime += Time.deltaTime;
+            UpdateTimerUI();
         }
     }
 
@@ -60,5 +66,19 @@ public class GameManager : MonoBehaviour
 
             SceneManager.LoadScene(resultSceneName);
         }
+    }
+
+    void UpdateTimerUI()
+    {
+        if (timerText != null)
+        {
+            System.TimeSpan timeSpan = System.TimeSpan.FromSeconds(elapsedTime);
+            timerText.text = timeSpan.ToString(@"mm\:ss\.ff");
+        }
+    }
+
+    public float GetClearTime()
+    {
+        return elapsedTime;
     }
 }

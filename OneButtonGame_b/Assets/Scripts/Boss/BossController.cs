@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System.Collections;
 
 public class BossController : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class BossController : MonoBehaviour
     [Header("UIコンポーネント")]
     public DamageDisplay damageDisplay;
     public TextMeshProUGUI healthText;
+
+    private bool isDead = false;
 
     void Start()
     {
@@ -24,6 +27,7 @@ public class BossController : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        
         currentHealth -= damage;
 
         if (currentHealth < 0)
@@ -42,18 +46,22 @@ public class BossController : MonoBehaviour
 
         if(currentHealth <= 0)
         {
-            Die();
+            StartCoroutine(Die());
         }
     }
 
-    private void Die()
+    private IEnumerator Die()
     {
         Debug.Log("ボスを倒した！");
+
+        GetComponent<Collider>().enabled = false;
 
         if (GameManager.Instance != null)
         {
             GameManager.Instance.BossDefeated();
         }
+
+        yield return new WaitForSeconds(damageDisplay.fadeDuration + damageDisplay.displayDuration);
 
         Destroy(gameObject);
     }
