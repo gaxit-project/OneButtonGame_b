@@ -12,9 +12,6 @@ public class CanonController : MonoBehaviour
     [Header("ボールの発射パワー")]
     public float launchPower = 50f;
 
-    [Header("プレイヤーの位置")]
-    public Transform player;
-
     // 生成したボールの情報を保存しておくためのリスト
     private List<GameObject> spawnedBalls = new List<GameObject>();
 
@@ -25,12 +22,10 @@ public class CanonController : MonoBehaviour
 
     void Update()
     {
-        Vector3 pos = player.position;
-
-        /*if (Input.GetKeyUp(KeyCode.Space))
+        if (Input.GetKeyUp(KeyCode.Space))
         {
             FireCanon();
-        }*/
+        }
 
         //if (Input.GetKeyUp(KeyCode.R))
         //{
@@ -50,9 +45,9 @@ public class CanonController : MonoBehaviour
 
     public void FireCanon()
     {
-        if(ballPrefab == null || spawnPoints == null || spawnPoints.Count == 0 || player == null)
+        if(ballPrefab == null || spawnPoints == null || spawnPoints.Count == 0)
         {
-            Debug.Log("Ball PrefabまたはSpawn Pointsもしくはplayerが設定されてません");
+            Debug.Log("Ball PrefabまたはSpawn Pointsが設定されてません");
             return;
         }
 
@@ -66,9 +61,8 @@ public class CanonController : MonoBehaviour
         if(ballRigidbody != null )
         {
             // ボールに力を加える
-            /*Vector3 launchDirection = -selectedSpawnPoint.forward;*/
-            Vector3 pos = (player.position - selectedSpawnPoint.position + new Vector3(0,20,0)).normalized;
-            ballRigidbody.AddForce(/*launchDirection*/pos * launchPower, ForceMode.Impulse);
+            Vector3 launchDirection = -selectedSpawnPoint.forward;
+            ballRigidbody.AddForce(launchDirection * launchPower, ForceMode.Impulse);
         }
 
         spawnedBalls.Add(newBall);

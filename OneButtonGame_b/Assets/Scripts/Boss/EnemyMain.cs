@@ -6,9 +6,8 @@ public class EnemyMain : MonoBehaviour
 {
 
     Animator anim;
-    public Ball ball;
+    public BossMain bossMain;
     public CanonController canonController;
-    public GameObject Efect;
 
     [Header("取り巻きのステータス")]
     public int HP = 250;
@@ -32,7 +31,12 @@ public class EnemyMain : MonoBehaviour
 
     void Update()
     {
-        if (HP <= 0 && onece ==true)
+        if (!attack && !getHit)
+        {
+            attack = true;  // 次の攻撃準備
+        }
+
+        if (dead == true && onece ==true)
         {
             StartCoroutine(Dead());
         }
@@ -47,7 +51,6 @@ public class EnemyMain : MonoBehaviour
             HP -= 10;
         }
     }
-
 
     IEnumerator Attack()
     {
@@ -70,12 +73,10 @@ public class EnemyMain : MonoBehaviour
                     }
                     if (attack == true)
                     {
-                        attack = false;
                         anim.SetTrigger("Attack");  //通常攻撃
                         yield return new WaitForSeconds(2.3f);
                         canonController.FireCanon();
                         yield return new WaitForSeconds(coolTime);
-                        attack = true;
                     }
                     else
                     {
@@ -84,7 +85,9 @@ public class EnemyMain : MonoBehaviour
                 }
                 else
                 {
-                    yield return null;
+                    anim.SetTrigger("Die");         //死亡
+                    dead = true;
+                    yield break;
                 }
             }
         }
@@ -92,14 +95,11 @@ public class EnemyMain : MonoBehaviour
 
     IEnumerator Dead()
     {
-        anim.SetTrigger("Die");         //死亡
         onece  = false;
-        ball.attackPower = ball.attackPower * 2;
-        Efect.SetActive(true);
+        bossMain.damage = bossMain.damage * 2;
         //エフェクト
         yield return new WaitForSeconds(30f);
-        ball.attackPower = ball.attackPower / 2;
-        Efect.SetActive(false);
+        bossMain.damage = bossMain.damage / 2;
 
     }
 }
