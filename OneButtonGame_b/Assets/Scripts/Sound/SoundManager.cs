@@ -44,6 +44,9 @@ public class SoundManager : MonoBehaviour
             case "Batting":
                 audioSourceBGM.clip = audioClipsBGM[2];
                 break;
+            case "Result":
+                audioSourceBGM.clip = audioClipsBGM[3];
+                break;
         }
         audioSourceBGM.Play();
     }

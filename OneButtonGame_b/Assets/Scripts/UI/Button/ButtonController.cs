@@ -48,6 +48,7 @@ public class StartButton : MonoBehaviour
     public void SwichResultScene()
     {
         SceneManager.LoadScene("Result");
+        AudioController.instance.ToResult();
     }
 
     public void EngGame()

@@ -130,6 +130,9 @@ public class Ball : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Bat"))
         {
+            // 打撃音を再生
+            SoundManager.instance.PlaySE(1);
+
             // ヒットしたらマーカーを消す
             HideMarker();
 

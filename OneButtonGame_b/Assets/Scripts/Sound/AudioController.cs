@@ -31,6 +31,8 @@ public class AudioController : MonoBehaviour
         Thread.Sleep(200);
         SceneManager.LoadScene("Title");
         SoundManager.instance.PlayBGM("Title");
+        Time.timeScale = 1f;
+
     }
 
     public void ToSetting()
@@ -47,6 +49,12 @@ public class AudioController : MonoBehaviour
         Thread.Sleep(200);
         SceneManager.LoadScene("Batting");
         SoundManager.instance.PlayBGM("Batting");
+    }
+    public void ToResult()
+    {
+        Thread.Sleep(200);
+        SceneManager.LoadScene("Result");
+        SoundManager.instance.PlayBGM("Result");
     }
     void Start()
     {
