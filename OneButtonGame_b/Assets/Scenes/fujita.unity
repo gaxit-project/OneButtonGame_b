@@ -650,8 +650,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc7977cf34625d341b7fb3211df5fc68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 1000
+  maxHealth: 1000
   damageDisplay: {fileID: 523182021}
+  healthText: {fileID: 0}
 --- !u!54 &523182017
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -816,8 +817,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc7977cf34625d341b7fb3211df5fc68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 1000
+  maxHealth: 1000
   damageDisplay: {fileID: 526982821}
+  healthText: {fileID: 0}
 --- !u!54 &526982817
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1531,8 +1533,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc7977cf34625d341b7fb3211df5fc68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 1000
+  maxHealth: 1000
   damageDisplay: {fileID: 870464265}
+  healthText: {fileID: 0}
 --- !u!1 &916415293
 GameObject:
   m_ObjectHideFlags: 0
@@ -1874,7 +1877,7 @@ Transform:
   m_GameObject: {fileID: 1378908134}
   serializedVersion: 2
   m_LocalRotation: {x: -0.17298746, y: -0.085831694, z: -0.015134449, w: 0.98106027}
-  m_LocalPosition: {x: 284, y: 100, z: 156}
+  m_LocalPosition: {x: 86.7, y: 100, z: 162.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2448,8 +2451,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc7977cf34625d341b7fb3211df5fc68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 1000
+  maxHealth: 1000
   damageDisplay: {fileID: 1514249887}
+  healthText: {fileID: 0}
 --- !u!1 &1518171664
 GameObject:
   m_ObjectHideFlags: 0
@@ -2673,7 +2677,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4e2016c566d353498fd2a4b198c850e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 7
+  moveSpeed: 20
   rightStanceYRotation: 160
   leftStanceYRotation: 200
   batController: {fileID: 1540835449}
@@ -7873,8 +7877,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc7977cf34625d341b7fb3211df5fc68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 1000
+  maxHealth: 1000
   damageDisplay: {fileID: 1864356638}
+  healthText: {fileID: 0}
 --- !u!1 &1877843744
 GameObject:
   m_ObjectHideFlags: 0
@@ -8028,8 +8033,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc7977cf34625d341b7fb3211df5fc68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 1000
+  maxHealth: 1000
   damageDisplay: {fileID: 1915107629}
+  healthText: {fileID: 0}
 --- !u!54 &1915107625
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -9857,7 +9863,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae5029ed6a751144594ef1a794606d4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bossMain: {fileID: 4988516786570519617}
+  ball: {fileID: 0}
   canonController: {fileID: 585022512}
   Efect: {fileID: 1835268379}
   HP: 250
@@ -10001,10 +10007,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canonController: {fileID: 585022512}
+  ball: {fileID: 0}
   HP: 1000
   Power: 1
   coolTime: 5
-  damage: 10
   attack: 1
   gameStart: 1
   skill: 0
@@ -10897,7 +10903,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae5029ed6a751144594ef1a794606d4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bossMain: {fileID: 4988516786570519617}
+  ball: {fileID: 0}
   canonController: {fileID: 585022512}
   Efect: {fileID: 1835268379}
   HP: 250

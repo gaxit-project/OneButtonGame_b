@@ -6,12 +6,12 @@ public class BossMain : MonoBehaviour
 {
     Animator anim;
     public CanonController canonController;
-
+    public Ball ball;
+    
     [Header("ボスのステータス")]
     public int HP = 1000;
     public int Power = 1;
     public float coolTime = 5f;
-    public int damage = 10;
 
     public bool attack = false;     //攻撃するかどうか
     public bool gameStart = false;  //後でゲームマネージャーで設定
@@ -30,17 +30,12 @@ public class BossMain : MonoBehaviour
 
     void Update()
     {
-        if (!attack && !skill && !getHit)
-        {
-            attack = true;  // 次の攻撃準備
-        }
-
         if (HP <= 0 && onece == false)
         {
             anim.SetTrigger("Die");         //死亡
             onece = true;
         }
-       }
+    }
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -48,7 +43,7 @@ public class BossMain : MonoBehaviour
         if (collision.gameObject.CompareTag("Ball"))
         {
             anim.SetTrigger("GetHit");  //ダメージの演出
-            HP -= damage;
+            HP -= ball.attackPower;
         }
     }
 
@@ -79,10 +74,12 @@ public class BossMain : MonoBehaviour
                     }
                     if (attack == true)
                     {
+                        attack = false;
                         anim.SetTrigger("Attack");  //通常攻撃
                         yield return new WaitForSeconds(2.3f);
                         canonController.FireCanon();
                         yield return new WaitForSeconds(coolTime);
+                        attack = true;
                     }
                     else
                     {

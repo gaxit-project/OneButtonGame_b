@@ -9,7 +9,7 @@ public class CameraController : MonoBehaviour
     private Transform ballTarget;
 
     [Header("カメラオフセット")]
-    // 見上げカメラのオフセット
+    //見上げカメラのオフセット
     public Vector3 lookUpOffset = new Vector3(0, -2f, -4f);
 
     // 追跡カメラのオフセット

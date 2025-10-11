@@ -27,10 +27,10 @@ public class CanonController : MonoBehaviour
     {
         Vector3 pos = player.position;
 
-        if (Input.GetKeyUp(KeyCode.Space))
+        /*if (Input.GetKeyUp(KeyCode.Space))
         {
             FireCanon();
-        }
+        }*/
 
         if (Input.GetKeyUp(KeyCode.R))
         {

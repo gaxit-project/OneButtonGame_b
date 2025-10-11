@@ -6,7 +6,7 @@ public class EnemyMain : MonoBehaviour
 {
 
     Animator anim;
-    public BossMain bossMain;
+    public Ball ball;
     public CanonController canonController;
     public GameObject Efect;
 
@@ -32,11 +32,6 @@ public class EnemyMain : MonoBehaviour
 
     void Update()
     {
-        if (!attack && !getHit)
-        {
-            attack = true;  // Ÿ‚ÌUŒ‚€”õ
-        }
-
         if (HP <= 0 && onece ==true)
         {
             StartCoroutine(Dead());
@@ -75,10 +70,12 @@ public class EnemyMain : MonoBehaviour
                     }
                     if (attack == true)
                     {
+                        attack = false;
                         anim.SetTrigger("Attack");  //’ÊíUŒ‚
                         yield return new WaitForSeconds(2.3f);
                         canonController.FireCanon();
                         yield return new WaitForSeconds(coolTime);
+                        attack = true;
                     }
                     else
                     {
@@ -97,11 +94,11 @@ public class EnemyMain : MonoBehaviour
     {
         anim.SetTrigger("Die");         //€–S
         onece  = false;
-        bossMain.damage = bossMain.damage * 2;
+        ball.attackPower = ball.attackPower * 2;
         Efect.SetActive(true);
         //ƒGƒtƒFƒNƒg
         yield return new WaitForSeconds(30f);
-        bossMain.damage = bossMain.damage / 2;
+        ball.attackPower = ball.attackPower / 2;
         Efect.SetActive(false);
 
     }
