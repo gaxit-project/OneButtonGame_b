@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using Unity.VisualScripting;
 
 public class GameManager : MonoBehaviour
 {
@@ -15,6 +16,9 @@ public class GameManager : MonoBehaviour
     private int remainingBosses;
     private float elapsedTime;
     private bool isGameActive = false;
+
+    private PlayerController playerController;
+    private CanonController canonController;
 
     private void Awake()
     {
@@ -40,6 +44,7 @@ public class GameManager : MonoBehaviour
             elapsedTime = 0f;
         }
     }
+
 
     // Update is called once per frame
     void Update()
