@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.1882762, g: 0.19113821, b: 0.19109797, a: 1}
+  m_IndirectSpecularColor: {r: 0.18827614, g: 0.19113815, b: 0.19109792, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1519,6 +1519,7 @@ MonoBehaviour:
   - {fileID: 1870294511}
   - {fileID: 1302933914}
   launchPower: 10.3
+  player: {fileID: 1624583174}
 --- !u!4 &585022513
 Transform:
   m_ObjectHideFlags: 0
@@ -4063,13 +4064,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerTarget: {fileID: 5874264376807553838}
-  batController: {fileID: 1540835449}
-  rightStanceOffset: {x: -5, y: 6, z: -18}
-  leftStanceOffset: {x: -5, y: 6, z: 18}
   lookUpOffset: {x: 0, y: -2, z: -4}
   followOffset: {x: 0, y: 10, z: -20}
   homerunOffset: {x: 0, y: 2, z: -20}
-  followSmoothness: 0.1
   transitionDuration: 1.5
   rotationSmoothness: 1
   useHomerunView: 1
