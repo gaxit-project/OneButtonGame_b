@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviour
                 DataLogger.Instance.LogClearTime(elapsedTime);
             }
 
-            SceneManager.LoadScene(resultSceneName);
+            AudioController.instance.ToResult();
         }
     }
 
