@@ -22,6 +22,9 @@ public class CameraController : MonoBehaviour
     public float followSmoothness = 1f;
     public float transitionDuration = 1.5f; // 見上げから追跡へ移行する時間
     public float rotationSmoothness = 5f; // カメラがターゲットを向くときの滑らかさ
+
+    [Header("カメラ切り替え設定")]
+    public bool ballTracking = false;
     public bool useHomerunView = false;
 
     // 状態管理
@@ -40,6 +43,7 @@ public class CameraController : MonoBehaviour
         leftStanceOffset = new Vector3(-rightStanceOffset.x, rightStanceOffset.y, rightStanceOffset.z);
         initialRotation = transform.rotation;
 
+        //  BatControllerの打席変更イベントを購読
         if (batController != null)
         {
             batController.OnStanceChanged += HandleStanceChange;
@@ -57,6 +61,7 @@ public class CameraController : MonoBehaviour
         
     }
 
+    // カメラの位置を計算する
     private void LateUpdate()
     {
         if (isTrackingBall && ballTarget != null)
@@ -87,6 +92,7 @@ public class CameraController : MonoBehaviour
                 transform.rotation = Quaternion.Slerp(transform.rotation, ballTargetRotation, rotationSmoothness * Time.deltaTime);
             }
         }
+        // プレイヤー追跡
         else if (playerTarget != null)
         {
             // カメラをプレイヤーの背後に固定
@@ -97,13 +103,25 @@ public class CameraController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// ボールの追跡を開始
+    /// </summary>
+    /// <param name="ballTransform">追跡対象のボールのTransform</param>
     public void StartTracking(Transform ballTransform)
     {
+        if (!ballTracking)
+        {
+            return;
+        }
+
         ballTarget = ballTransform;
         isTrackingBall = true;
         transitionTimer = 0f;
     }
 
+    /// <summary>
+    /// BatControllerからの通知で、打席に合わせたカメラオフセットに切り替える
+    /// </summary>
     private void HandleStanceChange(bool isRightHanded)
     {
         if (isRightHanded)
@@ -116,7 +134,9 @@ public class CameraController : MonoBehaviour
         }
     }
 
-    // カメラを初期位置に戻す
+    /// <summary>
+    /// プレイヤー追跡状態に戻す
+    /// </summary>
     public void ResetCamera()
     {
 
@@ -129,9 +149,12 @@ public class CameraController : MonoBehaviour
         }
 
         transform.rotation = initialRotation;
+
+        // カメラがリセットされたことをPlayerCOntrollerに通知
         OnCameraReset?.Invoke();
     }
 
+    // オブジェクト破棄時にイベントの購読を解除
     private void OnDestroy()
     {
         if (batController != null)

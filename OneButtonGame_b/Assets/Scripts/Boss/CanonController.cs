@@ -18,24 +18,16 @@ public class CanonController : MonoBehaviour
     // 生成したボールの情報を保存しておくためのリスト
     private List<GameObject> spawnedBalls = new List<GameObject>();
 
+    private bool canFire = false;
+
     void Start()
     {
-        FireCanon();
+
     }
 
     void Update()
     {
-        //Vector3 pos = player.position;
 
-        /*if (Input.GetKeyUp(KeyCode.Space))
-        {
-            FireCanon();
-        }*/
-
-        //if (Input.GetKeyUp(KeyCode.R))
-        //{
-        //    CleanerAllBalls();
-        //}
     }
 
     private void OnEnable()
@@ -48,9 +40,25 @@ public class CanonController : MonoBehaviour
         Ball.OnBallDestroyed -= FireCanon;
     }
 
+    public void SetFiringEnabled(bool enabled)
+    {
+        canFire = enabled;
+    }
+
+    public void FireFirstBall()
+    {
+        SetFiringEnabled(true);
+        FireCanon();
+    }
+
     public void FireCanon()
     {
-        if(ballPrefab == null || spawnPoints == null || spawnPoints.Count == 0)
+        if (!canFire)
+        {
+            return;
+        }
+
+        if (ballPrefab == null || spawnPoints == null || spawnPoints.Count == 0)
         {
             Debug.Log("Ball PrefabまたはSpawn Pointsもしくはplayerが設定されてません");
             return;

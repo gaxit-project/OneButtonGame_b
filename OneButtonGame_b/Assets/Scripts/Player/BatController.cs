@@ -15,18 +15,24 @@ public class BatController : MonoBehaviour
     [Tooltip("左打ちのバットの位置と角度")]
     public Transform leftHandedStance;
 
+    [Header("コンポーネント")]
+    PlayerController playerController;
+
+    // 打席が変更されたことを通知するイベント
     public event Action<bool> OnStanceChanged;
 
     private bool isSwinging = false;
     private Quaternion initialLocalRotation;
     private Vector3 initialLocalPosition;
     public bool isRightHanded { get; private set; } = true; // true：右打ち false：左打ち
+    private bool canChangeStance = true;
 
 
     void Start()
     {
         if(rightHandedStance != null)
         {
+            // ゲーム開始時は右打ち
             SetStance(true);
         }
         else
@@ -37,6 +43,12 @@ public class BatController : MonoBehaviour
 
     void Update()
     {
+        if (!canChangeStance)
+        {
+            return;
+        }
+
+        // 打席の切り替え
         float horizontalInput = Input.GetAxis("Horizontal");
 
         if(horizontalInput > 0 && !isRightHanded)
@@ -54,6 +66,11 @@ public class BatController : MonoBehaviour
             PerformSwing();
         }
         */
+    }
+
+    public void SetInputEnabled(bool enabled)
+    {
+        canChangeStance = enabled;
     }
 
     /// <summary>
@@ -86,9 +103,13 @@ public class BatController : MonoBehaviour
         initialLocalPosition = transform.localPosition;
         initialLocalRotation = transform.localRotation;
 
+        // 打席が変更されたことを通知
         OnStanceChanged?.Invoke(isRightHanded);
     }
 
+    /// <summary>
+    /// PlayerControllerからスイング状態の変更を受け取る
+    /// </summary>
     public void SetSwingingState(bool swinging)
     {
         isSwinging = swinging;

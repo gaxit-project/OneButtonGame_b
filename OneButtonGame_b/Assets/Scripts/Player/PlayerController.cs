@@ -6,21 +6,25 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [Header("プレイヤー設定")]
-    public float moveSpeed = 5.0f;
-    public float rightStanceYRotation = 0f;
-    public float leftStanceYRotation = 180f;
+    public float moveSpeed = 5.0f; // プレイヤーの移動速度
+    public float rightStanceYRotation = 0f; // 右打席の時のY軸回転
+    public float leftStanceYRotation = 180f; // 左打席の時のY軸回転 
 
 
     [Header("コンポーネント")]
-    public BatController batController;
-    public CameraController cameraController;
+    public BatController batController; // BatControllerを参照
+    public CameraController cameraController; // CameraControllerを参照
 
     private bool hitBat = false;
     private bool isPlayerSwinging = false;
-    private Quaternion initialSwingRotation;
+    private bool canSwing = true;
+
+    private Quaternion initialSwingRotation; // スイング開始時の回転を保持
+
 
     void Start()
     {
+        // 打席変更イベントを購読
         if (batController != null)
         {
             batController.OnStanceChanged += HandlePlayerStanceChange;
@@ -28,6 +32,7 @@ public class PlayerController : MonoBehaviour
             HandlePlayerStanceChange(batController.isRightHanded);
         }
 
+        // CameraControllerのカメラリセットイベントを購読
         if (cameraController != null)
         {
             cameraController.OnCameraReset += HandleCameraReset;
@@ -35,7 +40,9 @@ public class PlayerController : MonoBehaviour
     }
 
     void Update()
-    { 
+    {
+        if (!canSwing) return;
+
         if (!isPlayerSwinging)
         {
             // 水平方向の移動処理
@@ -50,6 +57,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // プレイヤーがZ軸方向に動かないように補正
     private void LateUpdate()
     {
         Vector3 currentPosition = transform.position;
@@ -59,6 +67,23 @@ public class PlayerController : MonoBehaviour
         transform.position = currentPosition;
     }
 
+    /// <summary>
+    /// GameManagerからプレイヤーの操作可否を設定
+    /// </summary>
+    /// <param name="enabled">trueなら操作可能</param>
+    public void SetInputEnabled(bool enabled)
+    {
+        canSwing = enabled;
+
+        if (batController != null)
+        {
+            batController.SetInputEnabled(enabled);
+        }
+    }
+
+    /// <summary>
+    /// スイングを行うコルーチン
+    /// </summary>
     private IEnumerator SwingAction()
     {
         hitBat = false;
@@ -66,34 +91,24 @@ public class PlayerController : MonoBehaviour
         batController.SetSwingingState(true);
         //batController.PerformSwing();
 
-        initialSwingRotation = transform.rotation;
+        initialSwingRotation = transform.rotation; // 回転前の状態を保持
 
-        Quaternion initialRotation = transform.rotation;
+       //Quaternion initialRotation = transform.rotation;
 
         float rotationAmount = batController.isRightHanded ? batController.swingAngle : -batController.swingAngle;
-        Quaternion targetRotation = initialRotation * Quaternion.Euler(0, rotationAmount, 0);
+        Quaternion targetRotation = initialSwingRotation * Quaternion.Euler(0, rotationAmount, 0);
 
-        // 回転
+        // 目標角度まで滑らかに回転
         while (Quaternion.Angle(transform.rotation, targetRotation) > 0.1f)
         {
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, batController.swingSpeed * Time.deltaTime);
             yield return null;
         }
 
+        // スイングの頂点で少し待機
         yield return new WaitForSeconds(0.2f);
 
-        if (!hitBat)
-        {
-            Debug.Log("空振り");
-
-            //Ball currentBall = FindObjectOfType<Ball>();
-            //if (currentBall != null)
-            //{
-            //    currentBall.HideMarker();
-            //}
-
             StartCoroutine(ResetStance());
-        }
 
         /*
         if (!cameraController.useHomerunView)
@@ -115,19 +130,28 @@ public class PlayerController : MonoBehaviour
          
     }
 
+    /// <summary>
+    /// ヒットしたことを通知するメソッド
+    /// </summary>
     public void NotifyHit()
     {
         hitBat = true;
     }
 
+    /// <summary>
+    /// カメラがリセットされた時に呼ばれる
+    /// </summary>
     private void HandleCameraReset()
     {
         if (hitBat)
         {
-            StartCoroutine(ResetStance());
+            //StartCoroutine(ResetStance());
         }
     }
 
+    /// <summary>
+    /// スイング後、プレイヤーの向きを元に戻すコルーチン
+    /// </summary>
     private IEnumerator ResetStance()
     {
         // 戻る
@@ -161,6 +185,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // オブジェクト破棄時にイベントの購読を解除
     private void OnDestroy()
     {
         if (batController != null)
