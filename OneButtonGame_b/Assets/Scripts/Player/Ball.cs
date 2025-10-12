@@ -23,8 +23,8 @@ public class Ball : MonoBehaviour
     public float distanceScalingFactor = 0.05f;
 
     [Header("予測マーカー")]
-    public GameObject targetMarkerPrefab;
-    public GameObject timingMarkerPrefab;
+    public GameObject targetMarkerPrefab; //着弾点マーカー
+    public GameObject timingMarkerPrefab; // タイミングマーカー
 
     [Header("予測マーカーの初期スケール")]
     public Vector3 initialMarkerScale = new Vector3(5f, 5f, 5f);
@@ -245,6 +245,9 @@ public class Ball : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 指定した時間だけ待ってからカメラをリセットし、ボールを破棄するコルーチン
+    /// </summary>
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Strike"))

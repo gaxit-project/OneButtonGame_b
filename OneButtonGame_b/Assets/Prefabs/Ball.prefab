@@ -151,11 +151,13 @@ MonoBehaviour:
   upwardModifier: 0.5
   horizontalControl: 0.1
   pushForce: 100
-  resetDelay: 1
+  resetDelay: 0
   distanceScalingFactor: 0.003
   targetMarkerPrefab: {fileID: 7842259405980243365, guid: 8eaca4b4b20bf5443a4336e6384b3b7b, type: 3}
   timingMarkerPrefab: {fileID: 5925005019704419259, guid: 52301e033a2837043bd0dcb828ba8e6f, type: 3}
   initialMarkerScale: {x: 2, y: 2, z: 2}
   finalMarkerScale: {x: 1, y: 1, z: 1}
+  arrowLeftUI: {fileID: 0}
+  arrowRightUI: {fileID: 0}
   hard: 0
   isGraunded: 0
