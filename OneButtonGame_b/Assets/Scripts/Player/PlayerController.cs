@@ -17,7 +17,10 @@ public class PlayerController : MonoBehaviour
 
     private bool hitBat = false;
     private bool isPlayerSwinging = false;
+    private bool canSwing = true;
+
     private Quaternion initialSwingRotation;
+
 
     void Start()
     {
@@ -35,7 +38,9 @@ public class PlayerController : MonoBehaviour
     }
 
     void Update()
-    { 
+    {
+        if (!canSwing) return;
+
         if (!isPlayerSwinging)
         {
             // …•½•ûŒü‚ÌˆÚ“®ˆ—
@@ -57,6 +62,11 @@ public class PlayerController : MonoBehaviour
         currentPosition.z = 0f;
 
         transform.position = currentPosition;
+    }
+
+    public void SetInputEnabled(bool enabled)
+    {
+        canSwing = enabled;
     }
 
     private IEnumerator SwingAction()

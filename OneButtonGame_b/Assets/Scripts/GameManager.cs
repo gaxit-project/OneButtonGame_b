@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
-using Unity.VisualScripting;
+using System.Collections;
+
 
 public class GameManager : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class GameManager : MonoBehaviour
 
     [Header("UIコンポーネント")]
     public TextMeshProUGUI timerText;
+    public TextMeshProUGUI countdownText;
 
     [Header("リザルトシーン名")]
     public string resultSceneName = "Result";
@@ -32,17 +34,21 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        BossController[] allBosses = FindObjectsOfType<BossController>();
-        remainingBosses = allBosses.Length;
-
-        if (remainingBosses > 0)
-        {
-            isGameActive = true;
-            elapsedTime = 0f;
-        }
+        
     }
 
 
@@ -54,6 +60,68 @@ public class GameManager : MonoBehaviour
             elapsedTime += Time.deltaTime;
             UpdateTimerUI();
         }
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "Batting")
+        {
+            isGameActive = false;
+            elapsedTime = 0f;
+            if (timerText != null)
+            {
+                timerText.text = "00:00.00";
+            }
+
+            playerController = FindObjectOfType<PlayerController>();
+            canonController = FindObjectOfType<CanonController>();
+
+            BossController[] allBosses = FindObjectsOfType<BossController>();
+            remainingBosses = allBosses.Length;
+
+            StartCoroutine(CountdownCoroutine());
+        }
+    }
+
+    /// <summary>
+    /// カウントダウン
+    /// </summary>
+    private IEnumerator CountdownCoroutine()
+    {
+        if (playerController != null)
+        {
+            playerController.SetInputEnabled(false);
+        }
+        if (canonController != null)
+        {
+            canonController.SetFiringEnabled(false);
+        }
+
+        countdownText.gameObject.SetActive(true);
+
+        countdownText.text = "3";
+        yield return new WaitForSeconds(1f);
+
+        countdownText.text = "2";
+        yield return new WaitForSeconds(1f);
+
+        countdownText.text = "1";
+        yield return new WaitForSeconds(1f);
+
+        countdownText.text = "START!";
+
+        isGameActive = true;
+        if (playerController != null)
+        {
+            playerController.SetInputEnabled(true);
+        }
+        if (canonController != null)
+        {
+            canonController.FireFirstBall();
+        }
+
+        yield return new WaitForSeconds(0.5f);
+        countdownText.gameObject.SetActive(false);
     }
 
     public void BossDefeated()
