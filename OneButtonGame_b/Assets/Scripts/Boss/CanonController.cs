@@ -116,6 +116,15 @@ public class CanonController : MonoBehaviour
         return velocity;
     }
 
+    public void RemoveSpawanPoint(Transform pointToRemove)
+    {
+        if (spawnPoints.Contains(pointToRemove))
+        {
+            spawnPoints.Remove(pointToRemove);
+            Debug.Log(pointToRemove.name + "‚ğ”­ËƒŠƒXƒg‚©‚çíœ‚µ‚Ü‚µ‚½");
+        }
+    }
+
     void CleanerAllBalls()
     {
         foreach(GameObject ball in spawnedBalls)

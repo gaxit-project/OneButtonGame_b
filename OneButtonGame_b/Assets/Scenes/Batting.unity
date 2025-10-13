@@ -1296,6 +1296,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 1000
+  associatedSpawnPoint: []
   damageDisplay: {fileID: 523182021}
   healthText: {fileID: 0}
 --- !u!54 &523182017
@@ -1463,6 +1464,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 1000
+  associatedSpawnPoint: []
   damageDisplay: {fileID: 526982821}
   healthText: {fileID: 0}
 --- !u!54 &526982817
@@ -1957,7 +1959,7 @@ GameObject:
   m_Component:
   - component: {fileID: 739696966}
   m_Layer: 0
-  m_Name: FirePoint
+  m_Name: FirePoints
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1979,8 +1981,8 @@ Transform:
   - {fileID: 2146816638}
   - {fileID: 1378908135}
   - {fileID: 1118154688}
-  - {fileID: 1870294511}
   - {fileID: 1302933914}
+  - {fileID: 1870294511}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &758118436
@@ -2316,6 +2318,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 1000
+  associatedSpawnPoint:
+  - {fileID: 2146816638}
+  - {fileID: 1378908135}
+  - {fileID: 1118154688}
   damageDisplay: {fileID: 870464265}
   healthText: {fileID: 989053375}
 --- !u!1 &916415293
@@ -3044,7 +3050,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1302933914}
   m_Layer: 0
-  m_Name: FirePoint (4)
+  m_Name: FirePoint (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4018,6 +4024,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 500
+  associatedSpawnPoint:
+  - {fileID: 1870294511}
   damageDisplay: {fileID: 1514249887}
   healthText: {fileID: 449362924}
 --- !u!1 &1533440159
@@ -4628,6 +4636,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 500
+  associatedSpawnPoint:
+  - {fileID: 1302933914}
   damageDisplay: {fileID: 1864356638}
   healthText: {fileID: 300861691}
 --- !u!1 &1870294510
@@ -4640,7 +4650,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1870294511}
   m_Layer: 0
-  m_Name: FirePoint (3)
+  m_Name: FirePoint (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4824,6 +4834,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 1000
+  associatedSpawnPoint: []
   damageDisplay: {fileID: 1915107629}
   healthText: {fileID: 0}
 --- !u!54 &1915107625

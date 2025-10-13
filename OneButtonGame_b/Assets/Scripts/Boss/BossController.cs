@@ -1,12 +1,16 @@
 using UnityEngine;
 using TMPro;
 using System.Collections;
+using System.Collections.Generic;
 
 public class BossController : MonoBehaviour
 {
     [Header("ボスの体力")]
     public int maxHealth = 1000;
     private int currentHealth;
+
+    [Header("関連オブジェクト")]
+    public List<Transform> associatedSpawnPoint; // 敵に対応するFirePoint
 
     [Header("UIコンポーネント")]
     public DamageDisplay damageDisplay;
@@ -55,6 +59,16 @@ public class BossController : MonoBehaviour
         Debug.Log("ボスを倒した！");
 
         GetComponent<Collider>().enabled = false;
+
+        // CanonControllerを探して、自分の担当のFirePointを削除する
+        CanonController canonController = FindObjectOfType<CanonController>();
+        if (canonController != null)
+        {
+            foreach (Transform spawnPoint in associatedSpawnPoint)
+            {
+                canonController.RemoveSpawanPoint(spawnPoint);
+            }
+        }
 
         if (GameManager.Instance != null)
         {
