@@ -4184,7 +4184,7 @@ GameObject:
   - component: {fileID: 1624583176}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4221,9 +4221,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4e2016c566d353498fd2a4b198c850e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerMaxHealth: 3
   moveSpeed: 15
   rightStanceYRotation: 160
   leftStanceYRotation: 200
+  gameOverSceneName: Result
+  healthHearts: []
   batController: {fileID: 1540835449}
   cameraController: {fileID: 1741794345}
 --- !u!54 &1624583176

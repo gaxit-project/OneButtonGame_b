@@ -29,7 +29,7 @@ public class BossController : MonoBehaviour
         
     }
 
-    public void TakeDamage(int damage)
+    public void TakeBossDamage(int damage)
     {
         
         currentHealth -= damage;
@@ -50,11 +50,11 @@ public class BossController : MonoBehaviour
 
         if(currentHealth <= 0)
         {
-            StartCoroutine(Die());
+            StartCoroutine(BossDie());
         }
     }
 
-    private IEnumerator Die()
+    private IEnumerator BossDie()
     {
         Debug.Log("ƒ{ƒX‚ð“|‚µ‚½I");
 
@@ -75,7 +75,7 @@ public class BossController : MonoBehaviour
             GameManager.Instance.BossDefeated();
         }
 
-        yield return new WaitForSeconds(damageDisplay.fadeDuration + damageDisplay.displayDuration);
+        yield return new WaitForSeconds(damageDisplay.fadeDuration/* + damageDisplay.displayDuration*/);
 
         Destroy(gameObject);
     }
