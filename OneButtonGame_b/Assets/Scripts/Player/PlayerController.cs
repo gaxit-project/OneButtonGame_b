@@ -23,6 +23,9 @@ public class PlayerController : MonoBehaviour
     [Header("コンポーネント")]
     public BatController batController; // BatControllerを参照
     public CameraController cameraController; // CameraControllerを参照
+    public Transform translucentBatTransform;
+    public Vector3 rightStanceTranslucentBatPosition = new Vector3(0.5f, 0, 0);
+    public Vector3 leftStanceTranslucentBatPosition = new Vector3(-0.5f, 0, 0);
 
     private bool hitBat = false;
     private bool isPlayerSwinging = false;
@@ -74,9 +77,7 @@ public class PlayerController : MonoBehaviour
     private void LateUpdate()
     {
         Vector3 currentPosition = transform.position;
-
         currentPosition.z = 0f;
-
         transform.position = currentPosition;
     }
 
@@ -104,6 +105,8 @@ public class PlayerController : MonoBehaviour
         batController.SetSwingingState(true);
         //batController.PerformSwing();
 
+        yield return StartCoroutine(batController.PrepareForSwing());
+
         initialSwingRotation = transform.rotation; // 回転前の状態を保持
 
        //Quaternion initialRotation = transform.rotation;
@@ -121,26 +124,12 @@ public class PlayerController : MonoBehaviour
         // スイングの頂点で少し待機
         yield return new WaitForSeconds(0.2f);
 
-            StartCoroutine(ResetStance());
+        yield return StartCoroutine(ResetStance());
 
-        /*
-        if (!cameraController.useHomerunView)
-        {
+        yield return StartCoroutine(batController.ReturnToIdle());
 
-            // 戻る
-            while (Quaternion.Angle(transform.rotation, initialRotation) > 0.1f)
-            {
-                transform.rotation = Quaternion.Slerp(transform.rotation, initialRotation, batController.swingSpeed * Time.deltaTime);
-                yield return null;
-            }
-
-            transform.rotation = initialRotation;
-
-            batController.SetSwingingState(false);
-            isPlayerSwinging = false;
-        }
-        */
-         
+        batController.SetSwingingState(false);
+        isPlayerSwinging = false;
     }
 
     /// <summary>
@@ -175,9 +164,6 @@ public class PlayerController : MonoBehaviour
         }
 
         transform.rotation = initialSwingRotation;
-
-        batController.SetSwingingState(false);
-        isPlayerSwinging = false;
     }
 
     /// <summary>
@@ -191,10 +177,20 @@ public class PlayerController : MonoBehaviour
         if (isRightHanded)
         {
             transform.rotation = Quaternion.Euler(0, rightStanceYRotation, 0);
+
+            if (translucentBatTransform != null)
+            {
+                translucentBatTransform.localPosition = rightStanceTranslucentBatPosition;
+            }
         }
         else
         {
             transform.rotation = Quaternion.Euler(0, leftStanceYRotation, 0);
+
+            if (translucentBatTransform != null)
+            {
+                translucentBatTransform.localPosition = leftStanceTranslucentBatPosition;
+            }
         }
     }
 
