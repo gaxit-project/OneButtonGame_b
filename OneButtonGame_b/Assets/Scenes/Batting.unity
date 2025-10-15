@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.1882762, g: 0.19113821, b: 0.19109797, a: 1}
+  m_IndirectSpecularColor: {r: 0.18827617, g: 0.19113809, b: 0.19109794, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1311,6 +1311,7 @@ MonoBehaviour:
   associatedSpawnPoint: []
   damageDisplay: {fileID: 523182021}
   healthText: {fileID: 0}
+  attack: 0
 --- !u!54 &523182017
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1479,6 +1480,7 @@ MonoBehaviour:
   associatedSpawnPoint: []
   damageDisplay: {fileID: 526982821}
   healthText: {fileID: 0}
+  attack: 0
 --- !u!54 &526982817
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1714,15 +1716,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ballPrefab: {fileID: 811886666185653579, guid: e98c72d9a7d46bb47af2d2683fc5259d, type: 3}
   spawnPoints:
-  - {fileID: 2146816638}
   - {fileID: 1378908135}
-  - {fileID: 1118154688}
   - {fileID: 1870294511}
   - {fileID: 1302933914}
   targetPoint: {fileID: 598882400}
   targetRandomness: {x: 10, y: 0.5, z: 0}
   timeToTarget: 2
   launchPower: 10.3
+  attackCaractor:
+  - {fileID: 870464266}
+  - {fileID: 1864356639}
+  - {fileID: 1514249888}
 --- !u!4 &585022513
 Transform:
   m_ObjectHideFlags: 0
@@ -1995,9 +1999,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2146816638}
   - {fileID: 1378908135}
-  - {fileID: 1118154688}
   - {fileID: 1302933914}
   - {fileID: 1870294511}
   m_Father: {fileID: 0}
@@ -2336,11 +2338,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 1000
   associatedSpawnPoint:
-  - {fileID: 2146816638}
+  - {fileID: 0}
   - {fileID: 1378908135}
-  - {fileID: 1118154688}
+  - {fileID: 0}
   damageDisplay: {fileID: 870464265}
   healthText: {fileID: 989053375}
+  attack: 0
 --- !u!1 &916415293
 GameObject:
   m_ObjectHideFlags: 0
@@ -2754,37 +2757,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1100472555}
   m_CullTransparentMesh: 1
---- !u!1 &1118154687
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1118154688}
-  m_Layer: 0
-  m_Name: FirePoint (2)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1118154688
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1118154687}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 33, y: 140, z: 230}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 739696966}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1213082881
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4045,6 +4017,7 @@ MonoBehaviour:
   - {fileID: 1870294511}
   damageDisplay: {fileID: 1514249887}
   healthText: {fileID: 449362924}
+  attack: 0
 --- !u!1 &1533440159
 GameObject:
   m_ObjectHideFlags: 0
@@ -4738,6 +4711,7 @@ MonoBehaviour:
   - {fileID: 1302933914}
   damageDisplay: {fileID: 1864356638}
   healthText: {fileID: 300861691}
+  attack: 0
 --- !u!1 &1870294510
 GameObject:
   m_ObjectHideFlags: 0
@@ -4935,6 +4909,7 @@ MonoBehaviour:
   associatedSpawnPoint: []
   damageDisplay: {fileID: 1915107629}
   healthText: {fileID: 0}
+  attack: 0
 --- !u!54 &1915107625
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5390,37 +5365,6 @@ Transform:
   m_Children:
   - {fileID: 598882400}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2146816637
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2146816638}
-  m_Layer: 0
-  m_Name: FirePoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2146816638
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2146816637}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 140, z: 230}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 739696966}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &859410768985551485
 PrefabInstance:

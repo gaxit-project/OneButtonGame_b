@@ -20,6 +20,8 @@ public class CanonController : MonoBehaviour
     // 生成したボールの情報を保存しておくためのリスト
     private List<GameObject> spawnedBalls = new List<GameObject>();
 
+    public List<BossController> attackCaractor;
+
     private bool canFire = false;
 
     void Start()
@@ -68,6 +70,8 @@ public class CanonController : MonoBehaviour
 
         // spawnPointでボールを生成
         int randomIndex = Random.Range(0, spawnPoints.Count);
+        BossController selectCharactor = attackCaractor[randomIndex];
+        selectCharactor.attack = true;
         Transform selectedSpawnPoint = spawnPoints[randomIndex];
         GameObject newBall = Instantiate(ballPrefab, selectedSpawnPoint.position, selectedSpawnPoint.rotation);
 
