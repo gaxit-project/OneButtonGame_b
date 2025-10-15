@@ -66,21 +66,30 @@ public class GameManager : MonoBehaviour
     {
         if (scene.name == "Batting")
         {
-            isGameActive = false;
-            elapsedTime = 0f;
-            if (timerText != null)
-            {
-                timerText.text = "00:00.00";
-            }
-
-            playerController = FindObjectOfType<PlayerController>();
-            canonController = FindObjectOfType<CanonController>();
-
-            BossController[] allBosses = FindObjectsOfType<BossController>();
-            remainingBosses = allBosses.Length;
-
-            StartCoroutine(CountdownCoroutine());
+            InitializeGame();
         }
+    }
+
+    private void InitializeGame()
+    {
+        isGameActive = false;
+        elapsedTime = 0f;
+
+        playerController = FindObjectOfType<PlayerController>();
+        canonController = FindObjectOfType<CanonController>();
+
+        GameObject countdownUIObject = GameObject.FindGameObjectWithTag("CountdownText");
+        if(countdownUIObject != null ) countdownText = countdownUIObject.GetComponent<TextMeshProUGUI>();
+
+        GameObject timerUIObject = GameObject.FindGameObjectWithTag("TimerText");
+        if( timerUIObject != null ) timerText = timerUIObject.GetComponent<TextMeshProUGUI>();
+
+        BossController[] allBosses = FindObjectsOfType<BossController>();
+        remainingBosses = allBosses.Length;
+
+        if (timerText != null) timerText.text = "00:00.00";
+
+        StartCoroutine(CountdownCoroutine());
     }
 
     /// <summary>

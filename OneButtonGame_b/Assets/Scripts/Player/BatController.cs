@@ -15,6 +15,11 @@ public class BatController : MonoBehaviour
     [Tooltip("左打ちのバットの位置と角度")]
     public Transform leftHandedStance;
 
+    [Header("バットの角度設定")]
+    public Vector3 idleRotationEuler = new Vector3(0, 0, 0);
+    public Vector3 readyRotationEuler = new Vector3(0, 0, 0);
+    public float readySpeed = 15f;
+
     [Header("コンポーネント")]
     PlayerController playerController;
 
@@ -22,14 +27,22 @@ public class BatController : MonoBehaviour
     public event Action<bool> OnStanceChanged;
 
     private bool isSwinging = false;
-    private Quaternion initialLocalRotation;
-    private Vector3 initialLocalPosition;
-    public bool isRightHanded { get; private set; } = true; // true：右打ち false：左打ち
     private bool canChangeStance = true;
+
+    private Quaternion initialLocalRotation;
+    private Quaternion idleRotaion;
+    private Quaternion readyRotaion;
+
+    private Vector3 initialLocalPosition;
+
+
+    public bool isRightHanded { get; private set; } = true; // true：右打ち false：左打ち
 
 
     void Start()
     {
+        idleRotaion = Quaternion.Euler(idleRotationEuler);
+        readyRotaion = Quaternion.Euler(readyRotationEuler);
         if(rightHandedStance != null)
         {
             // ゲーム開始時は右打ち
@@ -59,13 +72,6 @@ public class BatController : MonoBehaviour
         {
             SetStance(false);
         }
-
-        /*
-        if (Input.GetMouseButtonDown(0))
-        {
-            PerformSwing();
-        }
-        */
     }
 
     public void SetInputEnabled(bool enabled)
@@ -82,26 +88,16 @@ public class BatController : MonoBehaviour
 
         isRightHanded = isRight;
 
-        /*
-        if (isRightHanded)
-        {
-            transform.position = rightHandedStance.position;
-            transform.rotation = rightHandedStance.rotation;
-        }
-        else
-        {
-            transform.position = leftHandedStance.position;
-            transform.rotation = leftHandedStance.rotation;
-        }
-        */
-
         Transform targetStance = isRightHanded ? rightHandedStance : leftHandedStance;
 
         transform.position = targetStance.position;
         transform.rotation = targetStance.rotation;
 
         initialLocalPosition = transform.localPosition;
-        initialLocalRotation = transform.localRotation;
+        //initialLocalRotation = transform.localRotation;
+
+        transform.localRotation = idleRotaion;
+        initialLocalRotation = idleRotaion;
 
         // 打席が変更されたことを通知
         OnStanceChanged?.Invoke(isRightHanded);
@@ -121,50 +117,27 @@ public class BatController : MonoBehaviour
         }
     }
 
-    /*
-    public void PerformSwing()
+    public IEnumerator PrepareForSwing()
     {
-        if (!isSwinging)
-        {
-            //StartCoroutine(Swing());
-        }
+        //while (Quaternion.Angle(transform.localRotation, readyRotaion) > 0.1f)
+        //{
+        //    transform.localRotation = Quaternion.Slerp(transform.localRotation, readyRotaion, readySpeed * Time.deltaTime);
+        //    yield return null;
+        //}
+
+        transform.localRotation = readyRotaion;
+        yield return null;
     }
 
-    /// <summary>
-    /// スイングの動作を行うコルーチン
-    /// </summary>
-    IEnumerator Swing()
+    public IEnumerator ReturnToIdle()
     {
-        isSwinging = true;
+        //while (Quaternion.Angle(transform.localRotation, idleRotaion) > 0.1f)
+        //{
+        //    transform.localRotation = Quaternion.Slerp(transform.localRotation, idleRotaion, readySpeed * Time.deltaTime);
+        //    yield return null;
+        //}
 
-        float currentSwingAngle = isRightHanded ? swingAngle : -swingAngle;
-
-        // 目標の回転速度を計算
-        //Quaternion targetLocalRotation = initialLocalRotation * Quaternion.Euler(0, currentSwingAngle, 0);
-        Quaternion targetLocalRotation = Quaternion.Euler(transform.eulerAngles.x,transform.eulerAngles.y + currentSwingAngle, transform.eulerAngles.z);
-
-        // バットを滑らかに回転
-        while (Quaternion.Angle(transform.localRotation, targetLocalRotation) > 0.1f)
-        {
-            transform.rotation = Quaternion.Lerp(transform.localRotation,targetLocalRotation, swingSpeed * Time.deltaTime);
-            yield return null;
-        }
-
-        yield return new WaitForSeconds(0.1f);
-
-        // 元の位置に戻す
-        while (Quaternion.Angle(transform.localRotation, initialLocalRotation) > 0.1f)
-        {
-            transform.localRotation = Quaternion.Lerp(transform.localRotation, initialLocalRotation, swingSpeed * Time.deltaTime);
-            yield return null;
-        }
-
-        transform.localPosition = initialLocalPosition;
-        transform.localRotation = initialLocalRotation;
-
-        isSwinging =false;
+        transform.localRotation = idleRotaion;
+        yield return null;
     }
-    */
-
-
 }

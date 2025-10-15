@@ -2,28 +2,44 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
     [Header("プレイヤー設定")]
+    public float playerMaxHealth = 3f;
+    private float currentHealth;
     public float moveSpeed = 5.0f; // プレイヤーの移動速度
     public float rightStanceYRotation = 0f; // 右打席の時のY軸回転
     public float leftStanceYRotation = 180f; // 左打席の時のY軸回転 
 
+    [Header("ゲームオーバー設定")]
+    public string gameOverSceneName = "GameOver";
+
+    [Header("UIコンポーネント")]
+    public List<Image> healthHearts;
 
     [Header("コンポーネント")]
     public BatController batController; // BatControllerを参照
     public CameraController cameraController; // CameraControllerを参照
+    public Transform translucentBatTransform;
+    public Vector3 rightStanceTranslucentBatPosition = new Vector3(0.5f, 0, 0);
+    public Vector3 leftStanceTranslucentBatPosition = new Vector3(-0.5f, 0, 0);
 
     private bool hitBat = false;
     private bool isPlayerSwinging = false;
     private bool canSwing = true;
+    private bool isDead = false;
 
     private Quaternion initialSwingRotation; // スイング開始時の回転を保持
 
 
     void Start()
     {
+        currentHealth = playerMaxHealth;
+        UpdateHealthUI();
+
         // 打席変更イベントを購読
         if (batController != null)
         {
@@ -61,9 +77,7 @@ public class PlayerController : MonoBehaviour
     private void LateUpdate()
     {
         Vector3 currentPosition = transform.position;
-
         currentPosition.z = 0f;
-
         transform.position = currentPosition;
     }
 
@@ -91,6 +105,8 @@ public class PlayerController : MonoBehaviour
         batController.SetSwingingState(true);
         //batController.PerformSwing();
 
+        yield return StartCoroutine(batController.PrepareForSwing());
+
         initialSwingRotation = transform.rotation; // 回転前の状態を保持
 
        //Quaternion initialRotation = transform.rotation;
@@ -108,26 +124,12 @@ public class PlayerController : MonoBehaviour
         // スイングの頂点で少し待機
         yield return new WaitForSeconds(0.2f);
 
-            StartCoroutine(ResetStance());
+        yield return StartCoroutine(ResetStance());
 
-        /*
-        if (!cameraController.useHomerunView)
-        {
+        yield return StartCoroutine(batController.ReturnToIdle());
 
-            // 戻る
-            while (Quaternion.Angle(transform.rotation, initialRotation) > 0.1f)
-            {
-                transform.rotation = Quaternion.Slerp(transform.rotation, initialRotation, batController.swingSpeed * Time.deltaTime);
-                yield return null;
-            }
-
-            transform.rotation = initialRotation;
-
-            batController.SetSwingingState(false);
-            isPlayerSwinging = false;
-        }
-        */
-         
+        batController.SetSwingingState(false);
+        isPlayerSwinging = false;
     }
 
     /// <summary>
@@ -162,9 +164,6 @@ public class PlayerController : MonoBehaviour
         }
 
         transform.rotation = initialSwingRotation;
-
-        batController.SetSwingingState(false);
-        isPlayerSwinging = false;
     }
 
     /// <summary>
@@ -178,10 +177,53 @@ public class PlayerController : MonoBehaviour
         if (isRightHanded)
         {
             transform.rotation = Quaternion.Euler(0, rightStanceYRotation, 0);
+
+            if (translucentBatTransform != null)
+            {
+                translucentBatTransform.localPosition = rightStanceTranslucentBatPosition;
+            }
         }
         else
         {
             transform.rotation = Quaternion.Euler(0, leftStanceYRotation, 0);
+
+            if (translucentBatTransform != null)
+            {
+                translucentBatTransform.localPosition = leftStanceTranslucentBatPosition;
+            }
+        }
+    }
+
+    private void UpdateHealthUI()
+    {
+        for (int i = 0; i < healthHearts.Count; i++)
+        {
+            if (i < currentHealth)
+            {
+                healthHearts[i].enabled = true;
+            }
+            else
+            {
+                healthHearts[i].enabled = false;
+            }
+        }
+    }
+
+    public void TakePlayerDamage(int damage)
+    {
+        if (isDead) return;
+
+        currentHealth -= damage;
+        Debug.Log("プレイヤーがダメージを受けた！　残りHP：" + currentHealth);
+
+        UpdateHealthUI();
+
+        if (currentHealth <= 0)
+        {
+            isDead = true;
+            Debug.Log("ゲームオーバー");
+
+            SceneManager.LoadScene(gameOverSceneName);
         }
     }
 

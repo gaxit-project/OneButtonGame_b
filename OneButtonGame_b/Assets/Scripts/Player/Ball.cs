@@ -7,7 +7,8 @@ using System;
 public class Ball : MonoBehaviour
 {
     [Header("攻撃力")]
-    public int attackPower = 100;
+    public int attackPower = 100; // ボスへのダメージ
+    public int playerAttackPower = 1; // プレイヤーへのダメージ
 
     [Header("打撃設定")]
     public float hitPower = 50f;
@@ -233,7 +234,7 @@ public class Ball : MonoBehaviour
 
             if(boss != null)
             {
-                boss.TakeDamage(attackPower);
+                boss.TakeBossDamage(attackPower);
             }
 
             if (cameraController != null)
@@ -242,6 +243,18 @@ public class Ball : MonoBehaviour
                 StopAndSaveTrajectory();
                 StartCoroutine(ResetCameraAfterDelay());
             }
+        }
+        else if (collision.gameObject.CompareTag("Player"))
+        {
+            PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
+
+            if (playerController != null)
+            {
+                playerController.TakePlayerDamage(playerAttackPower);
+            }
+
+            HideMarker();
+            StartCoroutine(ResetCameraAfterDelay());
         }
     }
 
