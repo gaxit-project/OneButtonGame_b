@@ -12,6 +12,8 @@ TagManager:
   - Wall
   - Ball
   - Enemy
+  - TimerText
+  - CountdownText
   layers:
   - Default
   - TransparentFX
