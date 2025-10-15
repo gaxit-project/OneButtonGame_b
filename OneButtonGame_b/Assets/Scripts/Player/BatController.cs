@@ -119,23 +119,25 @@ public class BatController : MonoBehaviour
 
     public IEnumerator PrepareForSwing()
     {
-        while (Quaternion.Angle(transform.localRotation, readyRotaion) > 0.1f)
-        {
-            transform.localRotation = Quaternion.Slerp(transform.localRotation, readyRotaion, readySpeed * Time.deltaTime);
-            yield return null;
-        }
+        //while (Quaternion.Angle(transform.localRotation, readyRotaion) > 0.1f)
+        //{
+        //    transform.localRotation = Quaternion.Slerp(transform.localRotation, readyRotaion, readySpeed * Time.deltaTime);
+        //    yield return null;
+        //}
 
-        transform.localRotation = idleRotaion;
+        transform.localRotation = readyRotaion;
+        yield return null;
     }
 
     public IEnumerator ReturnToIdle()
     {
-        while (Quaternion.Angle(transform.localRotation, idleRotaion) > 0.1f)
-        {
-            transform.localRotation = Quaternion.Slerp(transform.localRotation, idleRotaion, readySpeed * Time.deltaTime);
-            yield return null;
-        }
+        //while (Quaternion.Angle(transform.localRotation, idleRotaion) > 0.1f)
+        //{
+        //    transform.localRotation = Quaternion.Slerp(transform.localRotation, idleRotaion, readySpeed * Time.deltaTime);
+        //    yield return null;
+        //}
 
         transform.localRotation = idleRotaion;
+        yield return null;
     }
 }
