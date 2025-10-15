@@ -12,6 +12,8 @@ public class CanonController : MonoBehaviour
     [Header("ボールの発射パワー")]
     public float launchPower = 50f;
 
+    public List<BossController> bossController;
+
     //[Header("プレイヤーの位置")]
     //public Transform player;
 
@@ -22,7 +24,7 @@ public class CanonController : MonoBehaviour
 
     void Start()
     {
-
+        
     }
 
     void Update()
@@ -66,6 +68,7 @@ public class CanonController : MonoBehaviour
 
         // spawnPointでボールを生成
         int randomIndex = Random.Range(0, spawnPoints.Count);
+        bossController[randomIndex].attack = true;        //どのボスが攻撃するのか
         Transform selectedSpawnPoint = spawnPoints[randomIndex];
         GameObject newBall = Instantiate(ballPrefab, selectedSpawnPoint.position, selectedSpawnPoint.rotation);
 
