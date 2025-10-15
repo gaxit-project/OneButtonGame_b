@@ -50,6 +50,14 @@ public class AudioController : MonoBehaviour
         SceneManager.LoadScene("Batting");
         SoundManager.instance.PlayBGM("Batting");
     }
+
+    public void ToHowToPlay()
+    {
+        SoundManager.instance.PlaySE(0);
+        Thread.Sleep(200);
+        SceneManager.LoadScene("HowToPlay");
+        SoundManager.instance.PlayBGM("Setting");
+    }
     public void ToResult()
     {
         Thread.Sleep(200);
