@@ -395,7 +395,7 @@ GameObject:
   - component: {fileID: 367426496}
   - component: {fileID: 367426498}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: StartPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -498,10 +498,22 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 1125579114}
+  m_TargetGraphic: {fileID: 367426496}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2129242830}
+        m_TargetAssemblyTypeName: StartButton, Assembly-CSharp
+        m_MethodName: SwichBattingScene
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &671586009
 GameObject:
   m_ObjectHideFlags: 0
@@ -1170,7 +1182,7 @@ MonoBehaviour:
     m_Mode: 4
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 1274617404}
-    m_SelectOnDown: {fileID: 1125579113}
+    m_SelectOnDown: {fileID: 367426498}
     m_SelectOnLeft: {fileID: 1274617404}
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
@@ -1393,7 +1405,6 @@ GameObject:
   - component: {fileID: 1125579112}
   - component: {fileID: 1125579115}
   - component: {fileID: 1125579114}
-  - component: {fileID: 1125579113}
   m_Layer: 5
   m_Name: START
   m_TagString: Untagged
@@ -1422,62 +1433,6 @@ RectTransform:
   m_AnchoredPosition: {x: -185, y: -349}
   m_SizeDelta: {x: 900, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1125579113
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1125579111}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Navigation:
-    m_Mode: 4
-    m_WrapAround: 0
-    m_SelectOnUp: {fileID: 951066442}
-    m_SelectOnDown: {fileID: 1274617404}
-    m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 1274617404}
-  m_Transition: 1
-  m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0, g: 1, b: 0, a: 1}
-    m_PressedColor: {r: 1, g: 1, b: 1, a: 1}
-    m_SelectedColor: {r: 0, g: 1, b: 0, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
-    m_ColorMultiplier: 1
-    m_FadeDuration: 0.1
-  m_SpriteState:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
-    m_SelectedSprite: {fileID: 0}
-    m_DisabledSprite: {fileID: 0}
-  m_AnimationTriggers:
-    m_NormalTrigger: Normal
-    m_HighlightedTrigger: Highlighted
-    m_PressedTrigger: Pressed
-    m_SelectedTrigger: Selected
-    m_DisabledTrigger: Disabled
-  m_Interactable: 1
-  m_TargetGraphic: {fileID: 1125579114}
-  m_OnClick:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2129242830}
-        m_TargetAssemblyTypeName: StartButton, Assembly-CSharp
-        m_MethodName: SwichBattingScene
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!114 &1125579114
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1570,9 +1525,9 @@ MonoBehaviour:
   m_Navigation:
     m_Mode: 4
     m_WrapAround: 0
-    m_SelectOnUp: {fileID: 1125579113}
+    m_SelectOnUp: {fileID: 367426498}
     m_SelectOnDown: {fileID: 951066442}
-    m_SelectOnLeft: {fileID: 1125579113}
+    m_SelectOnLeft: {fileID: 367426498}
     m_SelectOnRight: {fileID: 951066442}
   m_Transition: 1
   m_Colors:
@@ -1783,51 +1738,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1707196307}
   m_CullTransparentMesh: 1
---- !u!1 &1859134214
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1859134216}
-  - component: {fileID: 1859134215}
-  m_Layer: 0
-  m_Name: ButtonController
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1859134215
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1859134214}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f51b3cd29a44f144fb710c17e0168551, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  firstSelectedButton: {fileID: 1125579111}
---- !u!4 &1859134216
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1859134214}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2046839460
 GameObject:
   m_ObjectHideFlags: 0
@@ -1974,6 +1884,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2129242831}
   - component: {fileID: 2129242830}
+  - component: {fileID: 2129242832}
   m_Layer: 0
   m_Name: ButtonController
   m_TagString: Untagged
@@ -2008,6 +1919,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2129242832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2129242829}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f51b3cd29a44f144fb710c17e0168551, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  firstSelectedButton: {fileID: 367426494}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -2019,4 +1943,3 @@ SceneRoots:
   - {fileID: 2129242831}
   - {fileID: 717461580}
   - {fileID: 927732956}
-  - {fileID: 1859134216}
