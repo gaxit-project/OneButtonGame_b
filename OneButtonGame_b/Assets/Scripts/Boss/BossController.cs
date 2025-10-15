@@ -17,22 +17,31 @@ public class BossController : MonoBehaviour
     public TextMeshProUGUI healthText;
 
     private bool isDead = false;
+    public bool attack = false;
+    Animator anim;
 
     void Start()
     {
         currentHealth = maxHealth;
         UpdateHealthUI();
+        anim = GetComponent<Animator>();
+        anim.Play("Idle");
     }
 
     void Update()
     {
-        
+        if(attack == true)
+        {
+            attack = false;
+            anim.SetTrigger("Attack");
+        }
     }
 
     public void TakeBossDamage(int damage)
     {
         
         currentHealth -= damage;
+        anim.SetTrigger("GetHit");
 
         if (currentHealth < 0)
         {
@@ -77,7 +86,7 @@ public class BossController : MonoBehaviour
 
         yield return new WaitForSeconds(damageDisplay.fadeDuration/* + damageDisplay.displayDuration*/);
 
-        Destroy(gameObject);
+        anim.SetTrigger("Die");
     }
 
     void UpdateHealthUI()
