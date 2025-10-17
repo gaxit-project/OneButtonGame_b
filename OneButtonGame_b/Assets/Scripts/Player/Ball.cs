@@ -180,30 +180,110 @@ public class Ball : MonoBehaviour
             }
             else
             {
-                float horizontalDifference = transform.position.x - collision.transform.position.x;
+                BatController batController = collision.gameObject.GetComponent<BatController>();
 
-                float horizontalForce = horizontalDifference * horizontalControl;
-
-                Vector3 hitDirection = new Vector3(horizontalForce, upwardModifier, 1).normalized;
-
-                Vector3 newVelocity = hitDirection * hitPower;
-
-                if (rb != null)
+                if (batController != null || batController.sweetSpot != null)
                 {
-                    /*
-                    // 現在の速度を一度リセット
-                    rb.velocity = Vector3.zero;
-                    // 新しい方向に力を加える
-                    rb.AddForce(hitDirection * hitPower, ForceMode.Impulse);
-                    */
-                    rb.velocity = newVelocity;
 
-                    // ログを出力
-                    LogHitData("ノーマル", newVelocity, impactPoint);
+                    // 芯からどれだけ離れているか計算
+                    Vector3 sweetSpotPosition = batController.sweetSpot.position;
 
-                    if (cameraController != null)
+                    //ボールがバットに当たった座標からバットの中心までの距離を計算
+                    float hitDistance = Vector3.Distance(impactPoint, sweetSpotPosition);
+                    float spatialDistance = Vector3.Distance(impactPoint, sweetSpotPosition);
+
+                    // 判定のしきい値
+                    float justHitThreshold = 2.0f; // この距離以下ならジャスト
+                    float goodHitThreshold = 4.0f; // この距離以下ならグッド
+
+                    float spatialPowerMultiplier; // 今回のヒットで適応されるパワー
+
+                    // 距離に応じてヒットの質を判定
+                    if (hitDistance <= justHitThreshold)
                     {
-                        cameraController.StartTracking(transform);
+                        Debug.Log("ジャストヒット！");
+                        spatialPowerMultiplier = 1.0f;
+                    }
+                    else if (hitDistance <= goodHitThreshold)
+                    {
+                        Debug.Log("グッドヒット");
+                        spatialPowerMultiplier = 0.8f;
+                    }
+                    else
+                    {
+                        Debug.Log("バッドヒット");
+                        spatialPowerMultiplier = 0.5f;
+                    }
+
+                    // タイミングの判定
+                    float timingDifference = Mathf.Abs(transform.position.z);
+
+                    // タイミングのしきい値
+                    float temporalJustThreshold = 1.0f;
+                    float temporalGoodThreshold = 2.0f;
+
+                    float temporalpowerMultiplier;
+
+                    if(timingDifference <= temporalJustThreshold)
+                    {
+                        temporalpowerMultiplier = 1.0f;
+                    }
+                    else if(timingDifference <= temporalGoodThreshold)
+                    {
+                        temporalpowerMultiplier = 0.7f;
+                    }
+                    else
+                    {
+                        temporalpowerMultiplier = 0.5f;
+                    }
+
+                    Debug.Log($"当たった場所: {spatialPowerMultiplier}, タイミング: {temporalpowerMultiplier}");
+
+                    float finalHitPower = hitPower * spatialPowerMultiplier * temporalpowerMultiplier;
+
+                    // パワーの調整
+                    float horizontalDifference = transform.position.x - collision.transform.position.x;
+                    float horizontalForce = horizontalDifference * horizontalControl;
+                    Vector3 hitDirection = new Vector3(horizontalForce, upwardModifier, 1).normalized;
+
+                    // 調整されたパワーを速度に適応
+                    Vector3 newVelocity = hitDirection * finalHitPower;
+
+                    if (rb != null)
+                    {
+                        /*
+                        // 現在の速度を一度リセット
+                        rb.velocity = Vector3.zero;
+                        // 新しい方向に力を加える
+                        rb.AddForce(hitDirection * hitPower, ForceMode.Impulse);
+                        */
+                        rb.velocity = newVelocity;
+
+                        // ログを出力
+                        LogHitData("ノーマル", newVelocity, impactPoint);
+
+                        if (cameraController != null)
+                        {
+                            cameraController.StartTracking(transform);
+                        }
+                    }
+                }
+                else
+                {
+                    // sweetSpotが無い場合
+                    Debug.LogWarning("BatControllerまたはSweetSpotが設定されてません");
+                    float horizontalDifference = transform.position.x - collision.transform.position.x;
+                    float horizontalForce = horizontalDifference * horizontalControl;
+                    Vector3 hitDirection = new Vector3(horizontalForce, upwardModifier, 1);
+                    Vector3 newVelocity = hitDirection * hitPower;
+                    if(rb != null)
+                    {
+                        rb.velocity = newVelocity;
+                        LogHitData("ノーマル", newVelocity, impactPoint);
+                        if(cameraController != null)
+                        {
+                            cameraController.StartTracking(transform);
+                        }
                     }
                 }
             }

@@ -16,7 +16,7 @@ public class BossController : MonoBehaviour
     public DamageDisplay damageDisplay;
     public TextMeshProUGUI healthText;
 
-    private bool isDead = false;
+    //private bool isDead = false;
 
     void Start()
     {
