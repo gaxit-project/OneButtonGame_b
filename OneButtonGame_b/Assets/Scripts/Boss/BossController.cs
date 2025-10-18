@@ -16,13 +16,9 @@ public class BossController : MonoBehaviour
     public DamageDisplay damageDisplay;
     public TextMeshProUGUI healthText;
 
-<<<<<<< HEAD
-    private bool isDead = false;
+    //private bool isDead = false;
     public bool attack = false;
     Animator anim;
-=======
-    //private bool isDead = false;
->>>>>>> feature/BatPoint
 
     void Start()
     {
