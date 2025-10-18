@@ -37,11 +37,22 @@ public class Ball : MonoBehaviour
     public Image arrowLeftUI;
     public Image arrowRightUI;
 
+    [Header("当たり判定の幅")]
+    public float justHitRadius = 1.0f;
+    public float goodHitRadius = 2.0f;
+    public float badHitRadius = 3.0f;
+
+    [Header("ヒットパワー倍率")]
+    public float justHitPowerMultiplier = 1.0f;
+    public float goodHitPowerMultiplier = 0.7f;
+    public float badHitPowerMultiplier = 0.5f;
+
     [Header("難易度")]
     [SerializeField] private bool hard = false;
 
     private float touchGround = 0;
 
+    private bool hasBeenHit = false;
     public bool isGraunded = false;
     private bool isFaul = false;
     private bool isRecordingTrajectory = false;
@@ -107,12 +118,35 @@ public class Ball : MonoBehaviour
         }
 
         UpdateOffScreenArrows();
+
+        if (!hasBeenHit && playerController != null && playerController.IsPlayerSwinging && rb.velocity.z < 0)
+        {
+            if (playerController.batController != null && playerController.batController.sweetSpot != null)
+            {
+                Vector3 sweetSpotPos = playerController.batController.sweetSpot.position;
+                float distance = Vector3.Distance(transform.position, sweetSpotPos);
+
+                if (distance > justHitRadius && distance <= goodHitRadius)
+                {
+                    Debug.Log("Good");
+                    PerformTimingHit(goodHitPowerMultiplier);
+                }
+                else if (distance > goodHitRadius && distance <= badHitRadius)
+                {
+                    Debug.Log("Bad");
+                    PerformTimingHit(badHitPowerMultiplier);
+                }
+            }
+        }
     }
 
     private void FixedUpdate()
     {
         // 衝突前の速度を保持
-        lastVelocity = rb.velocity;
+        if (!hasBeenHit)
+        {
+            lastVelocity = rb.velocity;
+        }
 
         if (!predictionDone && rb.velocity.magnitude > 0.1f)
         {
@@ -131,6 +165,9 @@ public class Ball : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Bat"))
         {
+            if (hasBeenHit) return;
+
+            hasBeenHit = true;
             // 打撃音を再生
             SoundManager.instance.PlaySE(1);
 
@@ -182,7 +219,7 @@ public class Ball : MonoBehaviour
             {
                 BatController batController = collision.gameObject.GetComponent<BatController>();
 
-                if (batController != null || batController.sweetSpot != null)
+                if (batController != null && batController.sweetSpot != null)
                 {
 
                     // 芯からどれだけ離れているか計算
@@ -371,6 +408,52 @@ public class Ball : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    private void PerformTimingHit(float powerMultiplier)
+    {
+        if (hasBeenHit) return;
+        hasBeenHit = true;
+
+        SoundManager.instance.PlaySE(1);
+        HideMarker();
+        if (playerController != null)
+        {
+            playerController.NotifyHit();
+        }
+        isGraunded = false;
+        isRecordingTrajectory = true;
+        trajectoryPoints.Clear();
+
+        BatController batController = playerController.batController;
+        if (batController == null || batController.sweetSpot == null)
+        {
+            return;
+        }
+
+        float finalHitPower = hitPower * powerMultiplier;
+
+        float horizontalDifference = transform.position.x - batController.transform.position.x;
+        float horizontalForce = horizontalDifference * horizontalControl;
+        Vector3 hitDirection = new Vector3(horizontalForce, upwardModifier, 1).normalized;
+
+        Vector3 newVelocity = hitDirection * finalHitPower;
+        
+        if (rb != null)
+        {
+            rb.velocity = newVelocity;
+
+            LogHitData("ノーマル", newVelocity, batController.sweetSpot.position);
+
+            if (cameraController != null)
+            {
+                cameraController.StartTracking(transform);
+            }
+        }
+
+    }
+
     private void PredictAndPlaceMarker()
     {
         if (targetMarkerInstance == null || timingMarkerInstance == null) return;
@@ -487,6 +570,28 @@ public class Ball : MonoBehaviour
         Destroy(gameObject);
     }
 
+    private IEnumerator AnimateMarkerScale(float duration)
+    {
+        float elapsedTime = 0f;
+        if (duration <= 0)
+        {
+            timingMarkerInstance.transform.localScale = finalMarkerScale;
+            yield break;
+        }
+
+        while (elapsedTime < duration)
+        {
+            float t = elapsedTime / duration;
+            timingMarkerInstance.transform.localScale = Vector3.Lerp(initialMarkerScale, finalMarkerScale, t);
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        timingMarkerInstance.transform.localScale = finalMarkerScale;
+        markerAnimationCoroutine = null;
+    }
+
     /// <summary>
     /// 打球のデータを整形して出力する
     /// </summary>
@@ -541,27 +646,5 @@ public class Ball : MonoBehaviour
                 DataLogger.Instance.SaveTrajectory(difficulty, finalVelocity.magnitude, launchAngle, trajectoryPoints);
             }
         }
-    }
-
-    private IEnumerator AnimateMarkerScale(float duration)
-    {
-        float elapsedTime = 0f;
-        if (duration <= 0)
-        {
-            timingMarkerInstance.transform.localScale = finalMarkerScale;
-            yield break;
-        }
-
-        while (elapsedTime < duration)
-        {
-            float t = elapsedTime / duration;
-            timingMarkerInstance.transform.localScale = Vector3.Lerp(initialScale, finalMarkerScale, t);
-
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        timingMarkerInstance.transform.localScale = finalMarkerScale;
-        markerAnimationCoroutine = null;
     }
 }

@@ -147,6 +147,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackPower: 100
+  playerAttackPower: 1
   hitPower: 130
   upwardModifier: 0.5
   horizontalControl: 0.1
@@ -159,5 +160,11 @@ MonoBehaviour:
   finalMarkerScale: {x: 1, y: 1, z: 1}
   arrowLeftUI: {fileID: 0}
   arrowRightUI: {fileID: 0}
+  justHitRadius: 2
+  goodHitRadius: 6
+  badHitRadius: 8
+  justHitPowerMultiplier: 1
+  goodHitPowerMultiplier: 0.6
+  badHitPowerMultiplier: 0.2
   hard: 0
   isGraunded: 0

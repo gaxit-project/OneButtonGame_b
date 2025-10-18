@@ -156,7 +156,7 @@ MonoBehaviour:
   swingSpeed: 10
   rightHandedStance: {fileID: 0}
   leftHandedStance: {fileID: 0}
-  sweetSpot: {fileID: 0}
+  sweetSpot: {fileID: 4576478759431276494}
   idleRotationEuler: {x: 0, y: 0, z: 0}
   readyRotationEuler: {x: 0, y: 0, z: 0}
   readySpeed: 15
