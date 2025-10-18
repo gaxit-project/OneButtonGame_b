@@ -75,7 +75,7 @@ public class BossController : MonoBehaviour
             GameManager.Instance.BossDefeated();
         }
 
-        yield return new WaitForSeconds(damageDisplay.fadeDuration/* + damageDisplay.displayDuration*/);
+        yield return new WaitForSeconds(damageDisplay.fadeDuration + damageDisplay.displayDuration);
 
         Destroy(gameObject);
     }

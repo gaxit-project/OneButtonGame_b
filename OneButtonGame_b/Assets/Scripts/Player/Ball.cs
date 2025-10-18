@@ -128,13 +128,11 @@ public class Ball : MonoBehaviour
 
                 if (distance > justHitRadius && distance <= goodHitRadius)
                 {
-                    Debug.Log("Good");
-                    PerformTimingHit(goodHitPowerMultiplier);
+                    PerformTimingHit(goodHitPowerMultiplier, "Good");
                 }
                 else if (distance > goodHitRadius && distance <= badHitRadius)
                 {
-                    Debug.Log("Bad");
-                    PerformTimingHit(badHitPowerMultiplier);
+                    PerformTimingHit(badHitPowerMultiplier, "Bad");
                 }
             }
         }
@@ -214,6 +212,8 @@ public class Ball : MonoBehaviour
                         cameraController.StartTracking(transform);
                     }
                 }
+
+                hasBeenHit = true;
             }
             else
             {
@@ -233,48 +233,52 @@ public class Ball : MonoBehaviour
                     float justHitThreshold = 2.0f; // この距離以下ならジャスト
                     float goodHitThreshold = 4.0f; // この距離以下ならグッド
 
+                    string spatialLabel = "";
                     float spatialPowerMultiplier; // 今回のヒットで適応されるパワー
 
                     // 距離に応じてヒットの質を判定
                     if (hitDistance <= justHitThreshold)
                     {
-                        Debug.Log("ジャストヒット！");
+                        spatialLabel = "ジャスト";
                         spatialPowerMultiplier = 1.0f;
                     }
                     else if (hitDistance <= goodHitThreshold)
                     {
-                        Debug.Log("グッドヒット");
+                        spatialLabel = "グッドヒット";
                         spatialPowerMultiplier = 0.8f;
                     }
                     else
                     {
-                        Debug.Log("バッドヒット");
+                        spatialLabel = "バッドヒット";
                         spatialPowerMultiplier = 0.5f;
                     }
 
                     // タイミングの判定
-                    float timingDifference = Mathf.Abs(transform.position.z);
+                    float timingDifference = transform.position.z;
 
                     // タイミングのしきい値
-                    float temporalJustThreshold = 1.0f;
-                    float temporalGoodThreshold = 2.0f;
+                    float temporalJustThreshold = 0.1f;
 
+                    string timingLabel = "";
                     float temporalpowerMultiplier;
 
-                    if(timingDifference <= temporalJustThreshold)
+                    if(timingDifference > temporalJustThreshold)
                     {
+                        timingLabel = "Fast";
                         temporalpowerMultiplier = 1.0f;
                     }
-                    else if(timingDifference <= temporalGoodThreshold)
+                    else if(timingDifference < -temporalJustThreshold)
                     {
-                        temporalpowerMultiplier = 0.7f;
+                        timingLabel = "Late";
+                        temporalpowerMultiplier = 0.8f;
                     }
                     else
                     {
-                        temporalpowerMultiplier = 0.5f;
+                        timingLabel = "Just";
+                        temporalpowerMultiplier = 1.0f;
                     }
 
-                    Debug.Log($"当たった場所: {spatialPowerMultiplier}, タイミング: {temporalpowerMultiplier}");
+                    Debug.Log($"芯: {spatialLabel}, タイミング: {timingLabel}");
 
                     float finalHitPower = hitPower * spatialPowerMultiplier * temporalpowerMultiplier;
 
@@ -324,6 +328,8 @@ public class Ball : MonoBehaviour
                     }
                 }
             }
+
+            hasBeenHit = true;
 
         }
         else if (collision.gameObject.CompareTag("Ground") && !isGraunded)
@@ -411,12 +417,30 @@ public class Ball : MonoBehaviour
     /// <summary>
     /// 
     /// </summary>
-    private void PerformTimingHit(float powerMultiplier)
+    private void PerformTimingHit(float powerMultiplier, string spatialLabel)
     {
         if (hasBeenHit) return;
         hasBeenHit = true;
 
-        SoundManager.instance.PlaySE(1);
+        string timingLabel = "";
+        float timingThreshold = 0.1f;
+
+        if (transform.position.z > timingThreshold)
+        {
+             timingLabel = "Fast";
+        }
+        else if (transform.position.z < -timingThreshold)
+        {
+            timingLabel = "Late";
+        }
+        else
+        {
+            timingLabel = "Just";
+        }
+
+        Debug.Log($"タイミング: {spatialLabel} {timingLabel}");
+
+            SoundManager.instance.PlaySE(1);
         HideMarker();
         if (playerController != null)
         {
