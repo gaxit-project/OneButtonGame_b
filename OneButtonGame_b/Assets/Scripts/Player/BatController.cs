@@ -15,6 +15,9 @@ public class BatController : MonoBehaviour
     [Tooltip("左打ちのバットの位置と角度")]
     public Transform leftHandedStance;
 
+    [Header("スイートスポット設定")]
+    public Transform sweetSpot;
+
     [Header("バットの角度設定")]
     public Vector3 idleRotationEuler = new Vector3(0, 0, 0);
     public Vector3 readyRotationEuler = new Vector3(0, 0, 0);

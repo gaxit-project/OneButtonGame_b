@@ -16,9 +16,13 @@ public class BossController : MonoBehaviour
     public DamageDisplay damageDisplay;
     public TextMeshProUGUI healthText;
 
+<<<<<<< HEAD
     private bool isDead = false;
     public bool attack = false;
     Animator anim;
+=======
+    //private bool isDead = false;
+>>>>>>> feature/BatPoint
 
     void Start()
     {
@@ -82,6 +86,7 @@ public class BossController : MonoBehaviour
         }
 
         yield return new WaitForSeconds(damageDisplay.fadeDuration/* + damageDisplay.displayDuration*/);
+        yield return new WaitForSeconds(damageDisplay.fadeDuration + damageDisplay.displayDuration);
 
         anim.Play("Die");
         Collider[] col = gameObject.GetComponents<Collider>();

@@ -27,8 +27,9 @@ public class PlayerController : MonoBehaviour
     public Vector3 rightStanceTranslucentBatPosition = new Vector3(0.5f, 0, 0);
     public Vector3 leftStanceTranslucentBatPosition = new Vector3(-0.5f, 0, 0);
 
+    public bool IsPlayerSwinging { get; private set; } = false;
+
     private bool hitBat = false;
-    private bool isPlayerSwinging = false;
     private bool canSwing = true;
     private bool isDead = false;
 
@@ -59,7 +60,7 @@ public class PlayerController : MonoBehaviour
     {
         if (!canSwing) return;
 
-        if (!isPlayerSwinging)
+        if (!IsPlayerSwinging)
         {
             // êÖïΩï˚å¸ÇÃà⁄ìÆèàóù
             float horizontalInput = Input.GetAxis("Horizontal");
@@ -67,7 +68,7 @@ public class PlayerController : MonoBehaviour
             transform.Translate(-movement);
         }
 
-        if ((Input.GetMouseButtonDown(0) || Input.GetButtonDown("Fire1")) && !isPlayerSwinging)
+        if ((Input.GetMouseButtonDown(0) || Input.GetButtonDown("Fire1")) && !IsPlayerSwinging)
         {
             StartCoroutine(SwingAction());
         }
@@ -101,7 +102,7 @@ public class PlayerController : MonoBehaviour
     private IEnumerator SwingAction()
     {
         hitBat = false;
-        isPlayerSwinging = true;
+        IsPlayerSwinging = true;
         batController.SetSwingingState(true);
         //batController.PerformSwing();
 
@@ -129,7 +130,7 @@ public class PlayerController : MonoBehaviour
         yield return StartCoroutine(batController.ReturnToIdle());
 
         batController.SetSwingingState(false);
-        isPlayerSwinging = false;
+        IsPlayerSwinging = false;
     }
 
     /// <summary>
@@ -172,7 +173,7 @@ public class PlayerController : MonoBehaviour
     /// <param name="isRightHanded">âEë≈ÇøÇ»ÇÁtrue</param>
     private void HandlePlayerStanceChange(bool isRightHanded)
     {
-        if (isPlayerSwinging) return;
+        if (IsPlayerSwinging) return;
 
         if (isRightHanded)
         {

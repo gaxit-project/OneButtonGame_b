@@ -37,11 +37,22 @@ public class Ball : MonoBehaviour
     public Image arrowLeftUI;
     public Image arrowRightUI;
 
+    [Header("当たり判定の幅")]
+    public float justHitRadius = 1.0f;
+    public float goodHitRadius = 2.0f;
+    public float badHitRadius = 3.0f;
+
+    [Header("ヒットパワー倍率")]
+    public float justHitPowerMultiplier = 1.0f;
+    public float goodHitPowerMultiplier = 0.7f;
+    public float badHitPowerMultiplier = 0.5f;
+
     [Header("難易度")]
     [SerializeField] private bool hard = false;
 
     private float touchGround = 0;
 
+    private bool hasBeenHit = false;
     public bool isGraunded = false;
     private bool isFaul = false;
     private bool isRecordingTrajectory = false;
@@ -107,12 +118,33 @@ public class Ball : MonoBehaviour
         }
 
         UpdateOffScreenArrows();
+
+        if (!hasBeenHit && playerController != null && playerController.IsPlayerSwinging && rb.velocity.z < 0)
+        {
+            if (playerController.batController != null && playerController.batController.sweetSpot != null)
+            {
+                Vector3 sweetSpotPos = playerController.batController.sweetSpot.position;
+                float distance = Vector3.Distance(transform.position, sweetSpotPos);
+
+                if (distance > justHitRadius && distance <= goodHitRadius)
+                {
+                    PerformTimingHit(goodHitPowerMultiplier, "Good");
+                }
+                else if (distance > goodHitRadius && distance <= badHitRadius)
+                {
+                    PerformTimingHit(badHitPowerMultiplier, "Bad");
+                }
+            }
+        }
     }
 
     private void FixedUpdate()
     {
         // 衝突前の速度を保持
-        lastVelocity = rb.velocity;
+        if (!hasBeenHit)
+        {
+            lastVelocity = rb.velocity;
+        }
 
         if (!predictionDone && rb.velocity.magnitude > 0.1f)
         {
@@ -131,6 +163,9 @@ public class Ball : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Bat"))
         {
+            if (hasBeenHit) return;
+
+            hasBeenHit = true;
             // 打撃音を再生
             SoundManager.instance.PlaySE(1);
 
@@ -177,36 +212,124 @@ public class Ball : MonoBehaviour
                         cameraController.StartTracking(transform);
                     }
                 }
+
+                hasBeenHit = true;
             }
             else
             {
-                float horizontalDifference = transform.position.x - collision.transform.position.x;
+                BatController batController = collision.gameObject.GetComponent<BatController>();
 
-                float horizontalForce = horizontalDifference * horizontalControl;
-
-                Vector3 hitDirection = new Vector3(horizontalForce, upwardModifier, 1).normalized;
-
-                Vector3 newVelocity = hitDirection * hitPower;
-
-                if (rb != null)
+                if (batController != null && batController.sweetSpot != null)
                 {
-                    /*
-                    // 現在の速度を一度リセット
-                    rb.velocity = Vector3.zero;
-                    // 新しい方向に力を加える
-                    rb.AddForce(hitDirection * hitPower, ForceMode.Impulse);
-                    */
-                    rb.velocity = newVelocity;
 
-                    // ログを出力
-                    LogHitData("ノーマル", newVelocity, impactPoint);
+                    // 芯からどれだけ離れているか計算
+                    Vector3 sweetSpotPosition = batController.sweetSpot.position;
 
-                    if (cameraController != null)
+                    //ボールがバットに当たった座標からバットの中心までの距離を計算
+                    float hitDistance = Vector3.Distance(impactPoint, sweetSpotPosition);
+                    float spatialDistance = Vector3.Distance(impactPoint, sweetSpotPosition);
+
+                    // 判定のしきい値
+                    float justHitThreshold = 2.0f; // この距離以下ならジャスト
+                    float goodHitThreshold = 4.0f; // この距離以下ならグッド
+
+                    string spatialLabel = "";
+                    float spatialPowerMultiplier; // 今回のヒットで適応されるパワー
+
+                    // 距離に応じてヒットの質を判定
+                    if (hitDistance <= justHitThreshold)
                     {
-                        cameraController.StartTracking(transform);
+                        spatialLabel = "ジャスト";
+                        spatialPowerMultiplier = 1.0f;
+                    }
+                    else if (hitDistance <= goodHitThreshold)
+                    {
+                        spatialLabel = "グッドヒット";
+                        spatialPowerMultiplier = 0.8f;
+                    }
+                    else
+                    {
+                        spatialLabel = "バッドヒット";
+                        spatialPowerMultiplier = 0.5f;
+                    }
+
+                    // タイミングの判定
+                    float timingDifference = transform.position.z;
+
+                    // タイミングのしきい値
+                    float temporalJustThreshold = 0.1f;
+
+                    string timingLabel = "";
+                    float temporalpowerMultiplier;
+
+                    if(timingDifference > temporalJustThreshold)
+                    {
+                        timingLabel = "Fast";
+                        temporalpowerMultiplier = 1.0f;
+                    }
+                    else if(timingDifference < -temporalJustThreshold)
+                    {
+                        timingLabel = "Late";
+                        temporalpowerMultiplier = 0.8f;
+                    }
+                    else
+                    {
+                        timingLabel = "Just";
+                        temporalpowerMultiplier = 1.0f;
+                    }
+
+                    Debug.Log($"芯: {spatialLabel}, タイミング: {timingLabel}");
+
+                    float finalHitPower = hitPower * spatialPowerMultiplier * temporalpowerMultiplier;
+
+                    // パワーの調整
+                    float horizontalDifference = transform.position.x - collision.transform.position.x;
+                    float horizontalForce = horizontalDifference * horizontalControl;
+                    Vector3 hitDirection = new Vector3(horizontalForce, upwardModifier, 1).normalized;
+
+                    // 調整されたパワーを速度に適応
+                    Vector3 newVelocity = hitDirection * finalHitPower;
+
+                    if (rb != null)
+                    {
+                        /*
+                        // 現在の速度を一度リセット
+                        rb.velocity = Vector3.zero;
+                        // 新しい方向に力を加える
+                        rb.AddForce(hitDirection * hitPower, ForceMode.Impulse);
+                        */
+                        rb.velocity = newVelocity;
+
+                        // ログを出力
+                        LogHitData("ノーマル", newVelocity, impactPoint);
+
+                        if (cameraController != null)
+                        {
+                            cameraController.StartTracking(transform);
+                        }
+                    }
+                }
+                else
+                {
+                    // sweetSpotが無い場合
+                    Debug.LogWarning("BatControllerまたはSweetSpotが設定されてません");
+                    float horizontalDifference = transform.position.x - collision.transform.position.x;
+                    float horizontalForce = horizontalDifference * horizontalControl;
+                    Vector3 hitDirection = new Vector3(horizontalForce, upwardModifier, 1);
+                    Vector3 newVelocity = hitDirection * hitPower;
+                    if(rb != null)
+                    {
+                        rb.velocity = newVelocity;
+                        LogHitData("ノーマル", newVelocity, impactPoint);
+                        if(cameraController != null)
+                        {
+                            cameraController.StartTracking(transform);
+                        }
                     }
                 }
             }
+
+            hasBeenHit = true;
 
         }
         else if (collision.gameObject.CompareTag("Ground") && !isGraunded)
@@ -289,6 +412,70 @@ public class Ball : MonoBehaviour
                 StartCoroutine(ResetCameraAfterDelay());
             }
         }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    private void PerformTimingHit(float powerMultiplier, string spatialLabel)
+    {
+        if (hasBeenHit) return;
+        hasBeenHit = true;
+
+        string timingLabel = "";
+        float timingThreshold = 0.1f;
+
+        if (transform.position.z > timingThreshold)
+        {
+             timingLabel = "Fast";
+        }
+        else if (transform.position.z < -timingThreshold)
+        {
+            timingLabel = "Late";
+        }
+        else
+        {
+            timingLabel = "Just";
+        }
+
+        Debug.Log($"タイミング: {spatialLabel} {timingLabel}");
+
+            SoundManager.instance.PlaySE(1);
+        HideMarker();
+        if (playerController != null)
+        {
+            playerController.NotifyHit();
+        }
+        isGraunded = false;
+        isRecordingTrajectory = true;
+        trajectoryPoints.Clear();
+
+        BatController batController = playerController.batController;
+        if (batController == null || batController.sweetSpot == null)
+        {
+            return;
+        }
+
+        float finalHitPower = hitPower * powerMultiplier;
+
+        float horizontalDifference = transform.position.x - batController.transform.position.x;
+        float horizontalForce = horizontalDifference * horizontalControl;
+        Vector3 hitDirection = new Vector3(horizontalForce, upwardModifier, 1).normalized;
+
+        Vector3 newVelocity = hitDirection * finalHitPower;
+        
+        if (rb != null)
+        {
+            rb.velocity = newVelocity;
+
+            LogHitData("ノーマル", newVelocity, batController.sweetSpot.position);
+
+            if (cameraController != null)
+            {
+                cameraController.StartTracking(transform);
+            }
+        }
+
     }
 
     private void PredictAndPlaceMarker()
@@ -407,6 +594,28 @@ public class Ball : MonoBehaviour
         Destroy(gameObject);
     }
 
+    private IEnumerator AnimateMarkerScale(float duration)
+    {
+        float elapsedTime = 0f;
+        if (duration <= 0)
+        {
+            timingMarkerInstance.transform.localScale = finalMarkerScale;
+            yield break;
+        }
+
+        while (elapsedTime < duration)
+        {
+            float t = elapsedTime / duration;
+            timingMarkerInstance.transform.localScale = Vector3.Lerp(initialMarkerScale, finalMarkerScale, t);
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        timingMarkerInstance.transform.localScale = finalMarkerScale;
+        markerAnimationCoroutine = null;
+    }
+
     /// <summary>
     /// 打球のデータを整形して出力する
     /// </summary>
@@ -461,27 +670,5 @@ public class Ball : MonoBehaviour
                 DataLogger.Instance.SaveTrajectory(difficulty, finalVelocity.magnitude, launchAngle, trajectoryPoints);
             }
         }
-    }
-
-    private IEnumerator AnimateMarkerScale(float duration)
-    {
-        float elapsedTime = 0f;
-        if (duration <= 0)
-        {
-            timingMarkerInstance.transform.localScale = finalMarkerScale;
-            yield break;
-        }
-
-        while (elapsedTime < duration)
-        {
-            float t = elapsedTime / duration;
-            timingMarkerInstance.transform.localScale = Vector3.Lerp(initialScale, finalMarkerScale, t);
-
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        timingMarkerInstance.transform.localScale = finalMarkerScale;
-        markerAnimationCoroutine = null;
     }
 }
