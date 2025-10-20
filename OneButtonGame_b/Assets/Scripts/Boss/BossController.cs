@@ -16,22 +16,30 @@ public class BossController : MonoBehaviour
     public DamageDisplay damageDisplay;
     public TextMeshProUGUI healthText;
 
-    private bool isDead = false;
+    //private bool isDead = false;
+    public bool attack = false;
+    Animator anim;
 
     void Start()
     {
         currentHealth = maxHealth;
         UpdateHealthUI();
+        anim = GetComponent<Animator>();
+        anim.Play("Idle");
     }
 
     void Update()
     {
-        
+        if (attack == true && currentHealth > 0)
+        {
+            attack = false;
+            anim.Play("Attack");
+        }
     }
 
     public void TakeBossDamage(int damage)
     {
-        
+        anim.Play("GetHit");
         currentHealth -= damage;
 
         if (currentHealth < 0)
@@ -58,8 +66,6 @@ public class BossController : MonoBehaviour
     {
         Debug.Log("ƒ{ƒX‚ğ“|‚µ‚½I");
 
-        GetComponent<Collider>().enabled = false;
-
         // CanonController‚ğ’T‚µ‚ÄA©•ª‚Ì’S“–‚ÌFirePoint‚ğíœ‚·‚é
         CanonController canonController = FindObjectOfType<CanonController>();
         if (canonController != null)
@@ -76,8 +82,14 @@ public class BossController : MonoBehaviour
         }
 
         yield return new WaitForSeconds(damageDisplay.fadeDuration/* + damageDisplay.displayDuration*/);
+        yield return new WaitForSeconds(damageDisplay.fadeDuration + damageDisplay.displayDuration);
 
-        Destroy(gameObject);
+        anim.Play("Die");
+        Collider[] col = gameObject.GetComponents<Collider>();
+        col [0].enabled = false;
+        col [1].enabled = false;
+        col [2].enabled = false;
+
     }
 
     void UpdateHealthUI()
