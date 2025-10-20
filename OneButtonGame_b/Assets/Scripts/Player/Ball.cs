@@ -104,6 +104,11 @@ public class Ball : MonoBehaviour
         {
             arrowRightUI.gameObject.SetActive(false);
         }
+
+        if (HitResultUI.Instance != null)
+        {
+            HitResultUI.Instance.HideResult();
+        }
     }
 
     private void Update()
@@ -205,7 +210,7 @@ public class Ball : MonoBehaviour
                     rb.AddForce(rb.velocity.normalized * pushForce);
 
                     // ログを出力
-                    LogHitData("ハード", newVelocity, impactPoint);
+                    //LogHitData("ハード", newVelocity, impactPoint);
 
                     if (cameraController != null)
                     {
@@ -239,17 +244,17 @@ public class Ball : MonoBehaviour
                     // 距離に応じてヒットの質を判定
                     if (hitDistance <= justHitThreshold)
                     {
-                        spatialLabel = "ジャスト";
+                        spatialLabel = "Just";
                         spatialPowerMultiplier = 1.0f;
                     }
                     else if (hitDistance <= goodHitThreshold)
                     {
-                        spatialLabel = "グッドヒット";
+                        spatialLabel = "Good";
                         spatialPowerMultiplier = 0.8f;
                     }
                     else
                     {
-                        spatialLabel = "バッドヒット";
+                        spatialLabel = "Bad";
                         spatialPowerMultiplier = 0.5f;
                     }
 
@@ -301,7 +306,7 @@ public class Ball : MonoBehaviour
                         rb.velocity = newVelocity;
 
                         // ログを出力
-                        LogHitData("ノーマル", newVelocity, impactPoint);
+                        LogHitData("ノーマル", newVelocity, impactPoint, spatialLabel, timingLabel);
 
                         if (cameraController != null)
                         {
@@ -320,7 +325,7 @@ public class Ball : MonoBehaviour
                     if(rb != null)
                     {
                         rb.velocity = newVelocity;
-                        LogHitData("ノーマル", newVelocity, impactPoint);
+                        LogHitData("ノーマル", newVelocity, impactPoint, "不明", "不明");
                         if(cameraController != null)
                         {
                             cameraController.StartTracking(transform);
@@ -468,7 +473,7 @@ public class Ball : MonoBehaviour
         {
             rb.velocity = newVelocity;
 
-            LogHitData("ノーマル", newVelocity, batController.sweetSpot.position);
+            LogHitData("ノーマル", newVelocity, batController.sweetSpot.position, spatialLabel, timingLabel);
 
             if (cameraController != null)
             {
@@ -622,16 +627,18 @@ public class Ball : MonoBehaviour
     /// <param name="difficulty">難易度</param>
     /// <param name="ballRb">ボールのRigitdbody</param>
     /// <param name="impactPoint">衝突した座標</param>
-    void LogHitData(string difficulty, Vector3 velocity, Vector3 impactPoint)
+    void LogHitData(string difficulty, Vector3 velocity, Vector3 impactPoint, string spatial, string timing)
     {
+        float speedKmh = velocity.magnitude * 3.6f;
         float horizontalMagnitude = new Vector2(velocity.x, velocity.z).magnitude;
         float verticalMagnitude = velocity.y;
         float launchAngleRed = Mathf.Atan2(verticalMagnitude, horizontalMagnitude);
         float launchAngle = launchAngleRed * Mathf.Rad2Deg;
-        /*
-        Vector3 flatVelocity = new Vector3(velocity.x, 0, velocity.z);
-        float launchAngle = Vector3.Angle(velocity, flatVelocity);
-        */
+
+        if (HitResultUI.Instance != null)
+        {
+            HitResultUI.Instance.ShowResult(spatial, speedKmh, launchAngle, timing);
+        }
 
         if (DataLogger.Instance != null)
         {
