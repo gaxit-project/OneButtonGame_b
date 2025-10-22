@@ -50,6 +50,11 @@ public class StartButton : MonoBehaviour
         AudioController.instance.ToResult();
     }
 
+    public void SwichHowToPlayScene()
+    {
+        AudioController.instance.ToHowToPlay();
+    }
+
     public void EngGame()
     {
 #if UNITY_EDITOR
