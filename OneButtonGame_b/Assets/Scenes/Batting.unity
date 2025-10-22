@@ -5621,6 +5621,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BaseBall_Bat_Translucent
       objectReference: {fileID: 0}
+    - target: {fileID: 7795224763125616011, guid: 8c7bf95c13c58c144a3de0fa7ffe44ca, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

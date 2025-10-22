@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour
     private bool canSwing = true;
     private bool isDead = false;
 
+    private Animator animator;
     private Quaternion initialSwingRotation; // スイング開始時の回転を保持
 
 
@@ -40,6 +41,8 @@ public class PlayerController : MonoBehaviour
     {
         currentHealth = playerMaxHealth;
         UpdateHealthUI();
+
+        animator = GetComponentInChildren<Animator>();
 
         // 打席変更イベントを購読
         if (batController != null)
