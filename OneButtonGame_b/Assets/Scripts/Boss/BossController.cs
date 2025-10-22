@@ -39,8 +39,12 @@ public class BossController : MonoBehaviour
 
     public void TakeBossDamage(int damage)
     {
-        anim.Play("GetHit");
         currentHealth -= damage;
+
+        if (currentHealth > 0)
+        {
+            anim.Play("GetHit");
+        }
 
         if (currentHealth < 0)
         {
