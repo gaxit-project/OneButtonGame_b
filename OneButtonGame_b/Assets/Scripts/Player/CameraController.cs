@@ -188,8 +188,9 @@ public class CameraController : MonoBehaviour
         }
         if(defeatMoveCamera != null)
         {
-            defeatMoveCamera.Priority = 0;
             defeatMoveCamera.Follow = null;
+            defeatMoveCamera.LookAt = null;
+            defeatMoveCamera.Priority = 0;
         }
 
         //isTrackingBall = false;
@@ -213,7 +214,8 @@ public class CameraController : MonoBehaviour
     {
         if (defeatMoveCamera == null) return;
 
-        defeatMoveCamera.Follow = ballToFollow;
+        defeatMoveCamera.Follow = null;
+        defeatMoveCamera.LookAt = ballToFollow;
         defeatMoveCamera.Priority = 100;
 
         if (playerCamera != null)
