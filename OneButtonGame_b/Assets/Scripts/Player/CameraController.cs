@@ -1,5 +1,8 @@
 using UnityEngine;
+using Cinemachine;
 using System;
+using DG.Tweening;
+using System.Diagnostics.Contracts;
 
 public class CameraController : MonoBehaviour
 {
@@ -11,12 +14,19 @@ public class CameraController : MonoBehaviour
     [Header("コンポーネント")]
     public BatController batController;
 
+    [Header("Cinemachineカメラ")]
+    public CinemachineVirtualCamera playerCamera;
+    public CinemachineVirtualCamera ballCamera;
+    public CinemachineVirtualCamera defeatMoveCamera;
+
+    /*
     [Header("カメラオフセット")]
     public Vector3 rightStanceOffset; // 右打席のカメラのオフセット
     public Vector3 leftStanceOffset; // 左打席のカメラのオフセット
     public Vector3 lookUpOffset = new Vector3(0, -2f, -4f); // 見上げカメラのオフセット
     public Vector3 followOffset = new Vector3(0, 5f, 10f); // 追跡カメラのオフセット
     public Vector3 homerunOffset = new Vector3(0, -1f, -10f); // 打球のカメラのオフセット
+    */
 
     [Header("カメラの挙動")]
     public float followSmoothness = 1f;
@@ -25,23 +35,25 @@ public class CameraController : MonoBehaviour
 
     [Header("カメラ切り替え設定")]
     public bool ballTracking = false;
-    public bool useHomerunView = false;
+    //public bool useHomerunView = false;
 
     // 状態管理
-    private bool isTrackingBall = false;
-    private float transitionTimer = 0f;
+    //private bool isTrackingBall = false;
+    //private float transitionTimer = 0f;
 
     public event Action OnCameraReset;
 
-    private Vector3 currentOffset;
-    private Quaternion initialRotation;
+    //private Vector3 currentOffset;
+    //private Quaternion initialRotation;
 
     void Start()
     {
+        /*
         // プレイヤーに対するカメラの初期位置を保存
         rightStanceOffset = transform.position - playerTarget.position;
         leftStanceOffset = new Vector3(-rightStanceOffset.x, rightStanceOffset.y, rightStanceOffset.z);
         initialRotation = transform.rotation;
+        */
 
         //  BatControllerの打席変更イベントを購読
         if (batController != null)
@@ -50,10 +62,12 @@ public class CameraController : MonoBehaviour
 
             HandleStanceChange(batController.isRightHanded);
         }
-        else
-        {
-            currentOffset = rightStanceOffset;
-        }
+        //else
+        //{
+        //    currentOffset = rightStanceOffset;
+        //}
+
+        ResetCamera();
     }
 
     void Update()
@@ -61,6 +75,7 @@ public class CameraController : MonoBehaviour
         
     }
 
+    /*
     // カメラの位置を計算する
     private void LateUpdate()
     {
@@ -102,6 +117,7 @@ public class CameraController : MonoBehaviour
             transform.rotation = initialRotation;
         }
     }
+    */
 
     /// <summary>
     /// ボールの追跡を開始
@@ -115,8 +131,25 @@ public class CameraController : MonoBehaviour
         }
 
         ballTarget = ballTransform;
-        isTrackingBall = true;
-        transitionTimer = 0f;
+
+        if (ballCamera != null)
+        {
+            ballCamera.Follow = ballTarget;
+            ballCamera.LookAt = ballTarget;
+            ballCamera.Priority = 20;
+        }
+
+        if (playerCamera != null)
+        {
+            playerCamera.Priority = 0;
+        }
+        if (defeatMoveCamera != null)
+        {
+            defeatMoveCamera.Priority = 0;
+        }
+
+        //isTrackingBall = true;
+        //transitionTimer = 0f;
     }
 
     /// <summary>
@@ -124,6 +157,7 @@ public class CameraController : MonoBehaviour
     /// </summary>
     private void HandleStanceChange(bool isRightHanded)
     {
+        /*
         if (isRightHanded)
         {
             currentOffset = rightStanceOffset;
@@ -132,6 +166,7 @@ public class CameraController : MonoBehaviour
         {
             currentOffset = leftStanceOffset;
         }
+        */
     }
 
     /// <summary>
@@ -139,19 +174,60 @@ public class CameraController : MonoBehaviour
     /// </summary>
     public void ResetCamera()
     {
-
-        isTrackingBall = false;
         ballTarget = null;
 
+        if (playerCamera != null)
+        {
+            playerCamera.Priority = 10;
+        }
+        if (ballCamera != null)
+        {
+            ballCamera.Follow = null;
+            ballCamera.LookAt = null;
+            ballCamera.Priority = 0;
+        }
+        if(defeatMoveCamera != null)
+        {
+            defeatMoveCamera.Follow = null;
+            defeatMoveCamera.LookAt = null;
+            defeatMoveCamera.Priority = 0;
+        }
+
+        //isTrackingBall = false;
+
+        Time.timeScale = 1.0f;
+
+        /*
         if (playerTarget != null)
         {
             transform.position = playerTarget.position + currentOffset;
         }
 
         transform.rotation = initialRotation;
+        */
 
         // カメラがリセットされたことをPlayerCOntrollerに通知
         OnCameraReset?.Invoke();
+    }
+
+    public void BossDefeatMoveCamera(Transform ballToFollow)
+    {
+        if (defeatMoveCamera == null) return;
+
+        defeatMoveCamera.Follow = null;
+        defeatMoveCamera.LookAt = ballToFollow;
+        defeatMoveCamera.Priority = 100;
+
+        if (playerCamera != null)
+        {
+            playerCamera.Priority = 0;
+        }
+        if (ballCamera != null)
+        {
+            ballCamera.Priority = 0;
+        }
+
+        DOTween.To(() => Time.timeScale, x => Time.timeScale = x, 0.3f, 0.5f).SetUpdate(true);
     }
 
     // オブジェクト破棄時にイベントの購読を解除

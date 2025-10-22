@@ -5,6 +5,11 @@ using System.Collections.Generic;
 
 public class BossController : MonoBehaviour
 {
+    public int CurrentHealth
+    {
+        get { return currentHealth; }
+    }
+
     [Header("ƒ{ƒX‚Ì‘Ì—Í")]
     public int maxHealth = 1000;
     private int currentHealth;
