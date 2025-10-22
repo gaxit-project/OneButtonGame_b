@@ -65,6 +65,7 @@ public class Ball : MonoBehaviour
 
     private Rigidbody rb;
     private PlayerController playerController;
+    private BossController boss;
     private CameraController cameraController;
     private Camera mainCamera;
     private CanonController canonController;
@@ -77,6 +78,7 @@ public class Ball : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        boss = FindObjectOfType<BossController>();
         cameraController = FindObjectOfType<CameraController>();
         canonController = FindObjectOfType<CanonController>();
         playerController = FindObjectOfType<PlayerController>();
@@ -305,13 +307,25 @@ public class Ball : MonoBehaviour
                         */
                         rb.velocity = newVelocity;
 
+                        bool isFinishingBlow = CheckForFinishingBlow(newVelocity);
+
+                        if (isFinishingBlow)
+                        {
+                            if (cameraController != null)
+                            {
+                                cameraController.BossDefeatMoveCamera(transform);
+                            }
+                        }
+                        else
+                        {
+                            if (cameraController != null)
+                            {
+                                cameraController.StartTracking(transform);
+                            }
+                        }
+
                         // ログを出力
                         LogHitData("ノーマル", newVelocity, impactPoint, spatialLabel, timingLabel);
-
-                        if (cameraController != null)
-                        {
-                            cameraController.StartTracking(transform);
-                        }
                     }
                 }
                 else
@@ -565,6 +579,49 @@ public class Ball : MonoBehaviour
                 arrowRightUI.gameObject.SetActive(true);
             }
         }
+    }
+
+    private bool CheckForFinishingBlow(Vector3 initialVelocity)
+    {
+        if (boss != null && boss.CurrentHealth <= attackPower)
+        {
+            return false;
+        }
+
+        int bossLayerMask = LayerMask.GetMask("Boss");
+        if (bossLayerMask == 0)
+        {
+            return false;
+        }
+
+        Vector3 predictedPos = transform.position;
+        Vector3 predictedVel = initialVelocity;
+        float timeStep = Time.fixedDeltaTime;
+        float maxTime = 5.0f;
+        float ballRadius = transform.localScale.x / 2.0f;
+
+        for (float t = 0; t < maxTime; t += timeStep)
+        {
+            Vector3 nextPos = predictedPos + predictedVel * timeStep;
+
+            predictedVel += Physics.gravity * timeStep;
+
+            Vector3 moveDirection = nextPos - predictedPos;
+            float moveDistance = moveDirection.magnitude;
+
+            RaycastHit hit;
+            if (Physics.SphereCast(predictedPos, ballRadius, moveDirection.normalized, out hit, moveDistance, bossLayerMask, QueryTriggerInteraction.Ignore))
+            {
+                if (hit.collider.gameObject == boss.gameObject)
+                {
+                    return true;
+                }
+            }
+
+            predictedPos = nextPos;
+        }
+
+        return false;
     }
 
     private void OnDestroy()
