@@ -1920,8 +1920,8 @@ MonoBehaviour:
   ballPrefab: {fileID: 811886666185653579, guid: e98c72d9a7d46bb47af2d2683fc5259d, type: 3}
   spawnPoints:
   - {fileID: 1378908135}
-  - {fileID: 1870294511}
   - {fileID: 1302933914}
+  - {fileID: 1870294511}
   targetPoint: {fileID: 598882400}
   targetRandomness: {x: 10, y: 0.5, z: 0}
   timeToTarget: 2
