@@ -1861,8 +1861,8 @@ Transform:
   m_GameObject: {fileID: 571222099}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 105}
-  m_LocalScale: {x: 300, y: 0.1, z: 200}
+  m_LocalPosition: {x: 0, y: 0, z: 132}
+  m_LocalScale: {x: 500, y: 0.1, z: 250}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 557721280}
@@ -1917,7 +1917,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4289e165f3a223546bd9430a4835420a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ballPrefab: {fileID: 811886666185653579, guid: e98c72d9a7d46bb47af2d2683fc5259d, type: 3}
+  ballPrefab: {fileID: 3290993381302377785, guid: 42ccfb607b3ddde40abe90308a03cfb6, type: 3}
   spawnPoints:
   - {fileID: 1378908135}
   - {fileID: 1302933914}

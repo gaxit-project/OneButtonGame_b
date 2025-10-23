@@ -237,8 +237,8 @@ public class Ball : MonoBehaviour
                     float spatialDistance = Vector3.Distance(impactPoint, sweetSpotPosition);
 
                     // 判定のしきい値
-                    float justHitThreshold = 2.0f; // この距離以下ならジャスト
-                    float goodHitThreshold = 4.0f; // この距離以下ならグッド
+                    float justHitThreshold = 4.0f; // この距離以下ならジャスト
+                    float goodHitThreshold = 8.0f; // この距離以下ならグッド
 
                     string spatialLabel = "";
                     float spatialPowerMultiplier; // 今回のヒットで適応されるパワー
@@ -264,7 +264,7 @@ public class Ball : MonoBehaviour
                     float timingDifference = transform.position.z;
 
                     // タイミングのしきい値
-                    float temporalJustThreshold = 0.1f;
+                    float temporalJustThreshold = 0.5f;
 
                     string timingLabel = "";
                     float temporalpowerMultiplier;
@@ -272,7 +272,7 @@ public class Ball : MonoBehaviour
                     if(timingDifference > temporalJustThreshold)
                     {
                         timingLabel = "Fast";
-                        temporalpowerMultiplier = 1.0f;
+                        temporalpowerMultiplier = 0.8f;
                     }
                     else if(timingDifference < -temporalJustThreshold)
                     {
@@ -459,7 +459,7 @@ public class Ball : MonoBehaviour
 
         Debug.Log($"タイミング: {spatialLabel} {timingLabel}");
 
-            SoundManager.instance.PlaySE(1);
+        SoundManager.instance.PlaySE(1);
         HideMarker();
         if (playerController != null)
         {
