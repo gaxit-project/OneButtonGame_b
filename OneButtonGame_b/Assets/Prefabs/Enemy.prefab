@@ -560,11 +560,12 @@ GameObject:
   m_Component:
   - component: {fileID: 2856782759201820340}
   - component: {fileID: 7252586016544673466}
-  - component: {fileID: 7931495376101076125}
   - component: {fileID: 6394007539068235721}
   - component: {fileID: 8507906513895802740}
   - component: {fileID: 2587981594912421613}
   - component: {fileID: 1701160330013559689}
+  - component: {fileID: 2741603725416346755}
+  - component: {fileID: 4550915056635328681}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -610,26 +611,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &7931495376101076125
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4866066939302226835}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae5029ed6a751144594ef1a794606d4f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bossMain: {fileID: 0}
-  canonController: {fileID: 0}
-  HP: 250
-  Power: 1
-  coolTime: 10
-  attack: 0
-  gameStart: 1
-  getHit: 0
 --- !u!54 &6394007539068235721
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -720,6 +701,47 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.5, y: 3, z: 2}
   m_Center: {x: -1.7, y: 1.8, z: 0.2}
+--- !u!114 &2741603725416346755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4866066939302226835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc7977cf34625d341b7fb3211df5fc68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 500
+  attackPower: 100
+  attackCoolTime: 5
+  skillCoolTime: 20
+  associatedSpawnPoint:
+  - {fileID: 0}
+  canonController: {fileID: 0}
+  damageDisplay: {fileID: 0}
+  healthText: {fileID: 0}
+  canAttack: 1
+  canUseSkill: 1
+  isGettingHit: 0
+  isDead: 0
+  attack: 0
+--- !u!114 &4550915056635328681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4866066939302226835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 155930486a2e8924ea40bce111daaefc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageText: {fileID: 0}
+  displayDuration: 0.3
+  fadeDuration: 0.3
 --- !u!1 &5228393833515891880
 GameObject:
   m_ObjectHideFlags: 0

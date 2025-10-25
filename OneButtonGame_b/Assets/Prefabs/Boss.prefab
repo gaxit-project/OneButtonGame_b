@@ -329,9 +329,10 @@ GameObject:
   - component: {fileID: 3136306587511174861}
   - component: {fileID: 4146626727097097548}
   - component: {fileID: 3514589385971674633}
-  - component: {fileID: 4988516785366354240}
   - component: {fileID: 252586123071094373}
   - component: {fileID: 804479473246989985}
+  - component: {fileID: 2225373241625268831}
+  - component: {fileID: 5234630380846166485}
   m_Layer: 0
   m_Name: Boss
   m_TagString: Boss
@@ -425,27 +426,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2, y: 4, z: 2.7}
   m_Center: {x: 0, y: 2, z: 0.2}
---- !u!114 &4988516785366354240
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4741984893379413449}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06a289e91c8fbef4e9fb15d32979c4c9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  canonController: {fileID: 0}
-  HP: 1000
-  Power: 1
-  coolTime: 5
-  damage: 10
-  attack: 0
-  gameStart: 0
-  skill: 0
-  getHit: 0
 --- !u!65 &252586123071094373
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -488,6 +468,49 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.5, y: 2.8, z: 2}
   m_Center: {x: -1.5, y: 1.8, z: 0.3}
+--- !u!114 &2225373241625268831
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4741984893379413449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc7977cf34625d341b7fb3211df5fc68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 1000
+  attackPower: 100
+  attackCoolTime: 5
+  skillCoolTime: 20
+  associatedSpawnPoint:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  canonController: {fileID: 0}
+  damageDisplay: {fileID: 0}
+  healthText: {fileID: 0}
+  canAttack: 1
+  canUseSkill: 1
+  isGettingHit: 0
+  isDead: 0
+  attack: 0
+--- !u!114 &5234630380846166485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4741984893379413449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 155930486a2e8924ea40bce111daaefc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageText: {fileID: 0}
+  displayDuration: 0.3
+  fadeDuration: 0.3
 --- !u!1 &4826509303473322145
 GameObject:
   m_ObjectHideFlags: 0

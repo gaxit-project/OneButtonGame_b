@@ -1,8 +1,10 @@
 using UnityEngine;
 using UnityEngine.UI;
+using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Threading;
 
 public class Ball : MonoBehaviour
 {
@@ -131,7 +133,7 @@ public class Ball : MonoBehaviour
             if (playerController.batController != null && playerController.batController.sweetSpot != null)
             {
                 Vector3 sweetSpotPos = playerController.batController.sweetSpot.position;
-                float distance = Vector3.Distance(transform.position, sweetSpotPos);
+                float distance = Mathf.Abs(transform.position.x - sweetSpotPos.x);
 
                 if (distance > justHitRadius && distance <= goodHitRadius)
                 {
@@ -233,12 +235,12 @@ public class Ball : MonoBehaviour
                     Vector3 sweetSpotPosition = batController.sweetSpot.position;
 
                     //ボールがバットに当たった座標からバットの中心までの距離を計算
-                    float hitDistance = Vector3.Distance(impactPoint, sweetSpotPosition);
+                    float hitDistance = Mathf.Abs(impactPoint.x - sweetSpotPosition.x);
                     float spatialDistance = Vector3.Distance(impactPoint, sweetSpotPosition);
 
                     // 判定のしきい値
-                    float justHitThreshold = 2.0f; // この距離以下ならジャスト
-                    float goodHitThreshold = 4.0f; // この距離以下ならグッド
+                    float justHitThreshold = 1.0f; // この距離以下ならジャスト
+                    float goodHitThreshold = 2.0f; // この距離以下ならグッド
 
                     string spatialLabel = "";
                     float spatialPowerMultiplier; // 今回のヒットで適応されるパワー
@@ -264,7 +266,7 @@ public class Ball : MonoBehaviour
                     float timingDifference = transform.position.z;
 
                     // タイミングのしきい値
-                    float temporalJustThreshold = 0.1f;
+                    float temporalJustThreshold = 0.5f;
 
                     string timingLabel = "";
                     float temporalpowerMultiplier;
@@ -272,7 +274,7 @@ public class Ball : MonoBehaviour
                     if(timingDifference > temporalJustThreshold)
                     {
                         timingLabel = "Fast";
-                        temporalpowerMultiplier = 1.0f;
+                        temporalpowerMultiplier = 0.8f;
                     }
                     else if(timingDifference < -temporalJustThreshold)
                     {
@@ -358,7 +360,7 @@ public class Ball : MonoBehaviour
             {
                 isGraunded = true;
                 StopAndSaveTrajectory();
-                StartCoroutine(ResetCameraAfterDelay());
+                ResetCameraAfterDelayAcync().Forget();
             }
         }
         else if (collision.gameObject.CompareTag("Wall"))
@@ -367,7 +369,7 @@ public class Ball : MonoBehaviour
             {
                 isGraunded = true;
                 StopAndSaveTrajectory();
-                StartCoroutine(ResetCameraAfterDelay());
+                ResetCameraAfterDelayAcync().Forget();
             }
         }
         else if (collision.gameObject.CompareTag("Boss"))
@@ -383,7 +385,7 @@ public class Ball : MonoBehaviour
             {
                 isGraunded = true;
                 StopAndSaveTrajectory();
-                StartCoroutine(ResetCameraAfterDelay());
+                ResetCameraAfterDelayAcync().Forget();
             }
         }
         else if (collision.gameObject.CompareTag("Player"))
@@ -396,7 +398,7 @@ public class Ball : MonoBehaviour
             }
 
             HideMarker();
-            StartCoroutine(ResetCameraAfterDelay());
+            ResetCameraAfterDelayAcync().Forget();
         }
     }
 
@@ -415,7 +417,7 @@ public class Ball : MonoBehaviour
             if (cameraController != null && !isGraunded)
             {
                 isGraunded = true;
-                StartCoroutine(ResetCameraAfterDelay());
+                ResetCameraAfterDelayAcync().Forget();
             }
         }
         else if (other.gameObject.CompareTag("Foul"))
@@ -428,7 +430,7 @@ public class Ball : MonoBehaviour
             {
                 isGraunded = true;
                 StopAndSaveTrajectory();
-                StartCoroutine(ResetCameraAfterDelay());
+                ResetCameraAfterDelayAcync().Forget();
             }
         }
     }
@@ -459,7 +461,7 @@ public class Ball : MonoBehaviour
 
         Debug.Log($"タイミング: {spatialLabel} {timingLabel}");
 
-            SoundManager.instance.PlaySE(1);
+        SoundManager.instance.PlaySE(1);
         HideMarker();
         if (playerController != null)
         {
@@ -520,7 +522,8 @@ public class Ball : MonoBehaviour
         timingMarkerInstance.transform.position = timingMarkerPosition;
         timingMarkerInstance.SetActive(true);
 
-        markerAnimationCoroutine = StartCoroutine(AnimateMarkerScale(timeToImpact));
+        //markerAnimationCoroutine = StartCoroutine(AnimateMarkerScale(timeToImpact));
+        AnimateMarkerScaleAsync(timeToImpact, this.GetCancellationTokenOnDestroy()).Forget();
     } 
 
     public void HideMarker()
@@ -637,45 +640,63 @@ public class Ball : MonoBehaviour
     }
 
     // 指定した時間だけ待ってから処理を再開するコルーチン
-    IEnumerator ResetCameraAfterDelay()
+    async UniTaskVoid ResetCameraAfterDelayAcync()
     {
-        if (!isFaul)
+        var cancellationToken = this.GetCancellationTokenOnDestroy();
+
+        try
         {
-            yield return new WaitForSeconds(resetDelay);
-        }
-        isFaul = false;
+            if (!isFaul)
+            {
+                //yield return new WaitForSeconds(resetDelay);
+                await UniTask.Delay(TimeSpan.FromSeconds(resetDelay), cancellationToken: cancellationToken);
+            }
+            isFaul = false;
 
-        if(cameraController != null)
+            if (cameraController != null)
+            {
+                cameraController.ResetCamera();
+                //canonController.FireCanon();
+            }
+
+            OnBallDestroyed?.Invoke();
+
+            Destroy(gameObject);
+        }
+        catch (OperationCanceledException)
         {
-            cameraController.ResetCamera();
-            //canonController.FireCanon();
+
         }
-
-        OnBallDestroyed?.Invoke();
-
-        Destroy(gameObject);
     }
 
-    private IEnumerator AnimateMarkerScale(float duration)
+    private async UniTaskVoid AnimateMarkerScaleAsync(float duration, CancellationToken cancellationToken)
     {
         float elapsedTime = 0f;
         if (duration <= 0)
         {
             timingMarkerInstance.transform.localScale = finalMarkerScale;
-            yield break;
+            return;
         }
 
-        while (elapsedTime < duration)
+        try
         {
-            float t = elapsedTime / duration;
-            timingMarkerInstance.transform.localScale = Vector3.Lerp(initialMarkerScale, finalMarkerScale, t);
+            while (elapsedTime < duration)
+            {
+                float t = elapsedTime / duration;
+                timingMarkerInstance.transform.localScale = Vector3.Lerp(initialMarkerScale, finalMarkerScale, t);
 
-            elapsedTime += Time.deltaTime;
-            yield return null;
+                elapsedTime += Time.deltaTime;
+                //yield return null;
+                await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
+            }
+
+            timingMarkerInstance.transform.localScale = finalMarkerScale;
+            //markerAnimationCoroutine = null;
         }
+        catch (OperationCanceledException)
+        {
 
-        timingMarkerInstance.transform.localScale = finalMarkerScale;
-        markerAnimationCoroutine = null;
+        }
     }
 
     /// <summary>
