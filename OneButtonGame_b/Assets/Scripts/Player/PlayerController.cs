@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Cysharp.Threading.Tasks;
+using System.Threading;
 
 public class PlayerController : MonoBehaviour
 {
@@ -35,6 +37,8 @@ public class PlayerController : MonoBehaviour
 
     private Animator animator;
     private Quaternion initialSwingRotation; // スイング開始時の回転を保持
+
+    private CancellationTokenSource swingCancellation;
 
 
     void Start()
@@ -73,7 +77,10 @@ public class PlayerController : MonoBehaviour
 
         if ((Input.GetMouseButtonDown(0) || Input.GetButtonDown("Fire1")) && !IsPlayerSwinging)
         {
-            StartCoroutine(SwingAction());
+            //StartCoroutine(SwingAction());
+            swingCancellation?.Cancel();
+            swingCancellation = new CancellationTokenSource();
+            SwingActionAsync(swingCancellation.Token).Forget();
         }
     }
 
@@ -102,38 +109,63 @@ public class PlayerController : MonoBehaviour
     /// <summary>
     /// スイングを行うコルーチン
     /// </summary>
-    private IEnumerator SwingAction()
+    private async UniTaskVoid SwingActionAsync(CancellationToken cancellationToken)
     {
         hitBat = false;
         IsPlayerSwinging = true;
         batController.SetSwingingState(true);
         //batController.PerformSwing();
 
-        yield return StartCoroutine(batController.PrepareForSwing());
-
-        initialSwingRotation = transform.rotation; // 回転前の状態を保持
-
-       //Quaternion initialRotation = transform.rotation;
-
-        float rotationAmount = batController.isRightHanded ? batController.swingAngle : -batController.swingAngle;
-        Quaternion targetRotation = initialSwingRotation * Quaternion.Euler(0, rotationAmount, 0);
-
-        // 目標角度まで滑らかに回転
-        while (Quaternion.Angle(transform.rotation, targetRotation) > 0.1f)
+        try
         {
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, batController.swingSpeed * Time.deltaTime);
-            yield return null;
+            //yield return StartCoroutine(batController.PrepareForSwing());
+            await batController.PrepareForSwing(cancellationToken);
+
+            initialSwingRotation = transform.rotation; // 回転前の状態を保持
+
+            //Quaternion initialRotation = transform.rotation;
+
+            float rotationAmount = batController.isRightHanded ? batController.swingAngle : -batController.swingAngle;
+            Quaternion targetRotation = initialSwingRotation * Quaternion.Euler(0, rotationAmount, 0);
+
+            /*
+            // 目標角度まで滑らかに回転
+            while (Quaternion.Angle(transform.rotation, targetRotation) > 0.1f)
+            {
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, batController.swingSpeed * Time.deltaTime);
+                yield return null;
+            }
+            */
+
+            float startTime = Time.time;
+            float duration = 0.1f;
+
+            while(Time.time < startTime + duration)
+            {
+                float t = (Time.time - startTime) / duration;
+                transform.rotation = Quaternion.Slerp(initialSwingRotation, targetRotation, t);
+                await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
+            }
+
+            // スイングの頂点で少し待機
+            //yield return new WaitForSeconds(0.2f);
+            await UniTask.Delay(TimeSpan.FromSeconds(0.2f), cancellationToken: cancellationToken);
+
+            //yield return StartCoroutine(ResetStance());
+            await ResetStanceAsync(cancellationToken);
+
+            //yield return StartCoroutine(batController.ReturnToIdle());
+            await batController.ReturnToIdleAsync(cancellationToken);
+
+            if(cancellationToken.IsCancellationRequested) return;
+
+            batController.SetSwingingState(false);
+            IsPlayerSwinging = false;
         }
+        catch
+        {
 
-        // スイングの頂点で少し待機
-        yield return new WaitForSeconds(0.2f);
-
-        yield return StartCoroutine(ResetStance());
-
-        yield return StartCoroutine(batController.ReturnToIdle());
-
-        batController.SetSwingingState(false);
-        IsPlayerSwinging = false;
+        }
     }
 
     /// <summary>
@@ -158,13 +190,25 @@ public class PlayerController : MonoBehaviour
     /// <summary>
     /// スイング後、プレイヤーの向きを元に戻すコルーチン
     /// </summary>
-    private IEnumerator ResetStance()
+    private async UniTask ResetStanceAsync(CancellationToken cancellationToken)
     {
+        /*
         // 戻る
         while (Quaternion.Angle(transform.rotation, initialSwingRotation) > 0.1f)
         {
             transform.rotation = Quaternion.Slerp(transform.rotation, initialSwingRotation, batController.swingSpeed * Time.deltaTime);
             yield return null;
+        }
+        */
+
+        Quaternion currentRotation = transform.rotation;
+        float startTime = Time.time;
+        float duration = 0.1f;
+        while (Time.time < startTime + duration)
+        {
+            float t = (Time.time - startTime) / duration;
+            transform.rotation = Quaternion.Slerp(currentRotation, initialSwingRotation, t);
+            await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
         }
 
         transform.rotation = initialSwingRotation;
@@ -243,5 +287,8 @@ public class PlayerController : MonoBehaviour
         {
             cameraController.OnCameraReset -= HandleCameraReset;
         }
+
+        swingCancellation?.Cancel();
+        swingCancellation?.Dispose();
     }
 }

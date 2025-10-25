@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
+using System.Threading.Tasks;
+using System.Threading;
 
 public class BatController : MonoBehaviour
 {
@@ -120,7 +123,7 @@ public class BatController : MonoBehaviour
         }
     }
 
-    public IEnumerator PrepareForSwing()
+    public async UniTask PrepareForSwing(CancellationToken cancellationToken = default)
     {
         //while (Quaternion.Angle(transform.localRotation, readyRotaion) > 0.1f)
         //{
@@ -129,10 +132,11 @@ public class BatController : MonoBehaviour
         //}
 
         transform.localRotation = readyRotaion;
-        yield return null;
+        //yield return null;
+        await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
     }
 
-    public IEnumerator ReturnToIdle()
+    public async UniTask ReturnToIdleAsync(CancellationToken cancellationToken = default)
     {
         //while (Quaternion.Angle(transform.localRotation, idleRotaion) > 0.1f)
         //{
@@ -141,6 +145,7 @@ public class BatController : MonoBehaviour
         //}
 
         transform.localRotation = idleRotaion;
-        yield return null;
+        //yield return null;
+        await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
     }
 }
