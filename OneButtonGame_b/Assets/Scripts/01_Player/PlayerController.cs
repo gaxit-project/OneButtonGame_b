@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Cysharp.Threading.Tasks;
 using System.Threading;
+using UnityEditor.Build;
 
 public class PlayerController : MonoBehaviour
 {
@@ -17,8 +18,14 @@ public class PlayerController : MonoBehaviour
     public float leftStanceYRotation = 180f; // 左打席の時のY軸回転 
     private bool isInputEnabled = true;
 
+    [Header("デッドボール演出")]
+    public Image damageFlashOverlay;
+    public float flashFadeDuration = 0.5f;
+    public Color damageFlashColor = new Color(1f, 1f, 1f, 0.392f);
+
     [Header("ゲームオーバー設定")]
     public string gameOverSceneName = "GameOver";
+
 
     [Header("UIコンポーネント")]
     public List<Image> healthHearts;
@@ -41,6 +48,7 @@ public class PlayerController : MonoBehaviour
     private Quaternion initialSwingRotation; // スイング開始時の回転を保持
 
     private CancellationTokenSource swingCancellation;
+    private CancellationTokenSource damageFlashCancellation;
 
 
     void Start()
@@ -64,6 +72,14 @@ public class PlayerController : MonoBehaviour
         if (cameraController != null)
         {
             cameraController.OnCameraReset += HandleCameraReset;
+        }
+
+        damageFlashCancellation = new CancellationTokenSource();
+
+        if(damageFlashOverlay != null)
+        {
+            damageFlashOverlay.color = Color.clear;
+            damageFlashOverlay.enabled = false;
         }
     }
 
@@ -203,12 +219,54 @@ public class PlayerController : MonoBehaviour
 
         UpdateHealthUI();
 
+        if(damageFlashOverlay != null)
+        {
+            damageFlashCancellation?.Cancel();
+            damageFlashCancellation.Dispose();
+            damageFlashCancellation = new CancellationTokenSource();
+            FlashDamageEffectAsync(damageFlashCancellation.Token).Forget();
+            
+        }
+
         if (currentHealth <= 0)
         {
             isDead = true;
             Debug.Log("ゲームオーバー");
-
+            damageFlashCancellation.Cancel();
             SceneManager.LoadScene(gameOverSceneName);
+        }
+    }
+
+    private async UniTaskVoid FlashDamageEffectAsync(CancellationToken token)
+    {
+        try
+        {
+            damageFlashOverlay.enabled = true;
+            damageFlashOverlay.color = damageFlashColor;
+
+            float elapsedTime = 0f;
+            Color startColor = damageFlashColor;
+            Color endColor = new Color(startColor.r, startColor.g, startColor.b, 0f);
+
+            while(elapsedTime < flashFadeDuration)
+            {
+                token.ThrowIfCancellationRequested();
+
+                elapsedTime += Time.deltaTime;
+                float progress = Mathf.Clamp01(elapsedTime / flashFadeDuration);
+
+                damageFlashOverlay.color = Color.Lerp(startColor, endColor, progress);
+                await UniTask.Yield(PlayerLoopTiming.Update, token);
+            }
+            damageFlashOverlay.color = Color.clear;
+            damageFlashOverlay.enabled = false;
+        }
+        catch (OperationCanceledException)
+        {
+            if(damageFlashOverlay != null && !token.IsCancellationRequested)
+            {
+                damageFlashOverlay.enabled = false;
+            }
         }
     }
 
@@ -227,5 +285,8 @@ public class PlayerController : MonoBehaviour
 
         swingCancellation?.Cancel();
         swingCancellation?.Dispose();
+
+        damageFlashCancellation?.Cancel();
+        damageFlashCancellation?.Dispose();
     }
 }
