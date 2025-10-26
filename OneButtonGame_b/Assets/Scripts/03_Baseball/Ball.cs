@@ -49,6 +49,13 @@ public class Ball : MonoBehaviour
     public float goodHitPowerMultiplier = 0.7f;
     public float badHitPowerMultiplier = 0.5f;
 
+    [Header("チャンスボール")]
+    public int chanceBallBossDamageMultiplier = 3;
+    public int chanceBallCoreDamageMultiplier = 2;
+    public int chanceBallPlayerDamageMultiplier = 2;
+    public bool isChanceBall = false;
+
+
     [Header("難易度")]
     [SerializeField] private bool hard = false;
 
@@ -386,9 +393,11 @@ public class Ball : MonoBehaviour
         {
             BossController boss = collision.gameObject.GetComponent<BossController>();
 
-            if(boss != null)
+            int damageToBoss = isChanceBall ? (int)(attackPower * chanceBallBossDamageMultiplier) : attackPower;
+
+            if (boss != null)
             {
-                boss.TakeBossDamage(attackPower);
+                boss.TakeBossDamage(damageToBoss);
             }
 
             if (cameraController != null)
@@ -404,7 +413,8 @@ public class Ball : MonoBehaviour
 
             if (playerController != null)
             {
-                playerController.TakePlayerDamage(playerAttackPower);
+                int damageToPlayer = isChanceBall ? (int)(attackPower * chanceBallPlayerDamageMultiplier) : playerAttackPower;
+                playerController.TakePlayerDamage(damageToPlayer);
             }
 
             HideMarker();
@@ -426,7 +436,8 @@ public class Ball : MonoBehaviour
             CoreController coreController = FindObjectOfType<CoreController>();
             if (coreController != null)
             {
-                coreController.TakeCoreDamage(playerAttackPower);
+                int damageToCore = isChanceBall ? (int)(attackPower * chanceBallCoreDamageMultiplier) : playerAttackPower;
+                coreController.TakeCoreDamage(damageToCore);
             }
 
             if (cameraController != null && !isGraunded)

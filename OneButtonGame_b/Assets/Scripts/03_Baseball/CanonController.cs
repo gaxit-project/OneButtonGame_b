@@ -5,6 +5,7 @@ public class CanonController : MonoBehaviour
 {
     [Header("生成するボールのプレハブ")]
     public GameObject ballPrefab;
+    public GameObject chanceBallPrefab;
 
     [Header("ボールを生成する場所")]
     public List<Transform> spawnPoints;
@@ -16,6 +17,9 @@ public class CanonController : MonoBehaviour
 
     [Header("ボールの発射パワー")]
     public float launchPower = 50f;
+
+    [Header("チャンスボール確率")]
+    public float chanceBallProbability = 0.1f;
 
     // 生成したボールの情報を保存しておくためのリスト
     private List<GameObject> spawnedBalls = new List<GameObject>();
@@ -71,10 +75,22 @@ public class CanonController : MonoBehaviour
             return;
         }
 
+        GameObject prefabToSpawn;
+
         if (ballPrefab == null || spawnPoints == null || spawnPoints.Count == 0 || targetPoint == null)
         {
             Debug.Log("Ball PrefabまたはSpawn Pointsもしくはplayerが設定されてません");
             return;
+        }
+
+        if(chanceBallPrefab != null && Random.value < chanceBallProbability)
+        {
+            prefabToSpawn = chanceBallPrefab;
+            Debug.Log("チャンスボール発射");
+        }
+        else
+        {
+            prefabToSpawn = ballPrefab;
         }
 
         // spawnPointでボールを生成
@@ -84,13 +100,15 @@ public class CanonController : MonoBehaviour
         Transform selectedSpawnPoint = pointsToUse[randomIndex];
 
 
-        GameObject newBall = Instantiate(ballPrefab, selectedSpawnPoint.position, selectedSpawnPoint.rotation);
-        spawnedBalls.Add(newBall);
+        GameObject newBallObject = Instantiate(prefabToSpawn, selectedSpawnPoint.position, selectedSpawnPoint.rotation);
+        spawnedBalls.Add(newBallObject);
 
+        Ball newBall = newBallObject.GetComponent<Ball>();
         Rigidbody ballRigidbody = newBall.GetComponent<Rigidbody>();
 
-        if(ballRigidbody != null )
+        if(newBall != null && ballRigidbody != null)
         {
+
             Vector3 startPosition = selectedSpawnPoint.position;
             //Vector3 targetPosition = targetPoint.position;
 

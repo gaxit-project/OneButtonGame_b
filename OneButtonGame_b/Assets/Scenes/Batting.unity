@@ -2883,6 +2883,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ballPrefab: {fileID: 3290993381302377785, guid: 42ccfb607b3ddde40abe90308a03cfb6, type: 3}
+  chanceBallPrefab: {fileID: 8936162278468877666, guid: 0c41317760b56d64cace3f3496435d35, type: 3}
   spawnPoints:
   - {fileID: 1378908135}
   - {fileID: 1302933914}
@@ -2891,6 +2892,7 @@ MonoBehaviour:
   targetRandomness: {x: 10, y: 0.5, z: 0}
   timeToTarget: 2
   launchPower: 10.3
+  chanceBallProbability: 1
 --- !u!4 &585022513
 Transform:
   m_ObjectHideFlags: 0
@@ -4300,7 +4302,7 @@ MonoBehaviour:
   orbitMovieDuration: 5
   bossExplanationTextDuration: 4
   coreExplanationTextDuration: 4
-  movieSkip: 0
+  movieSkip: 1
 --- !u!4 &1078588911
 Transform:
   m_ObjectHideFlags: 0

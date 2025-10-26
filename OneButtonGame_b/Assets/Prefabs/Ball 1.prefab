@@ -166,5 +166,9 @@ MonoBehaviour:
   justHitPowerMultiplier: 1
   goodHitPowerMultiplier: 0.6
   badHitPowerMultiplier: 0.2
+  chanceBallBossDamageMultiplier: 3
+  chanceBallCoreDamageMultiplier: 2
+  chanceBallPlayerDamageMultiplier: 2
+  isChanceBall: 0
   hard: 0
   isGraunded: 0
