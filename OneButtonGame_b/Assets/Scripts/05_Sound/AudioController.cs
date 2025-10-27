@@ -64,6 +64,13 @@ public class AudioController : MonoBehaviour
         SceneManager.LoadScene("Result");
         SoundManager.instance.PlayBGM("Result");
     }
+
+    public void ToGameOver()
+    {
+        Thread.Sleep(200);
+        SceneManager.LoadScene("GameOver");
+        //SoundManager.instance.PlayBGM("");
+    }
     void Start()
     {
         SoundManager.instance.PlayBGM("Title");

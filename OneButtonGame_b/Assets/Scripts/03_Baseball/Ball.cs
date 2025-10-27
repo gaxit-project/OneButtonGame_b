@@ -247,8 +247,8 @@ public class Ball : MonoBehaviour
                     float spatialDistance = Vector3.Distance(impactPoint, sweetSpotPosition);
 
                     // 判定のしきい値
-                    float justHitThreshold = 0.5f; // この距離以下ならジャスト
-                    float goodHitThreshold = 0.8f; // この距離以下ならグッド
+                    float justHitThreshold = 1.0f; // この距離以下ならジャスト
+                    float goodHitThreshold = 2.0f; // この距離以下ならグッド
 
                     string spatialLabel = "";
                     float spatialPowerMultiplier; // 今回のヒットで適応されるパワー

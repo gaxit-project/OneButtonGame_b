@@ -55,7 +55,8 @@ public class CoreController : MonoBehaviour
             blinkCts?.Cancel();
             blinkCts?.Dispose();
 
-            SceneManager.LoadScene(gameOverSceneName);
+            AudioController.instance.ToGameOver();
+            //SceneManager.LoadScene(gameOverSceneName);
         }
     }
 

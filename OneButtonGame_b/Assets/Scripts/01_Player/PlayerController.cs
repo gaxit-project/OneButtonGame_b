@@ -6,7 +6,6 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Cysharp.Threading.Tasks;
 using System.Threading;
-using UnityEditor.Build;
 
 public class PlayerController : MonoBehaviour
 {
