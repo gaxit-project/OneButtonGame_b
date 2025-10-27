@@ -6,8 +6,7 @@ using UnityEngine.EventSystems;
 public class Pause : MonoBehaviour
 {
     //　ポーズした時に表示するUI
-    [SerializeField]
-    private GameObject pauseUI;
+    public GameObject pauseUI;
 
     [SerializeField]
     private GameObject firstSelectedButton;

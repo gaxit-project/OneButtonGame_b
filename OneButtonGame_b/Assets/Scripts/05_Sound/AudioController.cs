@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Threading;
+using Cysharp.Threading.Tasks;
+using Cinemachine;
 
 
 public class AudioController : MonoBehaviour
@@ -11,6 +13,8 @@ public class AudioController : MonoBehaviour
     //シングルトンなので、instanceを使ってアクセスする
 
     public static AudioController instance; // シングルトンへ
+    private Pause pauseController;
+    private CameraController cameraController;
 
     private void Awake()
     {
@@ -25,13 +29,43 @@ public class AudioController : MonoBehaviour
         }
     }
 
-    public void ToTitle()
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if(scene.name == "Batting")
+        {
+            pauseController = FindObjectOfType<Pause>();
+        }
+        else
+        {
+            pauseController = null;
+        }
+    }
+
+    public async void ToTitle()
     {
         SoundManager.instance.PlaySE(0);
-        Thread.Sleep(200);
+
+        Time.timeScale = 1f;
+
+        if(GameManager.Instance != null)
+        {
+            GameManager.Instance.ResetGameState();
+        }
+
+        await UniTask.Delay(200, ignoreTimeScale: true);
+
         SceneManager.LoadScene("Title");
         SoundManager.instance.PlayBGM("Title");
-        Time.timeScale = 1f;
 
     }
 

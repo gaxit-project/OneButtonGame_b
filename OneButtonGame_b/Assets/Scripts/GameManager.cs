@@ -113,41 +113,73 @@ public class GameManager : MonoBehaviour
     {
         IsGameActive = false;
         elapsedTime = 0f;
+        activeBosses.Clear();
 
         // コンポーネントの取得
         playerController = FindObjectOfType<PlayerController>();
         canonController = FindObjectOfType<CanonController>();
         cameraController = FindObjectOfType<CameraController>();
 
-        if(playerHealthPanel != null)
+        timerText = FindUIElementByTag<TextMeshProUGUI>("TimerText");
+        countdownText = FindUIElementByTag<TextMeshProUGUI>("CountdownText");
+        playerHealthPanel = FindUIElementByTag<Transform>("PlayerHealthPanel")?.gameObject;
+        BossHpPanel = FindUIElementByTag<Transform>("BossHpPanel")?.gameObject;
+        coreStatusText = FindUIElementByTag<TextMeshProUGUI>("CoreStatusText");
+        fpsText = FindUIElementByTag<TextMeshProUGUI>("FPSText");
+
+        bossExplanationPanel = GameObject.Find("BossExplanationPanel");
+        if (bossExplanationPanel != null)
         {
-            GameObject playerHealthPanelObject = GameObject.FindGameObjectWithTag("PlayerHealthPanel");
-            if (playerHealthPanelObject != null) playerHealthPanel = playerHealthPanelObject;
+            bossExplanationText = bossExplanationPanel.transform.Find("ExplanationText")?.GetComponent<TextMeshProUGUI>();
+            if (bossExplanationText == null) Debug.LogWarning("Child 'ExplanationText' or its TextMeshProUGUI not found in BossExplanationPanel!");
+        }
+        else
+        {
+            Debug.LogWarning("BossExplanationPanel (GameObject by name) not found!");
+            bossExplanationText = null;
         }
 
-        if(BossHpPanel != null)
+        coreExplanationPanel = GameObject.Find("CoreExplanationPanel");
+        if (coreExplanationPanel != null)
         {
-            GameObject bossHpPanelObject = GameObject.FindGameObjectWithTag("BossHpPanel");
-            if (bossHpPanelObject != null) BossHpPanel = bossHpPanelObject;
+            coreExplanationText = coreExplanationPanel.transform.Find("ExplanationText")?.GetComponent<TextMeshProUGUI>();
+            if (coreExplanationText == null) Debug.LogWarning("Child 'ExplanationText' or its TextMeshProUGUI not found in CoreExplanationPanel!");
+        }
+        else
+        {
+            Debug.LogWarning("CoreExplanationPanel (GameObject by name) not found!");
+            coreExplanationText = null;
         }
 
-        if(coreStatusText != null)
-        {
-            GameObject coreStatusTextObject = GameObject.FindGameObjectWithTag("CoreStatusText");
-            if (coreStatusTextObject != null) coreStatusText = coreStatusTextObject.GetComponent<TextMeshProUGUI>();
-        }
+        //if(playerHealthPanel != null)
+        //{
+        //    GameObject playerHealthPanelObject = GameObject.FindGameObjectWithTag("PlayerHealthPanel");
+        //    if (playerHealthPanelObject != null) playerHealthPanel = playerHealthPanelObject;
+        //}
 
-        if(fpsText != null)
-        {
-            GameObject fpsTextObject = GameObject.FindGameObjectWithTag("FPSText");
-            if (fpsTextObject != null) fpsText = fpsTextObject.GetComponent<TextMeshProUGUI>();
-        }
+        //if(BossHpPanel != null)
+        //{
+        //    GameObject bossHpPanelObject = GameObject.FindGameObjectWithTag("BossHpPanel");
+        //    if (bossHpPanelObject != null) BossHpPanel = bossHpPanelObject;
+        //}
 
-        GameObject countdownUIObject = GameObject.FindGameObjectWithTag("CountdownText");
-        if(countdownUIObject != null ) countdownText = countdownUIObject.GetComponent<TextMeshProUGUI>();
+        //if(coreStatusText != null)
+        //{
+        //    GameObject coreStatusTextObject = GameObject.FindGameObjectWithTag("CoreStatusText");
+        //    if (coreStatusTextObject != null) coreStatusText = coreStatusTextObject.GetComponent<TextMeshProUGUI>();
+        //}
 
-        GameObject timerUIObject = GameObject.FindGameObjectWithTag("TimerText");
-        if( timerUIObject != null ) timerText = timerUIObject.GetComponent<TextMeshProUGUI>();
+        //if(fpsText != null)
+        //{
+        //    GameObject fpsTextObject = GameObject.FindGameObjectWithTag("FPSText");
+        //    if (fpsTextObject != null) fpsText = fpsTextObject.GetComponent<TextMeshProUGUI>();
+        //}
+
+        //GameObject countdownUIObject = GameObject.FindGameObjectWithTag("CountdownText");
+        //if(countdownUIObject != null ) countdownText = countdownUIObject.GetComponent<TextMeshProUGUI>();
+
+        //GameObject timerUIObject = GameObject.FindGameObjectWithTag("TimerText");
+        //if( timerUIObject != null ) timerText = timerUIObject.GetComponent<TextMeshProUGUI>();
 
         BossController[] allBosses = FindObjectsOfType<BossController>();
         activeBosses = new List<BossController>(allBosses);
@@ -155,37 +187,125 @@ public class GameManager : MonoBehaviour
         if (timerText != null) timerText.text = "00:00.00";
 
         SetGameUIActive(false);
+        SetActiveIfNotNull(countdownText?.gameObject, false);
 
-        if(countdownText != null) countdownText.gameObject.SetActive(false);
+        SetActiveIfNotNull(bossExplanationPanel, false);
+        SetActiveIfNotNull(bossExplanationText?.gameObject, false);
+        SetActiveIfNotNull(coreExplanationPanel, false);
+        SetActiveIfNotNull(coreExplanationText?.gameObject, false);
+
+        if (countdownText != null) countdownText.gameObject.SetActive(false);
         if (bossExplanationPanel != null) bossExplanationPanel.SetActive(false);
+        if (bossExplanationText != null) bossExplanationText.gameObject.SetActive(false);
         if (coreExplanationPanel != null) coreExplanationPanel.SetActive(false);
+        if (coreExplanationText != null) coreExplanationText.gameObject.SetActive(false);
 
         if (bossExplanationText != null)
         {
             bossFullExplanationText = !string.IsNullOrEmpty(bossExplanationText.text) ? bossExplanationText.text : "ボスを倒せ！！";
-            bossExplanationText.gameObject.SetActive(false);
             bossExplanationText.text = bossFullExplanationText;
             bossExplanationText.maxVisibleCharacters = 0;
         }
         if (coreExplanationText != null)
         {
             coreFullExplanationText = !string.IsNullOrEmpty(coreExplanationText.text) ? coreExplanationText.text : "コアを守れ！！";
-            coreExplanationText.gameObject.SetActive(false);
             coreExplanationText.text = coreFullExplanationText;
             coreExplanationText.maxVisibleCharacters = 0;
         }
+
+        CancelAndDisposeToken();
+        gameLoopCancellationTokenSource = new CancellationTokenSource();
 
         //StartCoroutine(CountdownCoroutine());
         PlayIntroSequenceAsync(gameLoopCancellationTokenSource.Token).Forget();
     }
 
+    public void ResetGameState()
+    {
+        CancelAndDisposeToken();
+
+        IsGameActive = false;
+        elapsedTime = 0f;
+
+        activeBosses.Clear();
+
+        timerText = null;
+        countdownText = null;
+        playerHealthPanel = null;
+        BossHpPanel = null;
+        coreStatusText = null;
+        fpsText = null;
+        bossExplanationPanel = null;
+        bossExplanationText = null;
+        coreExplanationPanel = null;
+        coreExplanationText = null;
+
+        playerController = null;
+        canonController = null;
+        cameraController = null;
+    }
+
+    private void CancelAndDisposeToken()
+    {
+        if(gameLoopCancellationTokenSource != null)
+        {
+            if (!gameLoopCancellationTokenSource.IsCancellationRequested)
+            {
+                gameLoopCancellationTokenSource?.Cancel();
+            }
+            gameLoopCancellationTokenSource?.Dispose();
+            gameLoopCancellationTokenSource= null;
+        }
+    }
+
+    private T FindUIElementByTag<T>(string tag) where T : Component
+    {
+        GameObject foundObject = null;
+
+        try
+        {
+            foundObject = GameObject.FindGameObjectWithTag(tag);
+        }
+        catch
+        {
+            return null;
+        }
+
+        if (foundObject == null)
+        {
+            return null;
+        }
+
+        T component = foundObject.GetComponent<T>();
+
+        if (component == null)
+        {
+            if (typeof(T) == typeof(Transform))
+            {
+                return foundObject.transform as T;
+            }
+
+            return null;
+        }
+
+         return component;
+    }
+
     private void SetGameUIActive(bool isActive)
     {
-        timerText.gameObject.SetActive(isActive);
-        playerHealthPanel.SetActive(isActive);
-        BossHpPanel.SetActive(isActive);
-        coreStatusText.gameObject.SetActive(isActive);
-        fpsText.gameObject.SetActive(isActive);
+        SetActiveIfNotNull(timerText?.gameObject, isActive);
+        SetActiveIfNotNull(playerHealthPanel, isActive);
+        SetActiveIfNotNull(BossHpPanel, isActive);
+        SetActiveIfNotNull(coreStatusText?.gameObject, isActive);
+        SetActiveIfNotNull(fpsText?.gameObject, isActive);;
+    }
+
+    private void SetActiveIfNotNull(GameObject obj, bool isActive)
+    {
+        if (obj != null)
+        {
+            obj.SetActive(isActive);
+        }
     }
 
     /// <summary>
@@ -195,6 +315,8 @@ public class GameManager : MonoBehaviour
     {
         if (playerController != null) playerController.SetInputEnabled(false);
         if (canonController != null) canonController.SetFiringEnabled(false);
+
+        SetGameUIActive(false);
 
         try
         {
@@ -210,7 +332,6 @@ public class GameManager : MonoBehaviour
             // イントロムービー再生
             if (cameraController != null && introMovieDuration > 0 && !movieSkip)
             {
-                Debug.Log("イントロムービー開始");
                 cameraController.StartIntroMovie();
 
                 await UniTask.Delay(TimeSpan.FromSeconds(1.0f), cancellationToken: cancellationToken);
@@ -252,6 +373,11 @@ public class GameManager : MonoBehaviour
                 if (bossExplanationText != null) bossExplanationText.gameObject.SetActive(false);
                 if (bossExplanationPanel != null) bossExplanationPanel.SetActive(false);
                 Debug.Log("テキスト非表示");
+            }
+            else if (movieSkip)
+            {
+                SetActiveIfNotNull(bossExplanationPanel, false);
+                SetActiveIfNotNull(bossExplanationText?.gameObject, false);
             }
 
             // オービットムービー再生
@@ -298,18 +424,30 @@ public class GameManager : MonoBehaviour
                     await UniTask.Delay(TimeSpan.FromSeconds(remainingOrbitTime), cancellationToken: cancellationToken);
                 }
 
-                if(coreExplanationText != null) coreExplanationText.gameObject.SetActive(false);
+                if (coreExplanationText != null) coreExplanationText.gameObject.SetActive(false);
                 if (coreExplanationPanel != null) coreExplanationPanel.gameObject.SetActive(false);
                 Debug.Log("テキスト非表示");
             }
+            else if (movieSkip)
+            {
+                SetActiveIfNotNull(coreExplanationPanel, false);
+                SetActiveIfNotNull(coreExplanationPanel?.gameObject, false);
+            }
 
-            if(movieSkip) cameraController.ResetCamera();
+            if (movieSkip) cameraController.ResetCamera();
+
+            
 
             // ゲームカメラに切り替え
             if (cameraController != null)
             {
                 cameraController.ResetCamera();
             }
+
+            SetActiveIfNotNull(bossExplanationPanel, false);
+            SetActiveIfNotNull(bossExplanationText?.gameObject, false);
+            SetActiveIfNotNull(coreExplanationPanel, false);
+            SetActiveIfNotNull(coreExplanationText?.gameObject, false);
 
             countdownText.gameObject.SetActive(true);
             SetGameUIActive(true);
@@ -441,9 +579,14 @@ public class GameManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        gameLoopCancellationTokenSource?.Cancel();
-        gameLoopCancellationTokenSource?.Dispose();
-
+        CancelAndDisposeToken();
         SceneManager.sceneLoaded -= OnSceneLoaded;
+
+        if (Instance != null)
+        {
+            Instance = null;
+        }
+
+        DOTween.KillAll();
     }
 }
