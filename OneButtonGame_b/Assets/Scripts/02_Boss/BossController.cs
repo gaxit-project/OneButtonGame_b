@@ -8,16 +8,14 @@ using Unity.VisualScripting;
 
 public class BossController : MonoBehaviour
 {
+    public int CurrentHealth => currentHealth;
 
     [Header("ボスの体力")]
     public int maxHealth = 1000;
     public int attackPower = 100;
     public float attackCoolTime = 5f;
-    public float skillCoolTime = 20f;
-
 
     private int currentHealth;
-    public int CurrentHealth => currentHealth;
 
     [Header("関連オブジェクト/コンポーネント")]
     public List<Transform> associatedSpawnPoint; // 敵に対応するFirePoint
@@ -32,6 +30,7 @@ public class BossController : MonoBehaviour
     [SerializeField] private bool isDead = false;
 
     private Animator anim;
+    private CameraController cameraController;
     private CancellationTokenSource bossTaskCancellation;
 
     //private bool isDead = false;
@@ -49,20 +48,18 @@ public class BossController : MonoBehaviour
             enabled = false;
             return;
         }
-        anim.Play("Idle");
 
-        if (canonController == null)
-        {
-            canonController = FindObjectOfType<CanonController>();
-            if (canonController == null)
-            {
-                Debug.LogError("CanonControllerが見つかりません！", this);
-                enabled = false;
-                return;
-            }
-        }
+        cameraController = FindObjectOfType<CameraController>();
 
         bossTaskCancellation = new CancellationTokenSource();
+    }
+
+    private void Start()
+    {
+        if (anim != null)
+        {
+            anim.Play("Idle");
+        }
     }
 
     void Update()
@@ -75,10 +72,15 @@ public class BossController : MonoBehaviour
     /// </summary>
     public void TakeBossDamage(int damage)
     {
-        if (isDead) return;
+        if (isDead || isGettingHit) return;
 
+        bool wasAlive = currentHealth > 0;
         currentHealth -= damage;
         isGettingHit = true;
+
+        bossTaskCancellation?.Cancel();
+        bossTaskCancellation?.Dispose();
+        bossTaskCancellation = new CancellationTokenSource();
 
         if (currentHealth < 0)
         {
@@ -94,16 +96,49 @@ public class BossController : MonoBehaviour
 
         UpdateHealthUI();
 
+        bool isFinishingBlow = wasAlive && currentHealth <= 0;
+
         if(currentHealth <= 0)
         {
-            GameManager.Instance.HandleBossDeath(this).Forget();
+            if (wasAlive)
+            {
+                GameManager.Instance.HandleBossDeath(this).Forget();
+            }
         }
         else
+        {
+            PlayGetHitAnimationAsync().Forget();
+        }
+
+        return isFinishingBlow;
+    }
+
+    private async UniTaskVoid PlayGetHitAnimationAsync()
+    {
+        if (anim == null || isDead) return;
+
+        try
         {
             Debug.Log($"[{gameObject.name}] GetHitアニメーション再生");
             anim.Play("GetHit", -1, 0f);
 
-            WaitForGetHitEndAsync().Forget();
+            await UniTask.WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).IsName("GetHit"), cancellationToken: bossTaskCancellation.Token);
+            await UniTask.WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f, cancellationToken: bossTaskCancellation.Token);
+
+            if (!isDead && !bossTaskCancellation.IsCancellationRequested)
+            {
+                anim.Play("Idle");
+                isGettingHit = false;
+
+                StartAttackCooldownTimerAsync(bossTaskCancellation.Token).Forget();
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            if (!isDead)
+            {
+                anim?.Play("Idle");
+            }
         }
     }
 

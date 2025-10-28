@@ -3,6 +3,8 @@ using Cinemachine;
 using System;
 using DG.Tweening;
 using System.Diagnostics.Contracts;
+using Unity.PlasticSCM.Editor.WebApi;
+using System.Threading;
 
 public class CameraController : MonoBehaviour
 {
@@ -38,19 +40,30 @@ public class CameraController : MonoBehaviour
 
     [Header("カメラ切り替え設定")]
     public bool ballTracking = false;
-    //public bool useHomerunView = false;
 
-    // 状態管理
-    //private bool isTrackingBall = false;
-    //private float transitionTimer = 0f;
+    private CinemachineVirtualCamera currentActiveCamera;
+    private Transform ballToTrack = null;
+    private CancellationTokenSource ballTrackingCancellation;
 
     public event Action OnCameraReset;
 
-    //private Vector3 currentOffset;
-    //private Quaternion initialRotation;
-
     void Start()
     {
+        InitializeCameras();
+
+        if (playerCamera != null)
+        {
+            currentActiveCamera = allViewCamera;
+            SwitchCamera(playerCamera);
+        }
+        else if (allViewCamera != null)
+        {
+            currentActiveCamera = allViewCamera;
+            SwitchCamera(allViewCamera);
+        }
+
+        ballTrackingCancellation = new CancellationTokenSource();
+
         //  BatControllerの打席変更イベントを購読
         if (batController != null)
         {
@@ -65,38 +78,50 @@ public class CameraController : MonoBehaviour
         
     }
 
+    void InitializeCameras()
+    {
+        SetPriority(playerCamera, 0);
+        SetPriority(ballCamera, 0);
+        SetPriority(defeatMoveCamera, 0);
+        SetPriority(allViewCamera, 0);
+        SetPriority(introCamera, 0);
+        SetPriority(orbitCamera, 0);
+    }
+
+    private void SwitchCamera(CinemachineVirtualCamera targetCamera)
+    {
+        if (targetCamera == null) return;
+
+        if (currentActiveCamera != null && currentActiveCamera != targetCamera)
+        {
+            SetPriority(currentActiveCamera, 0);
+        }
+
+        SetPriority(targetCamera, 10);
+        currentActiveCamera = targetCamera;
+    }
+
+    private void SetPriority(CinemachineVirtualCamera vcam, int priority)
+    {
+        if (vcam != null)
+        {
+            vcam.Priority = priority;
+        }
+    }
+
     public void StartAllViewMovie()
     {
-        if (allViewCamera != null) allViewCamera.Priority = 50;
-        if (introCamera != null) introCamera.Priority = 0;
-        if (orbitCamera != null) orbitCamera.Priority = 0;
-
-        if (playerCamera != null) playerCamera.Priority = 10;
-        if (ballCamera != null) ballCamera.Priority = 0;
-        if (defeatMoveCamera != null) defeatMoveCamera.Priority = 0;
+        SwitchCamera(allViewCamera);
     }
 
     public void StartIntroMovie()
     {
-        if (introCamera != null) introCamera.Priority = 50;
-
-        if (allViewCamera != null) allViewCamera.Priority = 0;
-        if (orbitCamera != null) orbitCamera.Priority = 0;
-        if (playerCamera != null) playerCamera.Priority = 10;
-        if(ballCamera != null) ballCamera.Priority = 0;
-        if(defeatMoveCamera != null) defeatMoveCamera.Priority = 0;
-
+        SwitchCamera(introCamera);
     }
 
     public void StartOrbitMovie()
     {
-        if(orbitCamera != null) orbitCamera.Priority = 50;
-
-        if (allViewCamera != null) allViewCamera.Priority = 0;
-        if (introCamera != null) introCamera.Priority = 0;
-        if (playerCamera != null) playerCamera.Priority = 10;
-        if (ballCamera != null) ballCamera.Priority = 0;
-        if (defeatMoveCamera != null) defeatMoveCamera.Priority = 0;
+        SwitchCamera(orbitCamera);
     }
 
     /// <summary>
@@ -151,72 +176,37 @@ public class CameraController : MonoBehaviour
     /// </summary>
     public void ResetCamera()
     {
-        ballTarget = null;
+        ballToTrack = null;
 
         if (playerCamera != null)
         {
-            playerCamera.Priority = 10;
-        }
-        if (ballCamera != null)
-        {
-            ballCamera.Follow = null;
-            ballCamera.LookAt = null;
-            ballCamera.Priority = 0;
-        }
-        if(defeatMoveCamera != null)
-        {
-            defeatMoveCamera.Follow = null;
-            defeatMoveCamera.LookAt = null;
-            defeatMoveCamera.Priority = 0;
-        }
-        if(allViewCamera != null)
-        {
-            allViewCamera.Priority = 0;
-        }
-        if(introCamera != null)
-        {
-            introCamera.Priority = 0;
-        }
-        if(orbitCamera != null)
-        {
-            orbitCamera.Priority = 0;
+            SwitchCamera(playerCamera);
         }
 
-        //isTrackingBall = false;
-
-        Time.timeScale = 1.0f;
-
-        /*
-        if (playerTarget != null)
+        if (ballTrackingCancellation != null && !ballTrackingCancellation.IsCancellationRequested)
         {
-            transform.position = playerTarget.position + currentOffset;
+            ballTrackingCancellation.Cancel();
+            ballTrackingCancellation.Dispose();
+            ballTrackingCancellation = new CancellationTokenSource();
         }
-
-        transform.rotation = initialRotation;
-        */
 
         // カメラがリセットされたことをPlayerCOntrollerに通知
         OnCameraReset?.Invoke();
     }
 
-    public void BossDefeatMoveCamera(Transform ballToFollow)
+    public void SwitchToDefeatCamera(Transform defeatedBoss)
     {
-        if (defeatMoveCamera == null) return;
-
-        defeatMoveCamera.Follow = null;
-        defeatMoveCamera.LookAt = ballToFollow;
-        defeatMoveCamera.Priority = 100;
-
-        if (playerCamera != null)
+        if (defeatedBoss != null)
         {
-            playerCamera.Priority = 0;
-        }
-        if (ballCamera != null)
-        {
-            ballCamera.Priority = 0;
-        }
+            defeatMoveCamera.LookAt = defeatedBoss;
 
-        DOTween.To(() => Time.timeScale, x => Time.timeScale = x, 0.3f, 0.5f).SetUpdate(true);
+            SwitchCamera(defeatMoveCamera);
+        }
+    }
+
+    public void PlayFinishingBlowEffect(Transform ball)
+    {
+        StartTracking(ball);
     }
 
     // オブジェクト破棄時にイベントの購読を解除
