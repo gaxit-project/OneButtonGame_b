@@ -25,9 +25,8 @@ public class BossController : MonoBehaviour
 
     [Header("デバッグ用")]
     [SerializeField] private bool canAttack = true;
-    [SerializeField] private bool canUseSkill = true;
     [SerializeField] private bool isGettingHit = false;
-    [SerializeField] private bool isDead = false;
+                     public bool isDead = false;
 
     private Animator anim;
     private CameraController cameraController;
@@ -70,9 +69,9 @@ public class BossController : MonoBehaviour
     /// <summary>
     /// ダメージ処理
     /// </summary>
-    public void TakeBossDamage(int damage)
+    public bool TakeBossDamage(int damage)
     {
-        if (isDead || isGettingHit) return;
+        if (isDead || isGettingHit) return false;
 
         bool wasAlive = currentHealth > 0;
         currentHealth -= damage;
@@ -163,7 +162,7 @@ public class BossController : MonoBehaviour
     /// </summary>
     public async UniTask PerformAttackAsync(CancellationToken gameManagerToken)
     {
-        if (isDead) return;
+        if (isDead || isGettingHit) return;
 
         var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(gameManagerToken, bossTaskCancellation.Token);
         var cancellationToken = linkedCts.Token;
@@ -243,20 +242,6 @@ public class BossController : MonoBehaviour
     }
     */
 
-    private async UniTaskVoid StartSkillCooldownTimerAsync(CancellationToken cancellationToken)
-    {
-        try
-        {
-            await UniTask.Delay(TimeSpan.FromSeconds(skillCoolTime), cancellationToken: cancellationToken);
-            canUseSkill = true;
-            Debug.Log("スキルクールダウン終了");
-        }
-        catch (OperationCanceledException)
-        {
-
-        }
-    }
-
     private async UniTaskVoid StartAttackCooldownTimerAsync(CancellationToken cancellationToken)
     {
         try
@@ -281,8 +266,6 @@ public class BossController : MonoBehaviour
         Debug.Log($"[{gameObject.name}] ボスを倒した！");
         bossTaskCancellation?.Cancel();
 
-        var cancellationToken = this.GetCancellationTokenOnDestroy();
-
         // CanonControllerを探して、自分の担当のFirePointを削除する
         CanonController canonController = FindObjectOfType<CanonController>();
         if (canonController != null)
@@ -304,20 +287,31 @@ public class BossController : MonoBehaviour
         bossTaskCancellation?.Dispose();
         bossTaskCancellation = null;
 
+        var cancellationToken = this.GetCancellationTokenOnDestroy();
+
         // 倒した演出
         try
         {
-            //yield return new WaitForSeconds(damageDisplay.fadeDuration/* + damageDisplay.displayDuration*/);
             float waitTime = damageDisplay.fadeDuration + damageDisplay.displayDuration;
             await UniTask.Delay(TimeSpan.FromSeconds(waitTime), cancellationToken: cancellationToken);
 
             if(cancellationToken.IsCancellationRequested) return;
 
-            anim.Play("Die");
+            if (cameraController != null) cameraController.SwitchToDefeatCamera(transform);
+
+            if (anim != null) anim.Play("Die");
+
             Collider[] colliders = gameObject.GetComponents<Collider>();
             foreach (var col in colliders)
             {
                 col.enabled = false;
+            }
+
+            Rigidbody rb = GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.isKinematic = true;
+                rb.velocity = Vector3.zero;
             }
 
             await UniTask.Delay(TimeSpan.FromSeconds(3.0f), cancellationToken: cancellationToken);
@@ -341,8 +335,12 @@ public class BossController : MonoBehaviour
 
     private void OnDestroy()
     {
-        bossTaskCancellation?.Cancel();
-        bossTaskCancellation?.Dispose();
+        if (bossTaskCancellation != null)
+        {
+            if (!bossTaskCancellation.IsCancellationRequested) bossTaskCancellation?.Cancel();
+            bossTaskCancellation?.Dispose();
+            bossTaskCancellation = null;
+        }
     }
 
     /// <summary>
@@ -351,11 +349,9 @@ public class BossController : MonoBehaviour
     /// <returns></returns>
     public bool IsAttackReady()
     {
-        return canAttack &&
-               !isGettingHit &&
-               !isDead && 
-               anim != null &&
-               anim.GetCurrentAnimatorStateInfo(0).IsName("Idle");
+        bool isIdle = (anim != null) ? anim.GetAnimatorTransitionInfo(0).IsName("Idle") : true;
+
+        return canAttack && !isGettingHit && !isDead;
     }
 
     private async UniTaskVoid ApplyEnemyDeadBuffAsync(CancellationToken cancellationToken)
