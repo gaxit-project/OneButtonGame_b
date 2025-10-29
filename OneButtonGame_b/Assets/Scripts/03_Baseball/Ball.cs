@@ -332,7 +332,7 @@ public class Ball : MonoBehaviour
                         {
                             if (cameraController != null)
                             {
-                                cameraController.SwitchToDefeatCamera(transform);
+                                cameraController.PlayFinishingBlowEffect(transform);
                             }
                         }
                         else
@@ -413,7 +413,7 @@ public class Ball : MonoBehaviour
 
             if (playerController != null)
             {
-                int damageToPlayer = isChanceBall ? (int)(attackPower * chanceBallPlayerDamageMultiplier) : playerAttackPower;
+                int damageToPlayer = isChanceBall ? (int)(playerAttackPower * chanceBallPlayerDamageMultiplier) : playerAttackPower;
                 playerController.TakePlayerDamage(damageToPlayer);
             }
 

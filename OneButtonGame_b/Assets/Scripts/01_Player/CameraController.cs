@@ -191,6 +191,11 @@ public class CameraController : MonoBehaviour
         {
             defeatMoveCamera.LookAt = defeatedBoss;
 
+            if(ballCamera != null)
+            {
+                SetPriority(ballCamera, 0);
+            }
+
             SwitchCamera(defeatMoveCamera);
         }
     }

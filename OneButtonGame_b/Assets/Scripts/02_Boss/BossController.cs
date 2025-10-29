@@ -71,7 +71,7 @@ public class BossController : MonoBehaviour
     /// </summary>
     public bool TakeBossDamage(int damage)
     {
-        if (isDead || isGettingHit) return false;
+        if (isDead) return false;
 
         bool wasAlive = currentHealth > 0;
         currentHealth -= damage;
@@ -162,7 +162,7 @@ public class BossController : MonoBehaviour
     /// </summary>
     public async UniTask PerformAttackAsync(CancellationToken gameManagerToken)
     {
-        if (isDead || isGettingHit) return;
+        if (isDead) return;
 
         var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(gameManagerToken, bossTaskCancellation.Token);
         var cancellationToken = linkedCts.Token;
@@ -215,6 +215,7 @@ public class BossController : MonoBehaviour
                 anim?.Play("Idle");
                 StartAttackCooldownTimerAsync(bossTaskCancellation.Token).Forget();
             }
+            isGettingHit = false;
         }
         catch(Exception ex)
         {
@@ -295,7 +296,7 @@ public class BossController : MonoBehaviour
             float waitTime = damageDisplay.fadeDuration + damageDisplay.displayDuration;
             await UniTask.Delay(TimeSpan.FromSeconds(waitTime), cancellationToken: cancellationToken);
 
-            if(cancellationToken.IsCancellationRequested) return;
+            if (cancellationToken.IsCancellationRequested) return;
 
             if (cameraController != null) cameraController.SwitchToDefeatCamera(transform);
 
@@ -310,8 +311,8 @@ public class BossController : MonoBehaviour
             Rigidbody rb = GetComponent<Rigidbody>();
             if (rb != null)
             {
-                rb.isKinematic = true;
                 rb.velocity = Vector3.zero;
+                rb.isKinematic = true;
             }
 
             await UniTask.Delay(TimeSpan.FromSeconds(3.0f), cancellationToken: cancellationToken);

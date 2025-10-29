@@ -207,7 +207,7 @@ public class GameManager : MonoBehaviour
         CancelAndDisposeToken();
 
         IsGameActive = false;
-        elapsedTime = 0f;
+        //elapsedTime = 0f;
 
         activeBosses.Clear();
 
@@ -492,6 +492,7 @@ public class GameManager : MonoBehaviour
             }
             catch (OperationCanceledException)
             {
+                if (this == null) return;
                 Debug.Log("ボスの攻撃ループがキャンセルされました");
                 break;
             }
@@ -505,16 +506,40 @@ public class GameManager : MonoBehaviour
 
     public async UniTaskVoid HandleBossDeath(BossController dyingBoss)
     {
+        if (gameLoopCancellationTokenSource != null && !gameLoopCancellationTokenSource.IsCancellationRequested)
+        {
+            gameLoopCancellationTokenSource.Cancel();
+            gameLoopCancellationTokenSource.Dispose();
+            gameLoopCancellationTokenSource = null;
+        }
+        if (IsGameActive) IsGameActive = false;
+
         try
         {
             BossDefeated(dyingBoss);
 
             await dyingBoss.DieAsync();
 
+            if(cameraController != null)
+            {
+                cameraController.ResetCamera();
+
+                await UniTask.Delay(TimeSpan.FromSeconds(1.5f), cancellationToken: this.GetCancellationTokenOnDestroy());
+            }
+
             if (!IsGameActive && activeBosses.Count <= 0)
             {
                 Debug.Log("最後のボスの死亡演出完了。リザルトシーンへ遷移");
                 AudioController.instance.ToResult();
+            }
+            else
+            {
+                Debug.Log("まだボスが残っているのでゲームを再開します。");
+
+                IsGameActive = true;
+
+                gameLoopCancellationTokenSource = new CancellationTokenSource();
+                BossAttackLoopAsync(gameLoopCancellationTokenSource.Token).Forget();
             }
         }
         catch (OperationCanceledException)

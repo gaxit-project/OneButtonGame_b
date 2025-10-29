@@ -6,7 +6,7 @@ public class DamageDisplay : MonoBehaviour
 {
     public TextMeshProUGUI damageText;
     public float displayDuration = 0.5f;
-    public float fadeDuration = 1.0f;
+    public float fadeDuration = 0.5f;
 
     // Start is called before the first frame update
     void Start()
