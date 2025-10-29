@@ -39,13 +39,16 @@ public class SoundManager : MonoBehaviour
                 audioSourceBGM.clip = audioClipsBGM[0];
                 break;
             case "Setting":
-                audioSourceBGM.clip = audioClipsBGM[1];
+                audioSourceBGM.clip = audioClipsBGM[2];
                 break;
             case "Batting":
                 audioSourceBGM.clip = audioClipsBGM[2];
                 break;
             case "Result":
                 audioSourceBGM.clip = audioClipsBGM[3];
+                break;
+            case "GameOver":
+                audioSourceBGM.clip = audioClipsBGM[1];
                 break;
         }
         audioSourceBGM.Play();
@@ -70,7 +73,7 @@ public class SoundManager : MonoBehaviour
     private void LoadVolume()
     {
         // PlayerPrefsから音量設定を読み込み、読み込めなかったらデフォルト値(1.0f)を設定
-        audioSourceBGM.volume = PlayerPrefs.GetFloat("BGMVolume_Key", 1.0f);
+        audioSourceBGM.volume = PlayerPrefs.GetFloat("BGMVolume_Key", 0.8f);
         audioSourceSE.volume = PlayerPrefs.GetFloat("SEVolume_Key", 1.0f);
     }
 }

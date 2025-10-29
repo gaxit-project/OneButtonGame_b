@@ -103,7 +103,7 @@ public class AudioController : MonoBehaviour
     {
         Thread.Sleep(200);
         SceneManager.LoadScene("GameOver");
-        //SoundManager.instance.PlayBGM("");
+        SoundManager.instance.PlayBGM("GameOver");
     }
     void Start()
     {
