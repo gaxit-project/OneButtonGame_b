@@ -73,7 +73,7 @@ public class SoundManager : MonoBehaviour
     private void LoadVolume()
     {
         // PlayerPrefsから音量設定を読み込み、読み込めなかったらデフォルト値(1.0f)を設定
-        audioSourceBGM.volume = PlayerPrefs.GetFloat("BGMVolume_Key", 0.8f);
+        audioSourceBGM.volume = PlayerPrefs.GetFloat("BGMVolume_Key", 0.4f);
         audioSourceSE.volume = PlayerPrefs.GetFloat("SEVolume_Key", 1.0f);
     }
 }
