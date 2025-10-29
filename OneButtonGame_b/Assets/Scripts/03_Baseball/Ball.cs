@@ -247,8 +247,8 @@ public class Ball : MonoBehaviour
                     float spatialDistance = Vector3.Distance(impactPoint, sweetSpotPosition);
 
                     // 判定のしきい値
-                    float justHitThreshold = 1.0f; // この距離以下ならジャスト
-                    float goodHitThreshold = 2.0f; // この距離以下ならグッド
+                    float justHitThreshold = 2.0f; // この距離以下ならジャスト
+                    float goodHitThreshold = 3.0f; // この距離以下ならグッド
 
                     string spatialLabel = "";
                     float spatialPowerMultiplier; // 今回のヒットで適応されるパワー
@@ -332,7 +332,7 @@ public class Ball : MonoBehaviour
                         {
                             if (cameraController != null)
                             {
-                                cameraController.BossDefeatMoveCamera(transform);
+                                cameraController.PlayFinishingBlowEffect(transform);
                             }
                         }
                         else
@@ -413,7 +413,7 @@ public class Ball : MonoBehaviour
 
             if (playerController != null)
             {
-                int damageToPlayer = isChanceBall ? (int)(attackPower * chanceBallPlayerDamageMultiplier) : playerAttackPower;
+                int damageToPlayer = isChanceBall ? (int)(playerAttackPower * chanceBallPlayerDamageMultiplier) : playerAttackPower;
                 playerController.TakePlayerDamage(damageToPlayer);
             }
 

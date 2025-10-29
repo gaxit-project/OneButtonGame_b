@@ -49,6 +49,8 @@ public class GameManager : MonoBehaviour
 
     private float elapsedTime;
 
+    private bool isPausedForDefeat = false;
+
     private PlayerController playerController;
     private CanonController canonController;
     private CameraController cameraController;
@@ -77,6 +79,9 @@ public class GameManager : MonoBehaviour
     private void OnDisable()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
+
+        DOTween.KillAll();
+        CancelAndDisposeToken();
     }
 
     // Start is called before the first frame update
@@ -98,20 +103,27 @@ public class GameManager : MonoBehaviour
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        Time.timeScale = 1.0f;
+        isPausedForDefeat = false;
+
         // 既存のタスクをキャンセル
-        gameLoopCancellationTokenSource?.Cancel();
-        gameLoopCancellationTokenSource?.Dispose();
+        CancelAndDisposeToken();
         gameLoopCancellationTokenSource = new CancellationTokenSource();
 
         if (scene.name == "Batting")
         {
             InitializeGame();
         }
+        else
+        {
+            ResetGameState();
+        }
     }
 
     private void InitializeGame()
     {
         IsGameActive = false;
+        isPausedForDefeat = false;
         elapsedTime = 0f;
         activeBosses.Clear();
 
@@ -150,36 +162,6 @@ public class GameManager : MonoBehaviour
             Debug.LogWarning("CoreExplanationPanel (GameObject by name) not found!");
             coreExplanationText = null;
         }
-
-        //if(playerHealthPanel != null)
-        //{
-        //    GameObject playerHealthPanelObject = GameObject.FindGameObjectWithTag("PlayerHealthPanel");
-        //    if (playerHealthPanelObject != null) playerHealthPanel = playerHealthPanelObject;
-        //}
-
-        //if(BossHpPanel != null)
-        //{
-        //    GameObject bossHpPanelObject = GameObject.FindGameObjectWithTag("BossHpPanel");
-        //    if (bossHpPanelObject != null) BossHpPanel = bossHpPanelObject;
-        //}
-
-        //if(coreStatusText != null)
-        //{
-        //    GameObject coreStatusTextObject = GameObject.FindGameObjectWithTag("CoreStatusText");
-        //    if (coreStatusTextObject != null) coreStatusText = coreStatusTextObject.GetComponent<TextMeshProUGUI>();
-        //}
-
-        //if(fpsText != null)
-        //{
-        //    GameObject fpsTextObject = GameObject.FindGameObjectWithTag("FPSText");
-        //    if (fpsTextObject != null) fpsText = fpsTextObject.GetComponent<TextMeshProUGUI>();
-        //}
-
-        //GameObject countdownUIObject = GameObject.FindGameObjectWithTag("CountdownText");
-        //if(countdownUIObject != null ) countdownText = countdownUIObject.GetComponent<TextMeshProUGUI>();
-
-        //GameObject timerUIObject = GameObject.FindGameObjectWithTag("TimerText");
-        //if( timerUIObject != null ) timerText = timerUIObject.GetComponent<TextMeshProUGUI>();
 
         BossController[] allBosses = FindObjectsOfType<BossController>();
         activeBosses = new List<BossController>(allBosses);
@@ -225,7 +207,7 @@ public class GameManager : MonoBehaviour
         CancelAndDisposeToken();
 
         IsGameActive = false;
-        elapsedTime = 0f;
+        //elapsedTime = 0f;
 
         activeBosses.Clear();
 
@@ -510,6 +492,7 @@ public class GameManager : MonoBehaviour
             }
             catch (OperationCanceledException)
             {
+                if (this == null) return;
                 Debug.Log("ボスの攻撃ループがキャンセルされました");
                 break;
             }
@@ -523,16 +506,40 @@ public class GameManager : MonoBehaviour
 
     public async UniTaskVoid HandleBossDeath(BossController dyingBoss)
     {
+        if (gameLoopCancellationTokenSource != null && !gameLoopCancellationTokenSource.IsCancellationRequested)
+        {
+            gameLoopCancellationTokenSource.Cancel();
+            gameLoopCancellationTokenSource.Dispose();
+            gameLoopCancellationTokenSource = null;
+        }
+        if (IsGameActive) IsGameActive = false;
+
         try
         {
             BossDefeated(dyingBoss);
 
             await dyingBoss.DieAsync();
 
+            if(cameraController != null)
+            {
+                cameraController.ResetCamera();
+
+                await UniTask.Delay(TimeSpan.FromSeconds(1.5f), cancellationToken: this.GetCancellationTokenOnDestroy());
+            }
+
             if (!IsGameActive && activeBosses.Count <= 0)
             {
                 Debug.Log("最後のボスの死亡演出完了。リザルトシーンへ遷移");
                 AudioController.instance.ToResult();
+            }
+            else
+            {
+                Debug.Log("まだボスが残っているのでゲームを再開します。");
+
+                IsGameActive = true;
+
+                gameLoopCancellationTokenSource = new CancellationTokenSource();
+                BossAttackLoopAsync(gameLoopCancellationTokenSource.Token).Forget();
             }
         }
         catch (OperationCanceledException)
