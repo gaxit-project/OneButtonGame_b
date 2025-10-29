@@ -101,7 +101,14 @@ public class BossController : MonoBehaviour
         {
             if (wasAlive)
             {
-                GameManager.Instance.HandleBossDeath(this).Forget();
+                if (GameManager.Instance != null)
+                {
+                    GameManager.Instance.HandleBossDeath(this).Forget();
+                }
+                else
+                {
+                    DieAsync().Forget();
+                }
             }
         }
         else
@@ -334,16 +341,6 @@ public class BossController : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
-    {
-        if (bossTaskCancellation != null)
-        {
-            if (!bossTaskCancellation.IsCancellationRequested) bossTaskCancellation?.Cancel();
-            bossTaskCancellation?.Dispose();
-            bossTaskCancellation = null;
-        }
-    }
-
     /// <summary>
     /// GameManagerが攻撃可能か判断するためのメソッド
     /// </summary>
@@ -369,6 +366,16 @@ public class BossController : MonoBehaviour
         {
             this.attackPower = originalDamage;
             Debug.Log($"[{gameObject.name}] ボスの攻撃力アップ終了");
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (bossTaskCancellation != null)
+        {
+            if (!bossTaskCancellation.IsCancellationRequested) bossTaskCancellation?.Cancel();
+            bossTaskCancellation?.Dispose();
+            bossTaskCancellation = null;
         }
     }
 }

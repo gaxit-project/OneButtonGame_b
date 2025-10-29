@@ -2,8 +2,6 @@ using UnityEngine;
 using Cinemachine;
 using System;
 using DG.Tweening;
-using System.Diagnostics.Contracts;
-using Unity.PlasticSCM.Editor.WebApi;
 using System.Threading;
 
 public class CameraController : MonoBehaviour

@@ -512,7 +512,6 @@ public class GameManager : MonoBehaviour
             gameLoopCancellationTokenSource.Dispose();
             gameLoopCancellationTokenSource = null;
         }
-        if (IsGameActive) IsGameActive = false;
 
         try
         {
