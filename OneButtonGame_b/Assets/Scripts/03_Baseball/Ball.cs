@@ -436,7 +436,7 @@ public class Ball : MonoBehaviour
             CoreController coreController = FindObjectOfType<CoreController>();
             if (coreController != null)
             {
-                int damageToCore = isChanceBall ? (int)(attackPower * chanceBallCoreDamageMultiplier) : playerAttackPower;
+                int damageToCore = isChanceBall ? (int)(playerAttackPower * chanceBallCoreDamageMultiplier) : playerAttackPower;
                 coreController.TakeCoreDamage(damageToCore);
             }
 
