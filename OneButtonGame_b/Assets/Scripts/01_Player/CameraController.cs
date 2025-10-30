@@ -40,6 +40,7 @@ public class CameraController : MonoBehaviour
     {
         InitializeCameras();
 
+        /*
         if (playerCamera != null)
         {
             currentActiveCamera = allViewCamera;
@@ -50,6 +51,7 @@ public class CameraController : MonoBehaviour
             currentActiveCamera = allViewCamera;
             SwitchCamera(allViewCamera);
         }
+        */
 
         ballTrackingCancellation = new CancellationTokenSource();
 
@@ -189,7 +191,19 @@ public class CameraController : MonoBehaviour
         {
             defeatMoveCamera.LookAt = defeatedBoss;
 
-            if(ballCamera != null)
+            defeatMoveCamera.Follow = defeatedBoss;
+
+            var transposer = defeatMoveCamera.GetCinemachineComponent<CinemachineTransposer>();
+            if (transposer != null)
+            {
+                transposer.m_FollowOffset = new Vector3(0, 300, -10);
+            }
+            else
+            {
+                Debug.Log("defeatMoveCameraÇÃBodyÇ™TransposerÇ…ê›íËÇ≥ÇÍÇƒÇ¢Ç‹ÇπÇÒÅB");
+            }
+
+            if (ballCamera != null)
             {
                 SetPriority(ballCamera, 0);
             }

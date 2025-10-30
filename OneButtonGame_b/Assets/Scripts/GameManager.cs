@@ -362,16 +362,18 @@ public class GameManager : MonoBehaviour
                 SetActiveIfNotNull(bossExplanationText?.gameObject, false);
             }
 
+            if (cameraController != null && allViewMovieDuration > 0 && !movieSkip)
+            {
+                Debug.Log("イントロムービー開始");
+                cameraController.StartAllViewMovie();
+
+                await UniTask.Delay(TimeSpan.FromSeconds(allViewMovieDuration));
+            }
+
             // オービットムービー再生
             if (cameraController != null && orbitMovieDuration > 0 && !movieSkip)
             {
                 Debug.Log("オービットムービー開始");
-                /*
-                if(coreExplanationPanel != null) coreExplanationPanel.SetActive(true);
-                cameraController.StartOrbitMovie();
-                await UniTask.Delay(TimeSpan.FromSeconds(orbitMovieDuration + 0.2f), cancellationToken: cancellationToken);
-                if(coreExplanationPanel != null) coreExplanationPanel.SetActive(false);
-                */
 
                 cameraController.StartOrbitMovie();
 
@@ -416,7 +418,7 @@ public class GameManager : MonoBehaviour
                 SetActiveIfNotNull(coreExplanationPanel?.gameObject, false);
             }
 
-            if (movieSkip) cameraController.ResetCamera();
+            //if (movieSkip) cameraController.ResetCamera();
 
             
 
