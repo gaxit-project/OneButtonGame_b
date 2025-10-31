@@ -67,6 +67,8 @@ public class Ball : MonoBehaviour
     private bool isWeakHit = false;
     private bool isRecordingTrajectory = false;
     private bool predictionDone = false;
+    public bool justHit = false;    //ˆÈ‰º‘ÅŒ‚‚ÌŠÔ‘€ì‚Ì‚½‚ß’Ç‰Á
+    public bool lateHit = false;
 
     private List<Vector3> trajectoryPoints = new List<Vector3>();
     
@@ -180,6 +182,7 @@ public class Ball : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Bat"))
         {
+            justHit = true;
             if (hasBeenHit) return;
 
             hasBeenHit = true;
