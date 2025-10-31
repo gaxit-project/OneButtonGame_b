@@ -232,7 +232,7 @@ public class PlayerController : MonoBehaviour
             isDead = true;
             Debug.Log("ゲームオーバー");
             damageFlashCancellation.Cancel();
-            SceneManager.LoadScene(gameOverSceneName);
+            AudioController.instance.ToGameOver();
         }
     }
 

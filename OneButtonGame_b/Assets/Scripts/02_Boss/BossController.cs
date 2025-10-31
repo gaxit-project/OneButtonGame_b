@@ -8,16 +8,14 @@ using Unity.VisualScripting;
 
 public class BossController : MonoBehaviour
 {
+    public int CurrentHealth => currentHealth;
 
     [Header("ボスの体力")]
     public int maxHealth = 1000;
     public int attackPower = 100;
     public float attackCoolTime = 5f;
-    public float skillCoolTime = 20f;
-
 
     private int currentHealth;
-    public int CurrentHealth => currentHealth;
 
     [Header("関連オブジェクト/コンポーネント")]
     public List<Transform> associatedSpawnPoint; // 敵に対応するFirePoint
@@ -27,11 +25,11 @@ public class BossController : MonoBehaviour
 
     [Header("デバッグ用")]
     [SerializeField] private bool canAttack = true;
-    [SerializeField] private bool canUseSkill = true;
     [SerializeField] private bool isGettingHit = false;
-    [SerializeField] private bool isDead = false;
+                     public bool isDead = false;
 
     private Animator anim;
+    private CameraController cameraController;
     private CancellationTokenSource bossTaskCancellation;
 
     //private bool isDead = false;
@@ -49,20 +47,18 @@ public class BossController : MonoBehaviour
             enabled = false;
             return;
         }
-        anim.Play("Idle");
 
-        if (canonController == null)
-        {
-            canonController = FindObjectOfType<CanonController>();
-            if (canonController == null)
-            {
-                Debug.LogError("CanonControllerが見つかりません！", this);
-                enabled = false;
-                return;
-            }
-        }
+        cameraController = FindObjectOfType<CameraController>();
 
         bossTaskCancellation = new CancellationTokenSource();
+    }
+
+    private void Start()
+    {
+        if (anim != null)
+        {
+            anim.Play("Idle");
+        }
     }
 
     void Update()
@@ -73,12 +69,17 @@ public class BossController : MonoBehaviour
     /// <summary>
     /// ダメージ処理
     /// </summary>
-    public void TakeBossDamage(int damage)
+    public bool TakeBossDamage(int damage)
     {
-        if (isDead) return;
+        if (isDead) return false;
 
+        bool wasAlive = currentHealth > 0;
         currentHealth -= damage;
         isGettingHit = true;
+
+        bossTaskCancellation?.Cancel();
+        bossTaskCancellation?.Dispose();
+        bossTaskCancellation = new CancellationTokenSource();
 
         if (currentHealth < 0)
         {
@@ -94,16 +95,56 @@ public class BossController : MonoBehaviour
 
         UpdateHealthUI();
 
+        bool isFinishingBlow = wasAlive && currentHealth <= 0;
+
         if(currentHealth <= 0)
         {
-            GameManager.Instance.HandleBossDeath(this).Forget();
+            if (wasAlive)
+            {
+                if (GameManager.Instance != null)
+                {
+                    GameManager.Instance.HandleBossDeath(this).Forget();
+                }
+                else
+                {
+                    DieAsync().Forget();
+                }
+            }
         }
         else
+        {
+            PlayGetHitAnimationAsync().Forget();
+        }
+
+        return isFinishingBlow;
+    }
+
+    private async UniTaskVoid PlayGetHitAnimationAsync()
+    {
+        if (anim == null || isDead) return;
+
+        try
         {
             Debug.Log($"[{gameObject.name}] GetHitアニメーション再生");
             anim.Play("GetHit", -1, 0f);
 
-            WaitForGetHitEndAsync().Forget();
+            await UniTask.WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).IsName("GetHit"), cancellationToken: bossTaskCancellation.Token);
+            await UniTask.WaitUntil(() => anim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f, cancellationToken: bossTaskCancellation.Token);
+
+            if (!isDead && !bossTaskCancellation.IsCancellationRequested)
+            {
+                anim.Play("Idle");
+                isGettingHit = false;
+
+                StartAttackCooldownTimerAsync(bossTaskCancellation.Token).Forget();
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            if (!isDead)
+            {
+                anim?.Play("Idle");
+            }
         }
     }
 
@@ -181,6 +222,7 @@ public class BossController : MonoBehaviour
                 anim?.Play("Idle");
                 StartAttackCooldownTimerAsync(bossTaskCancellation.Token).Forget();
             }
+            isGettingHit = false;
         }
         catch(Exception ex)
         {
@@ -208,20 +250,6 @@ public class BossController : MonoBehaviour
     }
     */
 
-    private async UniTaskVoid StartSkillCooldownTimerAsync(CancellationToken cancellationToken)
-    {
-        try
-        {
-            await UniTask.Delay(TimeSpan.FromSeconds(skillCoolTime), cancellationToken: cancellationToken);
-            canUseSkill = true;
-            Debug.Log("スキルクールダウン終了");
-        }
-        catch (OperationCanceledException)
-        {
-
-        }
-    }
-
     private async UniTaskVoid StartAttackCooldownTimerAsync(CancellationToken cancellationToken)
     {
         try
@@ -246,8 +274,6 @@ public class BossController : MonoBehaviour
         Debug.Log($"[{gameObject.name}] ボスを倒した！");
         bossTaskCancellation?.Cancel();
 
-        var cancellationToken = this.GetCancellationTokenOnDestroy();
-
         // CanonControllerを探して、自分の担当のFirePointを削除する
         CanonController canonController = FindObjectOfType<CanonController>();
         if (canonController != null)
@@ -269,20 +295,31 @@ public class BossController : MonoBehaviour
         bossTaskCancellation?.Dispose();
         bossTaskCancellation = null;
 
+        var cancellationToken = this.GetCancellationTokenOnDestroy();
+
         // 倒した演出
         try
         {
-            //yield return new WaitForSeconds(damageDisplay.fadeDuration/* + damageDisplay.displayDuration*/);
             float waitTime = damageDisplay.fadeDuration + damageDisplay.displayDuration;
             await UniTask.Delay(TimeSpan.FromSeconds(waitTime), cancellationToken: cancellationToken);
 
-            if(cancellationToken.IsCancellationRequested) return;
+            if (cancellationToken.IsCancellationRequested) return;
 
-            anim.Play("Die");
+            if (cameraController != null) cameraController.SwitchToDefeatCamera(transform);
+
+            if (anim != null) anim.Play("Die");
+
             Collider[] colliders = gameObject.GetComponents<Collider>();
             foreach (var col in colliders)
             {
                 col.enabled = false;
+            }
+
+            Rigidbody rb = GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.velocity = Vector3.zero;
+                rb.isKinematic = true;
             }
 
             await UniTask.Delay(TimeSpan.FromSeconds(3.0f), cancellationToken: cancellationToken);
@@ -304,23 +341,15 @@ public class BossController : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
-    {
-        bossTaskCancellation?.Cancel();
-        bossTaskCancellation?.Dispose();
-    }
-
     /// <summary>
     /// GameManagerが攻撃可能か判断するためのメソッド
     /// </summary>
     /// <returns></returns>
     public bool IsAttackReady()
     {
-        return canAttack &&
-               !isGettingHit &&
-               !isDead && 
-               anim != null &&
-               anim.GetCurrentAnimatorStateInfo(0).IsName("Idle");
+        bool isIdle = (anim != null) ? anim.GetAnimatorTransitionInfo(0).IsName("Idle") : true;
+
+        return canAttack && !isGettingHit && !isDead;
     }
 
     private async UniTaskVoid ApplyEnemyDeadBuffAsync(CancellationToken cancellationToken)
@@ -337,6 +366,16 @@ public class BossController : MonoBehaviour
         {
             this.attackPower = originalDamage;
             Debug.Log($"[{gameObject.name}] ボスの攻撃力アップ終了");
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (bossTaskCancellation != null)
+        {
+            if (!bossTaskCancellation.IsCancellationRequested) bossTaskCancellation?.Cancel();
+            bossTaskCancellation?.Dispose();
+            bossTaskCancellation = null;
         }
     }
 }
