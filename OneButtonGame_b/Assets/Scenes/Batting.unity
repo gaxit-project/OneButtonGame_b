@@ -4349,7 +4349,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18fb35b172087334e8f49b503e12bae4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ball: {fileID: 3303797019271679876, guid: e98c72d9a7d46bb47af2d2683fc5259d, type: 3}
+  gameManager: {fileID: 1078588910}
+  ball: {fileID: 2110910750766758292, guid: 42ccfb607b3ddde40abe90308a03cfb6, type: 3}
 --- !u!4 &1057395050
 Transform:
   m_ObjectHideFlags: 0

@@ -4,68 +4,70 @@ using UnityEngine;
 
 public class TimeManager : MonoBehaviour
 {
+    public GameManager gameManager;
+
     private bool isPaused = false;
     private bool isSlowing = false;
-    private bool isQuick = false;
     public Ball ball;
 
     void Update()
     {
 
-        if (ball.justHit == true && !isSlowing == true)
+        if (ball.justHit && !isPaused && !isSlowing)
         {
-            Debug.Log("í Ç¡ÇƒÇ¢ÇÈÇÊ");
             StartCoroutine(TimeLate());
         }
 
-        if (Input.GetKeyDown(KeyCode.P))
+        if (!gameManager.IsGameActive && !isPaused && !isSlowing && Input.GetKeyDown(KeyCode.O))
         {
-            TimeQuick();
+            Time.timeScale = 3f;
+        }
+        else if (gameManager.IsGameActive && !isPaused && !isSlowing && Input.GetKey(KeyCode.O))
+        {
+            Time.timeScale = 1f;
         }
 
-        if (Input.GetKeyDown(KeyCode.K))
+        if (!isPaused && !isSlowing && Input.GetKeyUp(KeyCode.O))
+        {
+            Time.timeScale = 1f;
+        }
+
+        /*if (Input.GetKeyDown(KeyCode.P))
         {
             Pause();
-        }
+        }*/
     }
-
+    /*
     public void Pause()   //àÍìxñ⁄ÇÕí‚é~ìÒìxñ⁄ÇÕçƒäJ
     {
         if (isPaused == false)
         {
-            Time.timeScale = 1f;
+            Time.timeScale = 0f;
             isPaused = true;
         }
         else
         {
-            Time.timeScale = 0f;
+            Time.timeScale = 1f;
             isPaused = false;
         }
-    }
+    }*/
 
     IEnumerator TimeLate()
     {
         isSlowing = true;
-        Time.timeScale = 0.01f;
-        Time.fixedDeltaTime = Time.timeScale;
-        yield return new WaitForSeconds(1f);
-        Time.timeScale = 1.0f;
-        Time.fixedDeltaTime = Time.timeScale;
+
+        float originalFixedDeltaTime = Time.fixedDeltaTime;
+
+        Time.timeScale = 0.1f;
+        Time.fixedDeltaTime = 0.02f * Time.timeScale;
+
+        yield return new WaitForSecondsRealtime(0.5f);
+
+        Time.timeScale = 1f;
+        Time.fixedDeltaTime = originalFixedDeltaTime;
+
         ball.justHit = false;
         isSlowing = false;
     }
 
-    public void TimeQuick()
-    {
-        if (isQuick == false)
-        {
-            Time.timeScale = 3f;
-            isQuick = true;
-        }
-        else
-        {
-            Time.timeScale = 1f;
-            isQuick = false;
-        }
-    }
 }
