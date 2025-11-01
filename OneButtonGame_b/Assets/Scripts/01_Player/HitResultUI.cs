@@ -1,5 +1,9 @@
 using UnityEngine;
 using TMPro;
+using Cysharp.Threading.Tasks;
+using System;
+using System.Threading;
+using System.Reflection.Emit;
 
 public class HitResultUI : MonoBehaviour
 {
@@ -14,11 +18,17 @@ public class HitResultUI : MonoBehaviour
     public TextMeshProUGUI angleText;
     public TextMeshProUGUI timingText;
 
+    [Header("ï\é¶ê›íË")]
+    public float displayDuration = 2.0f;
+
+    private CancellationTokenSource cts;
+
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
+            cts = new CancellationTokenSource();
         }
         else
         {
@@ -42,8 +52,14 @@ public class HitResultUI : MonoBehaviour
         
     }
 
-    public void ShowResult(string meet, float speedKmh, float angleDeg, string timing)
+    public async void ShowResult(string meet, float speedKmh, float angleDeg, string timing)
     {
+        cts?.Cancel();
+        cts?.Dispose();
+        cts = new CancellationTokenSource();
+        var token = cts.Token;
+        
+
         if (meetText != null)
         {
             meetText.text = meet;
@@ -63,6 +79,16 @@ public class HitResultUI : MonoBehaviour
         }
 
         resultPanel.SetActive(true);
+        try
+        {
+            await UniTask.Delay(TimeSpan.FromSeconds(displayDuration), ignoreTimeScale: true, cancellationToken: token);
+
+            HideResult();
+        }
+        catch (OperationCanceledException)
+        {
+
+        }
     }
 
     public void HideResult()
@@ -71,5 +97,15 @@ public class HitResultUI : MonoBehaviour
         {
             resultPanel.SetActive(false);
         }
+    }
+
+    private void OnDestroy()
+    {
+        cts?.Cancel();
+        cts?.Dispose();
+
+        if(Instance != null)
+        {
+            Instance = null;        }
     }
 }
