@@ -4523,7 +4523,7 @@ MonoBehaviour:
   orbitMovieDuration: 3
   bossExplanationTextDuration: 4
   coreExplanationTextDuration: 3
-  movieSkip: 1
+  movieSkip: 0
 --- !u!4 &1078588911
 Transform:
   m_ObjectHideFlags: 0
