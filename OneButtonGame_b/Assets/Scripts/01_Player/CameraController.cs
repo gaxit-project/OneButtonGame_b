@@ -3,6 +3,7 @@ using Cinemachine;
 using System;
 using DG.Tweening;
 using System.Threading;
+using Cysharp.Threading.Tasks;
 
 public class CameraController : MonoBehaviour
 {
@@ -14,12 +15,16 @@ public class CameraController : MonoBehaviour
     [Header("コンポーネント")]
     public BatController batController;
 
+    [Header("カメラシェイク")]
+    public CinemachineImpulseSource impulseSource;
+
     [Header("Cinemachineカメラ")]
     public CinemachineVirtualCamera playerCamera;
     public CinemachineVirtualCamera ballCamera;
     public CinemachineVirtualCamera defeatMoveCamera;
     public CinemachineVirtualCamera allViewCamera;
     public CinemachineVirtualCamera introCamera;
+    public CinemachineVirtualCamera middleViewCamera;
     public CinemachineVirtualCamera orbitCamera;
 
     [Header("カメラの挙動")]
@@ -30,6 +35,7 @@ public class CameraController : MonoBehaviour
     [Header("カメラ切り替え設定")]
     public bool ballTracking = false;
 
+    private CinemachineBrain brain;
     private CinemachineVirtualCamera currentActiveCamera;
     private Transform ballToTrack = null;
     private CancellationTokenSource ballTrackingCancellation;
@@ -38,8 +44,15 @@ public class CameraController : MonoBehaviour
 
     void Start()
     {
+        brain = GetComponent<CinemachineBrain>();
+        if(brain == null)
+        {
+            Debug.LogError("Main CameraにCinemaChineBrainが見つかりません。");
+        }
+
         InitializeCameras();
 
+        /*
         if (playerCamera != null)
         {
             currentActiveCamera = allViewCamera;
@@ -50,6 +63,7 @@ public class CameraController : MonoBehaviour
             currentActiveCamera = allViewCamera;
             SwitchCamera(allViewCamera);
         }
+        */
 
         ballTrackingCancellation = new CancellationTokenSource();
 
@@ -74,6 +88,7 @@ public class CameraController : MonoBehaviour
         SetPriority(defeatMoveCamera, 0);
         SetPriority(allViewCamera, 0);
         SetPriority(introCamera, 0);
+        SetPriority(middleViewCamera, 0);
         SetPriority(orbitCamera, 0);
     }
 
@@ -106,6 +121,11 @@ public class CameraController : MonoBehaviour
     public void StartIntroMovie()
     {
         SwitchCamera(introCamera);
+    }
+
+    public void StartMiddleViewMovie()
+    {
+        SwitchCamera(middleViewCamera);
     }
 
     public void StartOrbitMovie()
@@ -183,18 +203,41 @@ public class CameraController : MonoBehaviour
         OnCameraReset?.Invoke();
     }
 
-    public void SwitchToDefeatCamera(Transform defeatedBoss)
+    public async UniTask SwitchToDefeatCamera(Transform defeatedBoss)
     {
         if (defeatedBoss != null)
         {
             defeatMoveCamera.LookAt = defeatedBoss;
 
-            if(ballCamera != null)
+            defeatMoveCamera.Follow = defeatedBoss;
+
+            var transposer = defeatMoveCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
+            if (transposer != null)
+            {
+                transposer.m_TrackedObjectOffset = new Vector3(0, 300, -10);
+                transposer.m_CameraDistance = 15;
+            }
+            else
+            {
+                Debug.Log("defeatMoveCameraのBodyがTransposerに設定されていません。");
+            }
+
+            if (ballCamera != null)
             {
                 SetPriority(ballCamera, 0);
             }
 
             SwitchCamera(defeatMoveCamera);
+
+            if(brain != null && brain.m_DefaultBlend.m_Time > 0)
+            {
+                await UniTask.Delay(TimeSpan.FromSeconds(brain.m_DefaultBlend.m_Time), cancellationToken: this.GetCancellationTokenOnDestroy());
+            }
+
+            if (impulseSource != null)
+            {
+                impulseSource.GenerateImpulse();
+            }
         }
     }
 

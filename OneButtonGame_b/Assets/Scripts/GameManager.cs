@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI countdownText;
     public GameObject playerHealthPanel;
     public GameObject BossHpPanel;
+    public GameObject coreStatusPanel;
     public TextMeshProUGUI coreStatusText;
     public TextMeshProUGUI fpsText;
     public GameObject bossExplanationPanel;
@@ -37,7 +38,8 @@ public class GameManager : MonoBehaviour
     [Header("ゲーム設定")]
     public float allViewMovieDuration = 2.0f;
     public float introMovieDuration = 3.0f;
-    public float orbitMovieDuration = 5.0f;
+    public float middleViewMovieDuration = 1.0f;
+    public float orbitMovieDuration = 3.0f;
     public float bossExplanationTextDuration = 4.0f;
     public float coreExplanationTextDuration = 4.0f;
 
@@ -136,6 +138,7 @@ public class GameManager : MonoBehaviour
         countdownText = FindUIElementByTag<TextMeshProUGUI>("CountdownText");
         playerHealthPanel = FindUIElementByTag<Transform>("PlayerHealthPanel")?.gameObject;
         BossHpPanel = FindUIElementByTag<Transform>("BossHpPanel")?.gameObject;
+        coreStatusPanel = FindUIElementByTag<Transform>("CoreStatusPanel")?.gameObject;
         coreStatusText = FindUIElementByTag<TextMeshProUGUI>("CoreStatusText");
         fpsText = FindUIElementByTag<TextMeshProUGUI>("FPSText");
 
@@ -215,6 +218,7 @@ public class GameManager : MonoBehaviour
         countdownText = null;
         playerHealthPanel = null;
         BossHpPanel = null;
+        coreStatusPanel = null;
         coreStatusText = null;
         fpsText = null;
         bossExplanationPanel = null;
@@ -278,6 +282,7 @@ public class GameManager : MonoBehaviour
         SetActiveIfNotNull(timerText?.gameObject, isActive);
         SetActiveIfNotNull(playerHealthPanel, isActive);
         SetActiveIfNotNull(BossHpPanel, isActive);
+        SetActiveIfNotNull(coreStatusPanel, isActive);
         SetActiveIfNotNull(coreStatusText?.gameObject, isActive);
         SetActiveIfNotNull(fpsText?.gameObject, isActive);;
     }
@@ -362,16 +367,25 @@ public class GameManager : MonoBehaviour
                 SetActiveIfNotNull(bossExplanationText?.gameObject, false);
             }
 
+            if (cameraController != null && allViewMovieDuration > 0 && !movieSkip)
+            {
+                Debug.Log("イントロムービー開始");
+                cameraController.StartAllViewMovie();
+
+                await UniTask.Delay(TimeSpan.FromSeconds(allViewMovieDuration));
+            }
+
+            if(cameraController != null && middleViewMovieDuration > 0 && !movieSkip)
+            {
+                Debug.Log("中間ムービー");
+                cameraController.StartMiddleViewMovie();
+                await UniTask.Delay(TimeSpan.FromSeconds(middleViewMovieDuration), cancellationToken: cancellationToken);
+            }
+
             // オービットムービー再生
             if (cameraController != null && orbitMovieDuration > 0 && !movieSkip)
             {
                 Debug.Log("オービットムービー開始");
-                /*
-                if(coreExplanationPanel != null) coreExplanationPanel.SetActive(true);
-                cameraController.StartOrbitMovie();
-                await UniTask.Delay(TimeSpan.FromSeconds(orbitMovieDuration + 0.2f), cancellationToken: cancellationToken);
-                if(coreExplanationPanel != null) coreExplanationPanel.SetActive(false);
-                */
 
                 cameraController.StartOrbitMovie();
 
@@ -416,7 +430,7 @@ public class GameManager : MonoBehaviour
                 SetActiveIfNotNull(coreExplanationPanel?.gameObject, false);
             }
 
-            if (movieSkip) cameraController.ResetCamera();
+            //if (movieSkip) cameraController.ResetCamera();
 
             
 
