@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI countdownText;
     public GameObject playerHealthPanel;
     public GameObject BossHpPanel;
+    public GameObject coreStatusPanel;
     public TextMeshProUGUI coreStatusText;
     public TextMeshProUGUI fpsText;
     public GameObject bossExplanationPanel;
@@ -136,6 +137,7 @@ public class GameManager : MonoBehaviour
         countdownText = FindUIElementByTag<TextMeshProUGUI>("CountdownText");
         playerHealthPanel = FindUIElementByTag<Transform>("PlayerHealthPanel")?.gameObject;
         BossHpPanel = FindUIElementByTag<Transform>("BossHpPanel")?.gameObject;
+        coreStatusPanel = FindUIElementByTag<Transform>("CoreStatusPanel")?.gameObject;
         coreStatusText = FindUIElementByTag<TextMeshProUGUI>("CoreStatusText");
         fpsText = FindUIElementByTag<TextMeshProUGUI>("FPSText");
 
@@ -215,6 +217,7 @@ public class GameManager : MonoBehaviour
         countdownText = null;
         playerHealthPanel = null;
         BossHpPanel = null;
+        coreStatusPanel = null;
         coreStatusText = null;
         fpsText = null;
         bossExplanationPanel = null;
@@ -278,6 +281,7 @@ public class GameManager : MonoBehaviour
         SetActiveIfNotNull(timerText?.gameObject, isActive);
         SetActiveIfNotNull(playerHealthPanel, isActive);
         SetActiveIfNotNull(BossHpPanel, isActive);
+        SetActiveIfNotNull(coreStatusPanel, isActive);
         SetActiveIfNotNull(coreStatusText?.gameObject, isActive);
         SetActiveIfNotNull(fpsText?.gameObject, isActive);;
     }

@@ -18,6 +18,7 @@ TagManager:
   - BossHpPanel
   - CoreStatusText
   - FPSText
+  - CoreStatusPanel
   layers:
   - Default
   - TransparentFX
