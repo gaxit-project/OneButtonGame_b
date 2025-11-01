@@ -15,6 +15,11 @@ public class CoreController : MonoBehaviour
 
     [Header("UIコンポーネント")]
     public TextMeshProUGUI statusText;
+    public Image coreDamageOverlay;
+
+    [Header("ダメージ演出")]
+    public float flashDuration = 0.5f;
+    public Color damageFlashColor = new Color(1f, 1f, 1f, 0.392f); 
 
     [Header("状態管理")]
     public Color normalColor = Color.green;
@@ -25,12 +30,19 @@ public class CoreController : MonoBehaviour
     private bool isDestroyed = false;
 
     private CancellationTokenSource blinkCts;
+    private CancellationTokenSource flashCts;
 
     void Start()
     {
         currentHealth = maxHealth;
         isDestroyed = false;
         UpdateStatusUI();
+
+        flashCts = new CancellationTokenSource();
+        if(coreDamageOverlay != null)
+        {
+            coreDamageOverlay.enabled = false;
+        }
     }
 
     void Update()
@@ -44,6 +56,14 @@ public class CoreController : MonoBehaviour
 
         currentHealth -= damage;
         Debug.Log($"コアがダメージを受けた！　残りHP:{currentHealth}");
+
+        if(coreDamageOverlay != null)
+        {
+            flashCts?.Cancel();
+            flashCts?.Dispose();
+            flashCts = new CancellationTokenSource();
+            FlashCoreDamageEffectAsync(flashCts.Token).Forget();
+        }
 
         UpdateStatusUI();
 
@@ -120,9 +140,30 @@ public class CoreController : MonoBehaviour
         }
     }
 
+    private async UniTaskVoid FlashCoreDamageEffectAsync(CancellationToken token)
+    {
+        try
+        {
+            coreDamageOverlay.enabled = true;
+
+            await UniTask.Delay(TimeSpan.FromSeconds(flashDuration), ignoreTimeScale: false, cancellationToken: token);
+
+            coreDamageOverlay.enabled = false;
+        }
+        catch (OperationCanceledException)
+        {
+            if(coreDamageOverlay != null)
+            {
+                coreDamageOverlay.enabled = false;
+            }
+        }
+    }
+
     private void OnDestroy()
     {
         blinkCts?.Cancel();
 
+        flashCts?.Cancel();
+        flashCts?.Dispose();
     }
 }
