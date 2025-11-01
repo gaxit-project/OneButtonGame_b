@@ -38,7 +38,8 @@ public class GameManager : MonoBehaviour
     [Header("ゲーム設定")]
     public float allViewMovieDuration = 2.0f;
     public float introMovieDuration = 3.0f;
-    public float orbitMovieDuration = 5.0f;
+    public float middleViewMovieDuration = 1.0f;
+    public float orbitMovieDuration = 3.0f;
     public float bossExplanationTextDuration = 4.0f;
     public float coreExplanationTextDuration = 4.0f;
 
@@ -372,6 +373,13 @@ public class GameManager : MonoBehaviour
                 cameraController.StartAllViewMovie();
 
                 await UniTask.Delay(TimeSpan.FromSeconds(allViewMovieDuration));
+            }
+
+            if(cameraController != null && middleViewMovieDuration > 0 && !movieSkip)
+            {
+                Debug.Log("中間ムービー");
+                cameraController.StartMiddleViewMovie();
+                await UniTask.Delay(TimeSpan.FromSeconds(middleViewMovieDuration), cancellationToken: cancellationToken);
             }
 
             // オービットムービー再生

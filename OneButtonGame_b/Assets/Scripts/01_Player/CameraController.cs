@@ -24,6 +24,7 @@ public class CameraController : MonoBehaviour
     public CinemachineVirtualCamera defeatMoveCamera;
     public CinemachineVirtualCamera allViewCamera;
     public CinemachineVirtualCamera introCamera;
+    public CinemachineVirtualCamera middleViewCamera;
     public CinemachineVirtualCamera orbitCamera;
 
     [Header("ƒJƒƒ‰‚Ì‹““®")]
@@ -43,7 +44,7 @@ public class CameraController : MonoBehaviour
 
     void Start()
     {
-        brain = Camera.main?.GetComponent<CinemachineBrain>();
+        brain = GetComponent<CinemachineBrain>();
         if(brain == null)
         {
             Debug.LogError("Main Camera‚ÉCinemaChineBrain‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB");
@@ -87,6 +88,7 @@ public class CameraController : MonoBehaviour
         SetPriority(defeatMoveCamera, 0);
         SetPriority(allViewCamera, 0);
         SetPriority(introCamera, 0);
+        SetPriority(middleViewCamera, 0);
         SetPriority(orbitCamera, 0);
     }
 
@@ -119,6 +121,11 @@ public class CameraController : MonoBehaviour
     public void StartIntroMovie()
     {
         SwitchCamera(introCamera);
+    }
+
+    public void StartMiddleViewMovie()
+    {
+        SwitchCamera(middleViewCamera);
     }
 
     public void StartOrbitMovie()
