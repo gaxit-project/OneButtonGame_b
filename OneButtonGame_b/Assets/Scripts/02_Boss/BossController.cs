@@ -310,9 +310,9 @@ public class BossController : MonoBehaviour
 
             Transform cameraTarget = (defeatCameraTarget != null) ? defeatCameraTarget : transform;
 
-            if (cameraController != null) cameraController.SwitchToDefeatCamera(cameraTarget);
-
             if (anim != null) anim.Play("Die");
+
+            if (cameraController != null) await cameraController.SwitchToDefeatCamera(cameraTarget);
 
             Collider[] colliders = gameObject.GetComponents<Collider>();
             foreach (var col in colliders)

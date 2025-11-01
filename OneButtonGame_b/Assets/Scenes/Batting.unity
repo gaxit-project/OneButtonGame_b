@@ -757,7 +757,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2741603725416346755, guid: e36b780bb78527042976572132ca8f2a, type: 3}
       propertyPath: maxHealth
-      value: 100
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 2741603725416346755, guid: e36b780bb78527042976572132ca8f2a, type: 3}
       propertyPath: healthText
@@ -1280,7 +1280,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5929230929691727137, guid: 58a0bebde930bb446b806c0b5d0fed0a, type: 3}
       propertyPath: maxHealth
-      value: 100
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 5929230929691727137, guid: 58a0bebde930bb446b806c0b5d0fed0a, type: 3}
       propertyPath: healthText
@@ -3251,13 +3251,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 653636715}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: -0.42261827, z: 0, w: 0.9063079}
   m_LocalPosition: {x: -200, y: 0, z: 250}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 859570224}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -50, z: 0}
 --- !u!1 &693863804
 GameObject:
   m_ObjectHideFlags: 0
@@ -4410,7 +4410,7 @@ MonoBehaviour:
   orbitMovieDuration: 3
   bossExplanationTextDuration: 4
   coreExplanationTextDuration: 3
-  movieSkip: 1
+  movieSkip: 0
 --- !u!4 &1078588911
 Transform:
   m_ObjectHideFlags: 0
@@ -4601,6 +4601,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1113927097}
   - component: {fileID: 1113927096}
+  - component: {fileID: 1113927098}
   m_Layer: 0
   m_Name: VCam_DefeatMove
   m_TagString: Untagged
@@ -4663,6 +4664,28 @@ Transform:
   - {fileID: 1465695809}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1113927098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1113927095}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c11265b855408d42af33d62691f5194, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ChannelMask: 1
+  m_Gain: 1
+  m_Use2DDistance: 0
+  m_UseLocalSpace: 1
+  m_ReactionSettings:
+    m_SecondaryNoise: {fileID: 0}
+    m_AmplitudeGain: 1
+    m_FrequencyGain: 1
+    m_Duration: 1
+    m_NoiseOffsets: {x: 0, y: 0, z: 0}
 --- !u!1 &1140563134
 GameObject:
   m_ObjectHideFlags: 0
@@ -4972,7 +4995,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2225373241625268831, guid: 604623a2410f16f43ab902289b692433, type: 3}
       propertyPath: maxHealth
-      value: 100
+      value: 400
       objectReference: {fileID: 0}
     - target: {fileID: 2225373241625268831, guid: 604623a2410f16f43ab902289b692433, type: 3}
       propertyPath: healthText
@@ -6121,9 +6144,10 @@ GameObject:
   - component: {fileID: 1455930010}
   - component: {fileID: 1455930009}
   - component: {fileID: 1455930013}
+  - component: {fileID: 1455930014}
   m_Layer: 0
   m_Name: Main camera
-  m_TagString: Untagged
+  m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6142,6 +6166,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerTarget: {fileID: 5874264376807553838}
   batController: {fileID: 0}
+  impulseSource: {fileID: 1455930014}
   playerCamera: {fileID: 154229656}
   ballCamera: {fileID: 1728560573}
   defeatMoveCamera: {fileID: 1113927096}
@@ -6260,6 +6285,59 @@ MonoBehaviour:
   m_CameraActivatedEvent:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1455930014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1455930007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 180ecf9b41d478f468eb3e9083753217, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ImpulseDefinition:
+    m_ImpulseChannel: 1
+    m_ImpulseShape: 2
+    m_CustomImpulseShape:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    m_ImpulseDuration: 0.5
+    m_ImpulseType: 0
+    m_DissipationRate: 0.25
+    m_RawSignal: {fileID: 0}
+    m_AmplitudeGain: 1
+    m_FrequencyGain: 1
+    m_RepeatMode: 0
+    m_Randomize: 1
+    m_TimeEnvelope:
+      m_AttackShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_DecayShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      m_AttackTime: 0
+      m_SustainTime: 0.2
+      m_DecayTime: 0.7
+      m_ScaleWithImpact: 1
+      m_HoldForever: 0
+    m_ImpactRadius: 100
+    m_DirectionMode: 0
+    m_DissipationMode: 2
+    m_DissipationDistance: 100
+    m_PropagationSpeed: 343
+  m_DefaultVelocity: {x: 0, y: 0, z: -20}
 --- !u!1 &1458491638
 GameObject:
   m_ObjectHideFlags: 0
@@ -7231,13 +7309,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1654708156}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.42261827, z: 0, w: 0.9063079}
   m_LocalPosition: {x: 200, y: 0, z: 250}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 859570224}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 50, z: 0}
 --- !u!1 &1661610037
 GameObject:
   m_ObjectHideFlags: 0

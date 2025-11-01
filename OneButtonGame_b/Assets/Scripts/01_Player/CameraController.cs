@@ -3,6 +3,7 @@ using Cinemachine;
 using System;
 using DG.Tweening;
 using System.Threading;
+using Cysharp.Threading.Tasks;
 
 public class CameraController : MonoBehaviour
 {
@@ -13,6 +14,9 @@ public class CameraController : MonoBehaviour
 
     [Header("コンポーネント")]
     public BatController batController;
+
+    [Header("カメラシェイク")]
+    public CinemachineImpulseSource impulseSource;
 
     [Header("Cinemachineカメラ")]
     public CinemachineVirtualCamera playerCamera;
@@ -30,6 +34,7 @@ public class CameraController : MonoBehaviour
     [Header("カメラ切り替え設定")]
     public bool ballTracking = false;
 
+    private CinemachineBrain brain;
     private CinemachineVirtualCamera currentActiveCamera;
     private Transform ballToTrack = null;
     private CancellationTokenSource ballTrackingCancellation;
@@ -38,6 +43,12 @@ public class CameraController : MonoBehaviour
 
     void Start()
     {
+        brain = Camera.main?.GetComponent<CinemachineBrain>();
+        if(brain == null)
+        {
+            Debug.LogError("Main CameraにCinemaChineBrainが見つかりません。");
+        }
+
         InitializeCameras();
 
         /*
@@ -185,7 +196,7 @@ public class CameraController : MonoBehaviour
         OnCameraReset?.Invoke();
     }
 
-    public void SwitchToDefeatCamera(Transform defeatedBoss)
+    public async UniTask SwitchToDefeatCamera(Transform defeatedBoss)
     {
         if (defeatedBoss != null)
         {
@@ -193,10 +204,11 @@ public class CameraController : MonoBehaviour
 
             defeatMoveCamera.Follow = defeatedBoss;
 
-            var transposer = defeatMoveCamera.GetCinemachineComponent<CinemachineTransposer>();
+            var transposer = defeatMoveCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
             if (transposer != null)
             {
-                transposer.m_FollowOffset = new Vector3(0, 300, -10);
+                transposer.m_TrackedObjectOffset = new Vector3(0, 300, -10);
+                transposer.m_CameraDistance = 15;
             }
             else
             {
@@ -209,6 +221,16 @@ public class CameraController : MonoBehaviour
             }
 
             SwitchCamera(defeatMoveCamera);
+
+            if(brain != null && brain.m_DefaultBlend.m_Time > 0)
+            {
+                await UniTask.Delay(TimeSpan.FromSeconds(brain.m_DefaultBlend.m_Time), cancellationToken: this.GetCancellationTokenOnDestroy());
+            }
+
+            if (impulseSource != null)
+            {
+                impulseSource.GenerateImpulse();
+            }
         }
     }
 
