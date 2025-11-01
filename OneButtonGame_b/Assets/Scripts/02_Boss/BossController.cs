@@ -23,6 +23,9 @@ public class BossController : MonoBehaviour
     public DamageDisplay damageDisplay;
     public TextMeshProUGUI healthText;
 
+    [Header("死亡演出用カメラターゲット")]
+    public Transform defeatCameraTarget;
+
     [Header("デバッグ用")]
     [SerializeField] private bool canAttack = true;
     [SerializeField] private bool isGettingHit = false;
@@ -305,9 +308,11 @@ public class BossController : MonoBehaviour
 
             if (cancellationToken.IsCancellationRequested) return;
 
-            if (cameraController != null) cameraController.SwitchToDefeatCamera(transform);
+            Transform cameraTarget = (defeatCameraTarget != null) ? defeatCameraTarget : transform;
 
             if (anim != null) anim.Play("Die");
+
+            if (cameraController != null) await cameraController.SwitchToDefeatCamera(cameraTarget);
 
             Collider[] colliders = gameObject.GetComponents<Collider>();
             foreach (var col in colliders)
