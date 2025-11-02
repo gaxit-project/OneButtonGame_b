@@ -100,6 +100,11 @@ public class BatController : MonoBehaviour
         }
 
         if (Input.GetButtonDown("Fire1")) StartSwingSequence().Forget();
+
+        if(Input.GetButtonDown("Fire1"))
+        {
+            StartCoroutine(ColliderOn());
+        }
     }
 
     public void SetInputEnabled(bool enabled)
@@ -263,5 +268,13 @@ public class BatController : MonoBehaviour
         OnStanceChanged -= HandleStanceChange;
         swingCts?.Cancel();
         swingCts?.Dispose();
+    }
+
+    private IEnumerator ColliderOn()
+    {
+        Collider collider = gameObject.GetComponent<Collider>();
+        collider.enabled = true;
+        yield return new WaitForSeconds(1f);
+        collider.enabled = false;
     }
 }
