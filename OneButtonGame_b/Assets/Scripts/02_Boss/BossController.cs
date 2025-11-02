@@ -300,6 +300,13 @@ public class BossController : MonoBehaviour
 
         var cancellationToken = this.GetCancellationTokenOnDestroy();
 
+        var colliders = gameObject.GetComponents<Collider>();
+
+        foreach (var col in colliders)
+        {
+            col.enabled = false;
+        }
+
         // ì|ÇµÇΩââèo
         try
         {
@@ -314,11 +321,6 @@ public class BossController : MonoBehaviour
 
             if (cameraController != null) await cameraController.SwitchToDefeatCamera(cameraTarget);
 
-            Collider[] colliders = gameObject.GetComponents<Collider>();
-            foreach (var col in colliders)
-            {
-                col.enabled = false;
-            }
 
             Rigidbody rb = GetComponent<Rigidbody>();
             if (rb != null)

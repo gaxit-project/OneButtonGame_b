@@ -84,6 +84,7 @@ public class Ball : MonoBehaviour
     private GameObject targetMarkerInstance;
     private GameObject timingMarkerInstance;
     private Coroutine markerAnimationCoroutine;
+    public GameObject targetObject;
 
     public static event Action OnBallDestroyed;
 
@@ -396,6 +397,8 @@ public class Ball : MonoBehaviour
         {
             BossController boss = collision.gameObject.GetComponent<BossController>();
 
+            targetObject.SetActive(true);
+
             int damageToBoss = isChanceBall ? (int)(attackPower * chanceBallBossDamageMultiplier) : attackPower;
 
             if (boss != null)
@@ -678,6 +681,8 @@ public class Ball : MonoBehaviour
             }
 
             OnBallDestroyed?.Invoke();
+
+            await UniTask.Delay(TimeSpan.FromSeconds(0.5f));
 
             Destroy(gameObject);
         }

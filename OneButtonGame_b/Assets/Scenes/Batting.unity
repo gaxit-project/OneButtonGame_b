@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18827614, g: 0.19113815, b: 0.19109792, a: 1}
+  m_IndirectSpecularColor: {r: 0.18827617, g: 0.19113809, b: 0.19109794, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -4696,7 +4696,7 @@ MonoBehaviour:
   orbitMovieDuration: 3
   bossExplanationTextDuration: 4
   coreExplanationTextDuration: 3
-  movieSkip: 1
+  movieSkip: 0
 --- !u!4 &1078588911
 Transform:
   m_ObjectHideFlags: 0
