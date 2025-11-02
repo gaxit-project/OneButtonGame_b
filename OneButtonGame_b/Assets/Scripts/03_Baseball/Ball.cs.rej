@@ -1,0 +1,9 @@
+diff a/OneButtonGame_b/Assets/Scripts/03_Baseball/Ball.cs b/OneButtonGame_b/Assets/Scripts/03_Baseball/Ball.cs	(rejected hunks)
+@@ -417,6 +417,7 @@
+         }
+         else if (collision.gameObject.CompareTag("Player"))
+         {
++            hasBeenHit = true;
+             PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
+ 
+             if (playerController != null)
