@@ -60,6 +60,7 @@ public class Ball : MonoBehaviour
     [SerializeField] private bool hard = false;
 
     private float touchGround = 0;
+    private float delayTime = 0;
 
     private bool hasBeenHit = false;
     public bool isGraunded = false;
@@ -399,7 +400,18 @@ public class Ball : MonoBehaviour
 
             targetObject.SetActive(true);
 
+            delayTime = 0.3f;
+
             int damageToBoss = isChanceBall ? (int)(attackPower * chanceBallBossDamageMultiplier) : attackPower;
+
+            if (damageToBoss == 100) //チャンスボールの判定がわからなかったためダメージで代用
+            {
+                SoundManager.instance.PlaySE(7);
+            }
+            else
+            {
+                SoundManager.instance.PlaySE(8);
+            }
 
             if (boss != null)
             {
@@ -419,6 +431,7 @@ public class Ball : MonoBehaviour
             {
                 PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
 
+                SoundManager.instance.PlaySE(5);
                 if (playerController != null)
                 {
                     int damageToPlayer = isChanceBall ? (int)(playerAttackPower * chanceBallPlayerDamageMultiplier) : playerAttackPower;
@@ -448,6 +461,8 @@ public class Ball : MonoBehaviour
                 int damageToCore = isChanceBall ? (int)(playerAttackPower * chanceBallCoreDamageMultiplier) : playerAttackPower;
                 coreController.TakeCoreDamage(damageToCore);
             }
+            
+            SoundManager.instance.PlaySE(6);
 
             if (cameraController != null && !isGraunded)
             {
@@ -685,7 +700,9 @@ public class Ball : MonoBehaviour
 
             OnBallDestroyed?.Invoke();
 
-            await UniTask.Delay(TimeSpan.FromSeconds(0.5f));
+            await UniTask.Delay(TimeSpan.FromSeconds(delayTime));
+
+            delayTime = 0;
 
             Destroy(gameObject);
         }

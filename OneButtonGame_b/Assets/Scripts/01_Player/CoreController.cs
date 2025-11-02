@@ -58,7 +58,11 @@ public class CoreController : MonoBehaviour
         currentHealth -= damage;
         Debug.Log($"コアがダメージを受けた！　残りHP:{currentHealth}");
 
-        if(coreDamageOverlay != null)
+        if (currentHealth <= 2)
+        {
+            SoundManager.instance.PlaySE(4);
+        }
+        if (coreDamageOverlay != null)
         {
             flashCts?.Cancel();
             flashCts?.Dispose();
