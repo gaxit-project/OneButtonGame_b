@@ -67,6 +67,8 @@ public class Ball : MonoBehaviour
     private bool isWeakHit = false;
     private bool isRecordingTrajectory = false;
     private bool predictionDone = false;
+    public bool justHit = false;    //à»â∫ë≈åÇéûÇÃéûä‘ëÄçÏÇÃÇΩÇﬂí«â¡
+    public bool lateHit = false;
 
     private List<Vector3> trajectoryPoints = new List<Vector3>();
     
@@ -82,6 +84,7 @@ public class Ball : MonoBehaviour
     private GameObject targetMarkerInstance;
     private GameObject timingMarkerInstance;
     private Coroutine markerAnimationCoroutine;
+    public GameObject targetObject;
 
     public static event Action OnBallDestroyed;
 
@@ -180,6 +183,7 @@ public class Ball : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Bat"))
         {
+            justHit = true;
             if (hasBeenHit) return;
 
             hasBeenHit = true;
@@ -392,6 +396,8 @@ public class Ball : MonoBehaviour
         else if (collision.gameObject.CompareTag("Boss"))
         {
             BossController boss = collision.gameObject.GetComponent<BossController>();
+
+            targetObject.SetActive(true);
 
             int damageToBoss = isChanceBall ? (int)(attackPower * chanceBallBossDamageMultiplier) : attackPower;
 
@@ -675,6 +681,8 @@ public class Ball : MonoBehaviour
             }
 
             OnBallDestroyed?.Invoke();
+
+            await UniTask.Delay(TimeSpan.FromSeconds(0.5f));
 
             Destroy(gameObject);
         }
