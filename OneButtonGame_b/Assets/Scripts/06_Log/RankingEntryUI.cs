@@ -5,7 +5,7 @@ using System;
 public class RankingEntryUI : MonoBehaviour
 {
     public TextMeshProUGUI rankText;
-    public TextMeshProUGUI nameText;
+    //public TextMeshProUGUI nameText;
     public TextMeshProUGUI timeText;
 
     // Start is called before the first frame update
@@ -23,9 +23,9 @@ public class RankingEntryUI : MonoBehaviour
     public void SetData(int rank, string playerName, float clearTime)
     {
         rankText.text = rank + " ";
-        nameText.text = playerName;
+        //nameText.text = playerName;
 
         TimeSpan timeSpan = TimeSpan.FromSeconds(clearTime);
-        timeText.text = timeSpan.ToString(@"mm\:ss\.ff");
+        timeText.text = clearTime.ToString("F0");
     }
 }

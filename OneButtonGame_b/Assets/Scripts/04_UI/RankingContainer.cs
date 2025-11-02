@@ -16,12 +16,12 @@ public class RankingContainer : MonoBehaviour
         {
             float clearTime = GameManager.Instance.GetClearTime();
 
-            System.TimeSpan timeSpan = System.TimeSpan.FromSeconds(clearTime);
-            yourTimeText.text = "Your Time : " + timeSpan.ToString(@"mm\:ss\.ff");
+            //System.TimeSpan timeSpan = System.TimeSpan.FromSeconds(clearTime);
+            yourTimeText.text = "Score : " + clearTime.ToString("F0");
         }
         else
         {
-            yourTimeText.text = "Your Time : --:--.--";
+            yourTimeText.text = "Score : ---";
         }
 
         DisplayRanking();

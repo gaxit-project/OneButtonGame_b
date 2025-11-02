@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     public bool IsGameActive { get; private set; } = false;
 
     [Header("UIコンポーネント")]
+    public GameObject timerPanel;
     public TextMeshProUGUI timerText;
     public TextMeshProUGUI countdownText;
     public GameObject playerHealthPanel;
@@ -36,6 +37,7 @@ public class GameManager : MonoBehaviour
     public float bossAttackInterval = 3.0f;
 
     [Header("ゲーム設定")]
+    public float gameTimeLimit = 180f;
     public float allViewMovieDuration = 2.0f;
     public float introMovieDuration = 3.0f;
     public float middleViewMovieDuration = 1.0f;
@@ -49,7 +51,8 @@ public class GameManager : MonoBehaviour
     private string bossFullExplanationText = "";
     private string coreFullExplanationText = "";
 
-    private float elapsedTime;
+    private float remainingTime;
+    private float lastElapsedTime = 0f;
 
     private bool isPausedForDefeat = false;
 
@@ -98,7 +101,15 @@ public class GameManager : MonoBehaviour
     {
         if (IsGameActive)
         {
-            elapsedTime += Time.deltaTime;
+            remainingTime -= Time.deltaTime;
+
+            if (remainingTime <= 0)
+            {
+                remainingTime = 0;
+                IsGameActive = false;
+                Debug.Log("時間切れ！ゲームオーバー");
+            }
+
             UpdateTimerUI();
         }
     }
@@ -126,7 +137,8 @@ public class GameManager : MonoBehaviour
     {
         IsGameActive = false;
         isPausedForDefeat = false;
-        elapsedTime = 0f;
+        remainingTime = gameTimeLimit;
+        lastElapsedTime = 0f;
         activeBosses.Clear();
 
         // コンポーネントの取得
@@ -134,6 +146,7 @@ public class GameManager : MonoBehaviour
         canonController = FindObjectOfType<CanonController>();
         cameraController = FindObjectOfType<CameraController>();
 
+        timerPanel = FindUIElementByTag<Transform>("TimerPanel")?.gameObject;
         timerText = FindUIElementByTag<TextMeshProUGUI>("TimerText");
         countdownText = FindUIElementByTag<TextMeshProUGUI>("CountdownText");
         playerHealthPanel = FindUIElementByTag<Transform>("PlayerHealthPanel")?.gameObject;
@@ -169,7 +182,7 @@ public class GameManager : MonoBehaviour
         BossController[] allBosses = FindObjectsOfType<BossController>();
         activeBosses = new List<BossController>(allBosses);
 
-        if (timerText != null) timerText.text = "00:00.00";
+        if (timerText != null) UpdateTimerUI();
 
         SetGameUIActive(false);
         SetActiveIfNotNull(countdownText?.gameObject, false);
@@ -211,9 +224,11 @@ public class GameManager : MonoBehaviour
 
         IsGameActive = false;
         //elapsedTime = 0f;
+        remainingTime = 0f;
 
         activeBosses.Clear();
 
+        timerPanel = null;
         timerText = null;
         countdownText = null;
         playerHealthPanel = null;
@@ -279,6 +294,7 @@ public class GameManager : MonoBehaviour
 
     private void SetGameUIActive(bool isActive)
     {
+        SetActiveIfNotNull(timerPanel, isActive);
         SetActiveIfNotNull(timerText?.gameObject, isActive);
         SetActiveIfNotNull(playerHealthPanel, isActive);
         SetActiveIfNotNull(BossHpPanel, isActive);
@@ -578,6 +594,8 @@ public class GameManager : MonoBehaviour
 
             if (DataLogger.Instance != null)
             {
+                float elapsedTime = remainingTime;
+                lastElapsedTime = elapsedTime;
                 DataLogger.Instance.LogClearTime(elapsedTime);
             }
         }
@@ -587,14 +605,15 @@ public class GameManager : MonoBehaviour
     {
         if (timerText != null)
         {
-            System.TimeSpan timeSpan = System.TimeSpan.FromSeconds(elapsedTime);
-            timerText.text = timeSpan.ToString(@"mm\:ss\.ff");
+            System.TimeSpan timeSpan = System.TimeSpan.FromSeconds(remainingTime);
+            //timerText.text = timeSpan.ToString(@"mm\:ss\.ff");
+            timerText.text = remainingTime.ToString("F0");
         }
     }
 
     public float GetClearTime()
     {
-        return elapsedTime;
+        return lastElapsedTime;
     }
 
     private void OnDestroy()

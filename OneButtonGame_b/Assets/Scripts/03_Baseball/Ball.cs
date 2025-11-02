@@ -190,9 +190,6 @@ public class Ball : MonoBehaviour
             // 打撃音を再生
             SoundManager.instance.PlaySE(1);
 
-            // ヒットしたらマーカーを消す
-            HideMarker();
-
             if (playerController != null)
             {
                 playerController.NotifyHit();
@@ -235,6 +232,9 @@ public class Ball : MonoBehaviour
                 }
 
                 hasBeenHit = true;
+
+                // ヒットしたらマーカーを消す
+                HideMarker();
             }
             else
             {
@@ -415,12 +415,15 @@ public class Ball : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Player"))
         {
-            PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
-
-            if (playerController != null)
+            if (!hasBeenHit)
             {
-                int damageToPlayer = isChanceBall ? (int)(playerAttackPower * chanceBallPlayerDamageMultiplier) : playerAttackPower;
-                playerController.TakePlayerDamage(damageToPlayer);
+                PlayerController playerController = collision.gameObject.GetComponent<PlayerController>();
+
+                if (playerController != null)
+                {
+                    int damageToPlayer = isChanceBall ? (int)(playerAttackPower * chanceBallPlayerDamageMultiplier) : playerAttackPower;
+                    playerController.TakePlayerDamage(damageToPlayer);
+                }
             }
 
             HideMarker();
@@ -546,7 +549,7 @@ public class Ball : MonoBehaviour
         float impactY = (0.5f * Physics.gravity.y * timeToImpact * timeToImpact) + (initialVelocity.y * timeToImpact) + initialPosition.y;
 
         Vector3 targetMarkerPosition = new Vector3(impactX, impactY, 0);
-        Vector3 timingMarkerPosition = new Vector3(impactX, impactY, 0.01f);
+        Vector3 timingMarkerPosition = new Vector3(impactX, impactY, 0.1f);
 
         targetMarkerInstance.transform.position = targetMarkerPosition;
         targetMarkerInstance.SetActive(true);

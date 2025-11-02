@@ -42,6 +42,7 @@ public class CoreController : MonoBehaviour
         if(coreDamageOverlay != null)
         {
             coreDamageOverlay.enabled = false;
+            coreDamageOverlay.color = Color.clear;
         }
     }
 
@@ -145,15 +146,31 @@ public class CoreController : MonoBehaviour
         try
         {
             coreDamageOverlay.enabled = true;
+            coreDamageOverlay.color = damageFlashColor;
 
-            await UniTask.Delay(TimeSpan.FromSeconds(flashDuration), ignoreTimeScale: false, cancellationToken: token);
+            float elapsedTime = 0f;
+            Color startColor = damageFlashColor;
+            Color endColor = new Color(startColor.r, startColor.g, startColor.b, 0);
 
+            while(elapsedTime < flashDuration)
+            {
+                token.ThrowIfCancellationRequested();
+
+                elapsedTime += Time.deltaTime;
+                float progress = Mathf.Clamp01(elapsedTime / flashDuration);
+
+                coreDamageOverlay.color = Color.Lerp(startColor, endColor, progress);
+                await UniTask.Yield(PlayerLoopTiming.Update, token);
+            }
+
+            coreDamageOverlay.color = Color.clear;
             coreDamageOverlay.enabled = false;
         }
         catch (OperationCanceledException)
         {
             if(coreDamageOverlay != null)
             {
+                coreDamageOverlay.color = Color.clear;
                 coreDamageOverlay.enabled = false;
             }
         }

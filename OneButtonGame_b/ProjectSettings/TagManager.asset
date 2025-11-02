@@ -19,6 +19,8 @@ TagManager:
   - CoreStatusText
   - FPSText
   - CoreStatusPanel
+  - FxTemporaire
+  - TimerPanel
   layers:
   - Default
   - TransparentFX
