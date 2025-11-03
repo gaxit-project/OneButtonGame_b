@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18827614, g: 0.19113815, b: 0.19109792, a: 1}
+  m_IndirectSpecularColor: {r: 0.18827617, g: 0.19113809, b: 0.19109794, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1492,6 +1492,10 @@ PrefabInstance:
       propertyPath: associatedSpawnPoint.Array.data[0]
       value: 
       objectReference: {fileID: 1870294511}
+    - target: {fileID: 6178175633347629053, guid: 58a0bebde930bb446b806c0b5d0fed0a, type: 3}
+      propertyPath: m_Radius
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 6550669469375198909, guid: 58a0bebde930bb446b806c0b5d0fed0a, type: 3}
       propertyPath: damageText
       value: 
