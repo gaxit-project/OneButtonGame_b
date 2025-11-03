@@ -18,11 +18,11 @@ public class TimeManager : MonoBehaviour
             StartCoroutine(TimeLate());
         }
 
-        if (!gameManager.IsGameActive && !isPaused && !isSlowing && Input.GetKeyDown(KeyCode.O))
+        if (!gameManager.IsGameActive && !isPaused && !isSlowing && Input.GetKeyDown("Fire1"))
         {
             Time.timeScale = 3f;
         }
-        else if (gameManager.IsGameActive && !isPaused && !isSlowing && Input.GetKey(KeyCode.O))
+        else if (gameManager.IsGameActive && !isPaused && !isSlowing && Input.GetKey("Fire1"))
         {
             Time.timeScale = 1f;
         }
