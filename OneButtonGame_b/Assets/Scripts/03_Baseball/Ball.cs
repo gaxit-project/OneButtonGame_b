@@ -187,6 +187,7 @@ public class Ball : MonoBehaviour
             justHit = true;
             if (hasBeenHit) return;
 
+            HideMarker();
             hasBeenHit = true;
             // ‘ÅŒ‚‰¹‚ğÄ¶
             SoundManager.instance.PlaySE(1);
