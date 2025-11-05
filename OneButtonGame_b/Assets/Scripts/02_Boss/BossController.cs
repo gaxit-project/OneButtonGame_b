@@ -34,9 +34,13 @@ public class BossController : MonoBehaviour
     private Animator anim;
     private CameraController cameraController;
     private CancellationTokenSource bossTaskCancellation;
+    public GameObject OtherBoss1;
+    public GameObject OtherBoss2;
+    public GameObject CanonController;
 
     //private bool isDead = false;
     public bool attack = false;
+    public bool bossStoping = false;
 
     void Awake()
     {
@@ -306,7 +310,9 @@ public class BossController : MonoBehaviour
         {
             col.enabled = false;
         }
-
+        OtherBoss1.SetActive(false);
+        OtherBoss2.SetActive(false);
+        CanonController.SetActive(false);
         // 倒した演出
         try
         {
@@ -337,7 +343,9 @@ public class BossController : MonoBehaviour
         {
             Debug.Log($"[{gameObject.name}] 死亡演出がキャンセルされました");
         }
-
+        OtherBoss1.SetActive(true);
+        OtherBoss2.SetActive(true);
+        CanonController.SetActive(false);
     }
 
     void UpdateHealthUI()
