@@ -109,6 +109,7 @@ public class AudioController : MonoBehaviour
     }
     void Start()
     {
+        SceneManager.LoadScene("Title");
         SoundManager.instance.PlayBGM("Title");
     }
 }
