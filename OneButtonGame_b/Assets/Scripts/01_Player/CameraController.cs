@@ -52,18 +52,15 @@ public class CameraController : MonoBehaviour
 
         InitializeCameras();
 
-        /*
         if (playerCamera != null)
         {
-            currentActiveCamera = allViewCamera;
+
             SwitchCamera(playerCamera);
         }
         else if (allViewCamera != null)
         {
-            currentActiveCamera = allViewCamera;
             SwitchCamera(allViewCamera);
         }
-        */
 
         ballTrackingCancellation = new CancellationTokenSource();
 
