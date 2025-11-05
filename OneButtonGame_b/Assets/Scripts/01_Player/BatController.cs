@@ -14,6 +14,10 @@ public class BatController : MonoBehaviour
     [Tooltip("左打ちのバットの位置と角度")]
     public Transform leftHandedStance;
 
+    [Header("プレイヤーの向き")]
+    public float rightStanceYRotation = 90f;
+    public float leftStanceYRotation = -90f;
+
     [Header("スイートスポット設定")]
     public Transform sweetSpot;
 
@@ -54,6 +58,8 @@ public class BatController : MonoBehaviour
     public float timeToReturnIdle = 0.2f;
 
     private Quaternion playerInitialRotation;
+    private Quaternion playerRightIdleRotation;
+    private Quaternion playerLeftIdleRotation;
 
     // 打席が変更されたことを通知するイベント
     public event Action<bool> OnStanceChanged;
@@ -68,6 +74,11 @@ public class BatController : MonoBehaviour
 
         OnStanceChanged += HandleStanceChange;
         if(playerController != null) playerController.SetAnimationStance(isRightHanded);
+
+        //if(playerController != null) playerInitialRotation = playerController.transform.rotation;
+
+        playerRightIdleRotation = Quaternion.Euler(0, rightStanceYRotation, 0);
+        playerLeftIdleRotation = Quaternion.Euler(0, leftStanceYRotation, 0);
     }
 
     void Start()
@@ -99,10 +110,10 @@ public class BatController : MonoBehaviour
             SetStance(false);
         }
 
-        if (Input.GetButtonDown("Fire1")) StartSwingSequence().Forget();
-
-        if(Input.GetButtonDown("Fire1"))
+        if (Input.GetButtonDown("Fire1"))
         {
+            SetStance(isRightHanded);
+            StartSwingSequence().Forget();
             StartCoroutine(ColliderOn());
         }
     }
@@ -128,6 +139,11 @@ public class BatController : MonoBehaviour
         transform.localPosition = targetStance.localPosition;
         transform.localRotation = targetStance.localRotation;
 
+        if(playerController != null)
+        {
+            playerController.transform.rotation = isRight ? playerRightIdleRotation : playerLeftIdleRotation;
+        }
+
         // 打席が変更されたことを通知
         OnStanceChanged?.Invoke(isRightHanded);
     }
@@ -146,7 +162,8 @@ public class BatController : MonoBehaviour
 
         playerController?.SetInputEnabled(false);
 
-        playerInitialRotation = playerController.transform.rotation;
+        //playerInitialRotation = playerController.transform.rotation;
+        Quaternion targetIdleRotation = isRightHanded ? playerRightIdleRotation : playerLeftIdleRotation;
 
         swingCts?.Cancel();
         swingCts = new CancellationTokenSource();
@@ -155,7 +172,7 @@ public class BatController : MonoBehaviour
         try
         {
             Transform idle = isRightHanded ? rightIdleStance : leftIdleStance;
-            Transform takeBack = isRightHanded ? rightTakeBackStance : leftHandedStance;
+            Transform takeBack = isRightHanded ? rightTakeBackStance : leftTakeBackStance;
             Transform impact = isRightHanded ? rightImpactStance : leftImpactStance;
             Transform follow = isRightHanded ? rightFollowThroughStance : leftFollowThroughStance;
 
@@ -165,36 +182,39 @@ public class BatController : MonoBehaviour
             Vector3 targetFollowPos = follow.localPosition;     Quaternion targetFollowRot = follow.localRotation;
 
             float currentSwingRotationAngle = isRightHanded ? playerSwingRotationAngle : -playerSwingRotationAngle;
+            float rotationToTakeBack = -currentSwingRotationAngle * 0.2f;
             float rotationToImpact = currentSwingRotationAngle * 0.6f;
             float rotationToFollow = currentSwingRotationAngle * 0.4f;
 
             // 1.構え → テイクバック
-            await MoveAndRotateBatAsync(targetImpactPos, targetImpactRot, timeToTakeBack, token, rotationToImpact);
+            await MoveAndRotateBatAsync(targetTakeBackPos, targetTakeBackRot, timeToTakeBack, token, rotationToTakeBack);
 
             // 2.テイクバック → インパクト
-            //await MoveAndRotateBatAsync(targetImpactPos, targetImpactRot, timeToImpact, token, rotationToImpact);
+            await MoveAndRotateBatAsync(targetImpactPos, targetImpactRot, timeToImpact, token, rotationToImpact);
 
             // 3.インパクト → フォロースルー
             await MoveAndRotateBatAsync(targetFollowPos, targetFollowRot, timeToFollowThrough, token, rotationToFollow);
 
-            Quaternion currentRotation = playerController.transform.rotation;
-            Quaternion rotaionDifference = Quaternion.Inverse(playerController.transform.rotation) * playerInitialRotation;
+            //Quaternion currentRotation = playerController.transform.rotation;
+            Quaternion rotaionDifference = Quaternion.Inverse(playerController.transform.rotation) * targetIdleRotation;
             float rotaionToReturnTotal = rotaionDifference.eulerAngles.y;
 
             if (rotaionToReturnTotal > 180) rotaionToReturnTotal -= 360f;
             else if (rotaionToReturnTotal < -180) rotaionToReturnTotal += 360f;
 
             float totalReturnDuration = timeToTakeBack + timeToImpact + timeToFollowThrough;
+
             float returnRotationInpact = rotaionToReturnTotal * (timeToFollowThrough / totalReturnDuration);
             float returnRotationTakeBack = rotaionToReturnTotal * (timeToImpact / totalReturnDuration);
             float returnRotationIdle = rotaionToReturnTotal * (timeToTakeBack / totalReturnDuration);
 
             // 4.フォロースルー → 構え
             await MoveAndRotateBatAsync(targetImpactPos, targetImpactRot, timeToFollowThrough, token, returnRotationInpact);
-            await MoveAndRotateBatAsync(targetIdlePos, targetIdleRot, timeToTakeBack, token, returnRotationIdle + returnRotationTakeBack);
+            await MoveAndRotateBatAsync(targetTakeBackPos, targetTakeBackRot, timeToImpact, token, returnRotationTakeBack);
+            await MoveAndRotateBatAsync(targetIdlePos, targetIdleRot, timeToTakeBack, token, returnRotationIdle);
 
             SetStance(isRightHanded);
-            if (playerController != null) playerController.transform.rotation = playerInitialRotation;
+            if (playerController != null) playerController.transform.rotation = targetIdleRotation;
         }
         catch (OperationCanceledException)
         {
