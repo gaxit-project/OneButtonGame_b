@@ -68,8 +68,7 @@ public class Ball : MonoBehaviour
     private bool isWeakHit = false;
     private bool isRecordingTrajectory = false;
     private bool predictionDone = false;
-    public bool justHit = false;    //以下打撃時の時間操作のため追加
-    public bool lateHit = false;
+    private bool firstTach = true;    //以下打撃時の時間操作のため追加
 
     private List<Vector3> trajectoryPoints = new List<Vector3>();
     
@@ -86,6 +85,7 @@ public class Ball : MonoBehaviour
     private GameObject timingMarkerInstance;
     private Coroutine markerAnimationCoroutine;
     public GameObject targetObject;
+    public TimeManager timeManager;
 
     public static event Action OnBallDestroyed;
 
@@ -182,11 +182,11 @@ public class Ball : MonoBehaviour
     // 他のオブジェクトと衝突した時に呼び出される
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Bat"))
+        if (collision.gameObject.CompareTag("Bat") && firstTach)
         {
-            justHit = true;
+            firstTach = false;
             if (hasBeenHit) return;
-
+            StartCoroutine(timeManager.TimeLate());
             HideMarker();
             hasBeenHit = true;
             // 打撃音を再生
@@ -376,7 +376,7 @@ public class Ball : MonoBehaviour
             hasBeenHit = true;
 
         }
-        else if (collision.gameObject.CompareTag("Ground") && !isGraunded)
+        else if (collision.gameObject.CompareTag("Ground") && !isGraunded && firstTach)
         {
             touchGround++;
             if (cameraController != null && touchGround >= 3)
@@ -386,7 +386,7 @@ public class Ball : MonoBehaviour
                 ResetCameraAfterDelayAcync().Forget();
             }
         }
-        else if (collision.gameObject.CompareTag("Wall"))
+        else if (collision.gameObject.CompareTag("Wall") && firstTach)
         {
             if (cameraController != null)
             {
@@ -395,7 +395,7 @@ public class Ball : MonoBehaviour
                 ResetCameraAfterDelayAcync().Forget();
             }
         }
-        else if (collision.gameObject.CompareTag("Boss"))
+        else if (collision.gameObject.CompareTag("Boss") && firstTach)
         {
             BossController boss = collision.gameObject.GetComponent<BossController>();
 
@@ -426,7 +426,7 @@ public class Ball : MonoBehaviour
                 ResetCameraAfterDelayAcync().Forget();
             }
         }
-        else if (collision.gameObject.CompareTag("Player"))
+        else if (collision.gameObject.CompareTag("Player") && firstTach)
         {
             if (!hasBeenHit)
             {
@@ -443,6 +443,7 @@ public class Ball : MonoBehaviour
             HideMarker();
             ResetCameraAfterDelayAcync().Forget();
         }
+        firstTach = true;
     }
 
     /// <summary>
@@ -450,7 +451,7 @@ public class Ball : MonoBehaviour
     /// </summary>
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Strike"))
+        if (other.gameObject.CompareTag("Strike") && firstTach)
         {
             Debug.Log("ストライク");
 
@@ -471,7 +472,7 @@ public class Ball : MonoBehaviour
                 ResetCameraAfterDelayAcync().Forget();
             }
         }
-        else if (other.gameObject.CompareTag("Foul"))
+        else if (other.gameObject.CompareTag("Foul") && firstTach)
         {
             Debug.Log("ファール");
 
@@ -484,6 +485,7 @@ public class Ball : MonoBehaviour
                 ResetCameraAfterDelayAcync().Forget();
             }
         }
+        firstTach = true;
     }
 
     /// <summary>

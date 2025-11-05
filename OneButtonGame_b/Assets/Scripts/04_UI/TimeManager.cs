@@ -8,51 +8,28 @@ public class TimeManager : MonoBehaviour
 
     private bool isPaused = false;
     private bool isSlowing = false;
-    public Ball ball;
+    private bool onece = true;
 
     void Update()
     {
-
-        if (ball.justHit && !isPaused && !isSlowing)
-        {
-            StartCoroutine(TimeLate());
-        }
-
-        if (!gameManager.IsGameActive && !isPaused && !isSlowing && Input.GetKeyDown("Fire1"))
+        if (!gameManager.IsGameActive && !isPaused && !isSlowing && Input.GetButtonDown("Fire1"))
         {
             Time.timeScale = 3f;
         }
-        else if (gameManager.IsGameActive && !isPaused && !isSlowing && Input.GetKey("Fire1"))
+
+        if (!gameManager.IsGameActive && !isPaused && !isSlowing && Input.GetButtonUp("Fire1"))
         {
             Time.timeScale = 1f;
         }
 
-        if (!isPaused && !isSlowing && Input.GetKeyUp(KeyCode.O))
+        if (gameManager.IsGameActive && Time.timeScale == 3f && onece)
         {
+            onece = false;
             Time.timeScale = 1f;
         }
-
-        /*if (Input.GetKeyDown(KeyCode.P))
-        {
-            Pause();
-        }*/
     }
-    /*
-    public void Pause()   //àÍìxñ⁄ÇÕí‚é~ìÒìxñ⁄ÇÕçƒäJ
-    {
-        if (isPaused == false)
-        {
-            Time.timeScale = 0f;
-            isPaused = true;
-        }
-        else
-        {
-            Time.timeScale = 1f;
-            isPaused = false;
-        }
-    }*/
 
-    IEnumerator TimeLate()
+    public IEnumerator TimeLate()
     {
         isSlowing = true;
 
@@ -65,8 +42,6 @@ public class TimeManager : MonoBehaviour
 
         Time.timeScale = 1f;
         Time.fixedDeltaTime = originalFixedDeltaTime;
-
-        ball.justHit = false;
         isSlowing = false;
     }
 
