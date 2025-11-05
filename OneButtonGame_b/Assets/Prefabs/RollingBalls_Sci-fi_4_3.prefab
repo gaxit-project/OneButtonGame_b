@@ -310,9 +310,8 @@ MonoBehaviour:
   isChanceBall: 1
   hard: 0
   isGraunded: 0
-  justHit: 0
-  lateHit: 0
   targetObject: {fileID: 1582310189368563943}
+  timeManager: {fileID: 7031077728845637069, guid: a1d83e34a0c39c44cae68d1b20d243a9, type: 3}
 --- !u!1001 &1582310189368532549
 PrefabInstance:
   m_ObjectHideFlags: 0

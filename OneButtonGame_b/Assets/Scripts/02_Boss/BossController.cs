@@ -37,6 +37,8 @@ public class BossController : MonoBehaviour
     public GameObject OtherBoss1;
     public GameObject OtherBoss2;
     public GameObject CanonController;
+    public BossController AnotherBoss1;
+    public BossController AnotherBoss2;
 
     //private bool isDead = false;
     public bool attack = false;
@@ -310,8 +312,17 @@ public class BossController : MonoBehaviour
         {
             col.enabled = false;
         }
-        OtherBoss1.SetActive(false);
-        OtherBoss2.SetActive(false);
+
+        if (!AnotherBoss1.isDead)
+        {
+            OtherBoss1.SetActive(false);
+        }
+
+        if (!AnotherBoss2.isDead)
+        {
+            OtherBoss2.SetActive(false);
+        }
+
         CanonController.SetActive(false);
         // 倒した演出
         try
@@ -343,9 +354,18 @@ public class BossController : MonoBehaviour
         {
             Debug.Log($"[{gameObject.name}] 死亡演出がキャンセルされました");
         }
-        OtherBoss1.SetActive(true);
-        OtherBoss2.SetActive(true);
-        CanonController.SetActive(false);
+
+        if (!AnotherBoss1.isDead)
+        {
+            OtherBoss1.SetActive(true);
+        }
+
+        if (!AnotherBoss2.isDead)
+        {
+            OtherBoss2.SetActive(true);
+        }
+
+        CanonController.SetActive(true);
     }
 
     void UpdateHealthUI()

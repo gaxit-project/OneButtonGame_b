@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TimeManager : MonoBehaviour
 {
-    public GameManager gameManager;
+    //public GameManager gameManager;
 
     private bool isPaused = false;
     private bool isSlowing = false;
@@ -12,17 +12,19 @@ public class TimeManager : MonoBehaviour
 
     void Update()
     {
-        if (!gameManager.IsGameActive && !isPaused && !isSlowing && Input.GetButtonDown("Fire1"))
+        if (!GameManager.Instance.IsGameActive && !isPaused && !isSlowing && Input.GetButtonDown("Fire1"))
         {
-            Time.timeScale = 3f;
+            if (Time.timeScale <= 2f)
+            {
+                Time.timeScale = Time.timeScale * 2;
+            }
+            else
+            {
+                Time.timeScale = 1f;
+            }
         }
 
-        if (!gameManager.IsGameActive && !isPaused && !isSlowing && Input.GetButtonUp("Fire1"))
-        {
-            Time.timeScale = 1f;
-        }
-
-        if (gameManager.IsGameActive && Time.timeScale == 3f && onece)
+        if (GameManager.Instance.IsGameActive && Time.timeScale != 1f && onece)
         {
             onece = false;
             Time.timeScale = 1f;
@@ -43,6 +45,12 @@ public class TimeManager : MonoBehaviour
         Time.timeScale = 1f;
         Time.fixedDeltaTime = originalFixedDeltaTime;
         isSlowing = false;
+    }
+
+    private void OnDestroy()
+    {
+        Time.timeScale = 1f;
+        Time.fixedDeltaTime = 0.02f;
     }
 
 }

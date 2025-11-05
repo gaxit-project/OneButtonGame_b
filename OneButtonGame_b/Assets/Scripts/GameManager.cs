@@ -47,6 +47,7 @@ public class GameManager : MonoBehaviour
 
     [Header("デバッグ用")]
     public bool movieSkip = false;
+    public bool Copy;
 
     private string bossFullExplanationText = "";
     private string coreFullExplanationText = "";
@@ -99,6 +100,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Copy = IsGameActive;
         if (IsGameActive)
         {
             remainingTime -= Time.deltaTime;
@@ -108,6 +110,7 @@ public class GameManager : MonoBehaviour
                 remainingTime = 0;
                 IsGameActive = false;
                 Debug.Log("時間切れ！ゲームオーバー");
+                AudioController.instance.ToGameOver();
             }
 
             UpdateTimerUI();
