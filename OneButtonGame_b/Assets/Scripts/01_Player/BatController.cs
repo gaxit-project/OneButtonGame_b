@@ -110,12 +110,12 @@ public class BatController : MonoBehaviour
             SetStance(false);
         }
 
-        if (Input.GetButtonDown("Fire1"))
+        /*if (Input.GetButtonDown("Fire1"))
         {
             SetStance(isRightHanded);
             StartSwingSequence().Forget();
             StartCoroutine(ColliderOn());
-        }
+        }*/
     }
 
     public void SetInputEnabled(bool enabled)

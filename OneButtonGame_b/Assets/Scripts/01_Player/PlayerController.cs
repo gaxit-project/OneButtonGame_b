@@ -99,7 +99,11 @@ public class PlayerController : MonoBehaviour
             float animationSpeed = Mathf.Abs(x);
             if (animator != null) animator.SetFloat("moveSpeed", animationSpeed);
 
-            if (Input.GetButtonDown("Fire1")) TriggerHit();
+            if (Input.GetButtonDown("Fire1"))
+            {
+                TriggerHit();
+                animator.Play("Swing");
+            }
         }
         else
         {
