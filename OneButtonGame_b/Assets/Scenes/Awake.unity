@@ -248,6 +248,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   timerPanel: {fileID: 0}
   timerText: {fileID: 0}
+  countdownPanel: {fileID: 0}
   countdownText: {fileID: 0}
   playerHealthPanel: {fileID: 0}
   BossHpPanel: {fileID: 0}

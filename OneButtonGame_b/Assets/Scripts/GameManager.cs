@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     [Header("UIコンポーネント")]
     public GameObject timerPanel;
     public TextMeshProUGUI timerText;
+    public GameObject countdownPanel;
     public TextMeshProUGUI countdownText;
     public GameObject playerHealthPanel;
     public GameObject BossHpPanel;
@@ -93,7 +94,19 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+         timerPanel = GameObject.Find("TimerPanel");
+         timerText = timerPanel.GetComponent<TextMeshProUGUI>();
+         countdownPanel = GameObject.Find("CountDown");
+         countdownText = countdownPanel.GetComponent<TextMeshProUGUI>();
+         playerHealthPanel = GameObject.Find("PlayerHearts");
+         BossHpPanel = GameObject.Find("BossHP");
+         coreStatusPanel = GameObject.Find("CoreStatus");
+         coreStatusText = coreStatusPanel.GetComponent<TextMeshProUGUI>();
+         //fpsText = GameObject.Find("FPS");
+         bossExplanationPanel = GameObject.Find("");
+         bossExplanationText = bossExplanationPanel.GetComponent<TextMeshProUGUI>();
+         coreExplanationPanel = GameObject.Find("");
+         coreExplanationText = coreExplanationPanel.GetComponent<TextMeshProUGUI>();
     }
 
 
