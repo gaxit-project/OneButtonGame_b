@@ -68,7 +68,8 @@ public class Ball : MonoBehaviour
     private bool isWeakHit = false;
     private bool isRecordingTrajectory = false;
     private bool predictionDone = false;
-    private bool firstTach = true;    //以下打撃時の時間操作のため追加
+    public bool justHit = false;    //以下打撃時の時間操作のため追加
+    public bool lateHit = false;
 
     private List<Vector3> trajectoryPoints = new List<Vector3>();
     
@@ -85,7 +86,6 @@ public class Ball : MonoBehaviour
     private GameObject timingMarkerInstance;
     private Coroutine markerAnimationCoroutine;
     public GameObject targetObject;
-    public TimeManager timeManager;
 
     public static event Action OnBallDestroyed;
 
@@ -182,11 +182,11 @@ public class Ball : MonoBehaviour
     // 他のオブジェクトと衝突した時に呼び出される
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Bat") && firstTach)
+        if (collision.gameObject.CompareTag("Bat"))
         {
-            firstTach = false;
+            justHit = true;
             if (hasBeenHit) return;
-            StartCoroutine(timeManager.TimeLate());
+
             HideMarker();
             hasBeenHit = true;
             // 打撃音を再生
@@ -376,26 +376,28 @@ public class Ball : MonoBehaviour
             hasBeenHit = true;
 
         }
-        else if (collision.gameObject.CompareTag("Ground") && !isGraunded && firstTach)
+        else if (collision.gameObject.CompareTag("Ground") && !isGraunded)
         {
             touchGround++;
             if (cameraController != null && touchGround >= 3)
             {
                 isGraunded = true;
                 StopAndSaveTrajectory();
-                ResetCameraAfterDelayAcync().Forget();
+                //ResetCameraAfterDelayAcync().Forget();
+                DestroyBallAndNotifyAsync().Forget();
             }
         }
-        else if (collision.gameObject.CompareTag("Wall") && firstTach)
+        else if (collision.gameObject.CompareTag("Wall"))
         {
             if (cameraController != null)
             {
                 isGraunded = true;
                 StopAndSaveTrajectory();
                 ResetCameraAfterDelayAcync().Forget();
+                //DestroyBallAndNotifyAsync().Forget();
             }
         }
-        else if (collision.gameObject.CompareTag("Boss") && firstTach)
+        else if (collision.gameObject.CompareTag("Boss"))
         {
             BossController boss = collision.gameObject.GetComponent<BossController>();
 
@@ -426,7 +428,7 @@ public class Ball : MonoBehaviour
                 ResetCameraAfterDelayAcync().Forget();
             }
         }
-        else if (collision.gameObject.CompareTag("Player") && firstTach)
+        else if (collision.gameObject.CompareTag("Player"))
         {
             if (!hasBeenHit)
             {
@@ -443,7 +445,6 @@ public class Ball : MonoBehaviour
             HideMarker();
             ResetCameraAfterDelayAcync().Forget();
         }
-        firstTach = true;
     }
 
     /// <summary>
@@ -451,7 +452,7 @@ public class Ball : MonoBehaviour
     /// </summary>
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Strike") && firstTach)
+        if (other.gameObject.CompareTag("Strike"))
         {
             Debug.Log("ストライク");
 
@@ -472,7 +473,7 @@ public class Ball : MonoBehaviour
                 ResetCameraAfterDelayAcync().Forget();
             }
         }
-        else if (other.gameObject.CompareTag("Foul") && firstTach)
+        else if (other.gameObject.CompareTag("Foul"))
         {
             Debug.Log("ファール");
 
@@ -485,7 +486,6 @@ public class Ball : MonoBehaviour
                 ResetCameraAfterDelayAcync().Forget();
             }
         }
-        firstTach = true;
     }
 
     /// <summary>
@@ -707,6 +707,28 @@ public class Ball : MonoBehaviour
 
             delayTime = 0;
 
+            Destroy(gameObject);
+        }
+        catch (OperationCanceledException)
+        {
+
+        }
+    }
+
+    async UniTaskVoid DestroyBallAndNotifyAsync()
+    {
+        var cancellationToken = this.GetCancellationTokenOnDestroy();
+
+        try
+        {
+            // resetDelayと同じ時間待機
+            await UniTask.Delay(TimeSpan.FromSeconds(resetDelay), cancellationToken: cancellationToken);
+
+            // CanonController に通知
+            OnBallDestroyed?.Invoke();
+
+            // 破棄
+            await UniTask.Delay(TimeSpan.FromSeconds(0.5f));
             Destroy(gameObject);
         }
         catch (OperationCanceledException)
