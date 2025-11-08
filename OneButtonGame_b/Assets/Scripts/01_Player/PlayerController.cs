@@ -41,7 +41,7 @@ public class PlayerController : MonoBehaviour
     private bool hitBat = false;
     private bool canSwing = true;
     private bool isDead = false;
-    private bool isSwinging = false;
+    public  bool isSwinging = false;
 
     private Animator animator;
     private CharacterController controller;

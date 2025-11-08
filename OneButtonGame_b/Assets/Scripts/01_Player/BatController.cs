@@ -101,21 +101,24 @@ public class BatController : MonoBehaviour
         // ‘ÅÈ‚ÌØ‚è‘Ö‚¦
         float horizontalInput = Input.GetAxis("Horizontal");
 
-        if (horizontalInput > 0 && !isRightHanded)
+        if (!playerController.isSwinging)
         {
-            SetStance(true);
-        }
-        else if (horizontalInput < 0 && isRightHanded)
-        {
-            SetStance(false);
+            if (horizontalInput > 0 && !isRightHanded)
+            {
+                SetStance(true);
+            }
+            else if (horizontalInput < 0 && isRightHanded)
+            {
+                SetStance(false);
+            }
         }
 
-        /*if (Input.GetButtonDown("Fire1"))
+        if (Input.GetButtonDown("Fire1"))
         {
-            SetStance(isRightHanded);
+            //SetStance(isRightHanded);
             //StartSwingSequence().Forget();
             StartCoroutine(ColliderOn());
-        }*/
+        }
     }
 
     public void SetInputEnabled(bool enabled)
