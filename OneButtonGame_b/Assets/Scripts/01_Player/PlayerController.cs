@@ -41,6 +41,7 @@ public class PlayerController : MonoBehaviour
     private bool hitBat = false;
     private bool canSwing = true;
     private bool isDead = false;
+    private bool isSwinging = false;
 
     private Animator animator;
     private CharacterController controller;
@@ -56,7 +57,7 @@ public class PlayerController : MonoBehaviour
         UpdateHealthUI();
 
         animator = GetComponentInChildren<Animator>();
-        if(animator == null ) animator = GetComponent<Animator>();
+        if (animator == null) animator = GetComponent<Animator>();
         controller = GetComponent<CharacterController>();
 
         // 打席変更イベントを購読
@@ -75,7 +76,7 @@ public class PlayerController : MonoBehaviour
 
         damageFlashCancellation = new CancellationTokenSource();
 
-        if(damageFlashOverlay != null)
+        if (damageFlashOverlay != null)
         {
             damageFlashOverlay.color = Color.clear;
             damageFlashOverlay.enabled = false;
@@ -87,19 +88,39 @@ public class PlayerController : MonoBehaviour
         if (isInputEnabled)
         {
             float x = Input.GetAxis("Horizontal");
-
             Vector3 move = Vector3.right * x;
             if (move.magnitude > 1f)
             {
                 move.Normalize();
             }
 
-            controller.Move(move * moveSpeed * Time.deltaTime);
+            if (x > 0)
+            {
+                animator.SetBool("isMirrored", false);
+                Debug.Log("Mirror OFF");
+            }
+            else if (x < 0)
+            {
+                animator.SetBool("isMirrored", true);
+                Debug.Log("Mirror ON");
+            }
+
+
+            if (!isSwinging)
+            {
+                controller.Move(move * moveSpeed * Time.deltaTime);
+            }
 
             float animationSpeed = Mathf.Abs(x);
             if (animator != null) animator.SetFloat("moveSpeed", animationSpeed);
 
-            if (Input.GetButtonDown("Fire1")) TriggerHit();
+            if (Input.GetButtonDown("Fire1") && !isSwinging)
+            {
+                isSwinging = true;
+                StartCoroutine(WaitSwing());
+                TriggerHit();
+                animator.Play("Swing");
+            }
         }
         else
         {
@@ -140,7 +161,7 @@ public class PlayerController : MonoBehaviour
 
     public void TriggerHit()
     {
-        if (animator != null && isInputEnabled) animator.SetTrigger("Hit"); 
+        if (animator != null && isInputEnabled) animator.SetTrigger("Hit");
     }
 
     /// <summary>
@@ -218,13 +239,13 @@ public class PlayerController : MonoBehaviour
 
         UpdateHealthUI();
 
-        if(damageFlashOverlay != null)
+        if (damageFlashOverlay != null)
         {
             damageFlashCancellation?.Cancel();
             damageFlashCancellation.Dispose();
             damageFlashCancellation = new CancellationTokenSource();
             FlashDamageEffectAsync(damageFlashCancellation.Token).Forget();
-            
+
         }
 
         if (currentHealth <= 0)
@@ -247,7 +268,7 @@ public class PlayerController : MonoBehaviour
             Color startColor = damageFlashColor;
             Color endColor = new Color(startColor.r, startColor.g, startColor.b, 0f);
 
-            while(elapsedTime < flashFadeDuration)
+            while (elapsedTime < flashFadeDuration)
             {
                 token.ThrowIfCancellationRequested();
 
@@ -262,7 +283,7 @@ public class PlayerController : MonoBehaviour
         }
         catch (OperationCanceledException)
         {
-            if(damageFlashOverlay != null && !token.IsCancellationRequested)
+            if (damageFlashOverlay != null && !token.IsCancellationRequested)
             {
                 damageFlashOverlay.enabled = false;
             }
@@ -287,5 +308,12 @@ public class PlayerController : MonoBehaviour
 
         damageFlashCancellation?.Cancel();
         damageFlashCancellation?.Dispose();
+    }
+
+    IEnumerator WaitSwing()
+    {
+        yield return new WaitForSeconds(2.2f);
+        isSwinging = false;
+
     }
 }

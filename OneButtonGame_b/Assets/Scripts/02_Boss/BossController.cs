@@ -29,14 +29,20 @@ public class BossController : MonoBehaviour
     [Header("デバッグ用")]
     [SerializeField] private bool canAttack = true;
     [SerializeField] private bool isGettingHit = false;
-                     public bool isDead = false;
+    public bool isDead = false;
 
     private Animator anim;
     private CameraController cameraController;
     private CancellationTokenSource bossTaskCancellation;
+    public GameObject OtherBoss1;
+    public GameObject OtherBoss2;
+    public GameObject CanonController;
+    public BossController AnotherBoss1;
+    public BossController AnotherBoss2;
 
     //private bool isDead = false;
     public bool attack = false;
+    public bool bossStoping = false;
 
     void Awake()
     {
@@ -90,7 +96,7 @@ public class BossController : MonoBehaviour
         }
 
         Debug.Log($"[{gameObject.name}] {damage} ダメージ受けた！残りのHP: {currentHealth}");
-        
+
         if (damageDisplay != null)
         {
             damageDisplay.ShowDamage(damage);
@@ -100,7 +106,7 @@ public class BossController : MonoBehaviour
 
         bool isFinishingBlow = wasAlive && currentHealth <= 0;
 
-        if(currentHealth <= 0)
+        if (currentHealth <= 0)
         {
             if (wasAlive)
             {
@@ -217,7 +223,7 @@ public class BossController : MonoBehaviour
             // クールダウンタイマーを開始
             StartAttackCooldownTimerAsync(bossTaskCancellation.Token).Forget();
         }
-        catch(OperationCanceledException)
+        catch (OperationCanceledException)
         {
             Debug.Log($"[{gameObject.name}] 通常攻撃キャンセル");
             if (isDead)
@@ -227,7 +233,7 @@ public class BossController : MonoBehaviour
             }
             isGettingHit = false;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Debug.LogError($"[{gameObject.name}] 通常攻撃中にエラー発生: {ex.Message}\n {ex.StackTrace}");
             if (!isDead)
@@ -307,6 +313,17 @@ public class BossController : MonoBehaviour
             col.enabled = false;
         }
 
+        if (!AnotherBoss1.isDead)
+        {
+            OtherBoss1.SetActive(false);
+        }
+
+        if (!AnotherBoss2.isDead)
+        {
+            OtherBoss2.SetActive(false);
+        }
+
+        CanonController.SetActive(false);
         // 倒した演出
         try
         {
@@ -338,11 +355,22 @@ public class BossController : MonoBehaviour
             Debug.Log($"[{gameObject.name}] 死亡演出がキャンセルされました");
         }
 
+        if (!AnotherBoss1.isDead)
+        {
+            OtherBoss1.SetActive(true);
+        }
+
+        if (!AnotherBoss2.isDead)
+        {
+            OtherBoss2.SetActive(true);
+        }
+
+        CanonController.SetActive(true);
     }
 
     void UpdateHealthUI()
     {
-        if(healthText != null)
+        if (healthText != null)
         {
             healthText.text = $"{currentHealth} / {maxHealth}";
         }

@@ -19,7 +19,7 @@ public class CoreController : MonoBehaviour
 
     [Header("ダメージ演出")]
     public float flashDuration = 0.5f;
-    public Color damageFlashColor = new Color(1f, 1f, 1f, 0.392f); 
+    public Color damageFlashColor = new Color(1f, 1f, 1f, 0.392f);
 
     [Header("状態管理")]
     public Color normalColor = Color.green;
@@ -39,7 +39,7 @@ public class CoreController : MonoBehaviour
         UpdateStatusUI();
 
         flashCts = new CancellationTokenSource();
-        if(coreDamageOverlay != null)
+        if (coreDamageOverlay != null)
         {
             coreDamageOverlay.enabled = false;
             coreDamageOverlay.color = Color.clear;
@@ -48,7 +48,7 @@ public class CoreController : MonoBehaviour
 
     void Update()
     {
-        
+
     }
 
     public void TakeCoreDamage(int damage)
@@ -156,7 +156,7 @@ public class CoreController : MonoBehaviour
             Color startColor = damageFlashColor;
             Color endColor = new Color(startColor.r, startColor.g, startColor.b, 0);
 
-            while(elapsedTime < flashDuration)
+            while (elapsedTime < flashDuration)
             {
                 token.ThrowIfCancellationRequested();
 
@@ -172,7 +172,7 @@ public class CoreController : MonoBehaviour
         }
         catch (OperationCanceledException)
         {
-            if(coreDamageOverlay != null)
+            if (coreDamageOverlay != null)
             {
                 coreDamageOverlay.color = Color.clear;
                 coreDamageOverlay.enabled = false;
