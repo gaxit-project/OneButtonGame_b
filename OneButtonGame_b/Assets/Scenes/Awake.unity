@@ -248,7 +248,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   timerPanel: {fileID: 0}
   timerText: {fileID: 0}
-  countdownPanel: {fileID: 0}
   countdownText: {fileID: 0}
   playerHealthPanel: {fileID: 0}
   BossHpPanel: {fileID: 0}
@@ -269,7 +268,6 @@ MonoBehaviour:
   bossExplanationTextDuration: 4
   coreExplanationTextDuration: 3
   movieSkip: 0
-  Copy: 0
 --- !u!4 &990349748
 Transform:
   m_ObjectHideFlags: 0
@@ -678,6 +676,51 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2017821655
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2017821657}
+  - component: {fileID: 2017821656}
+  m_Layer: 0
+  m_Name: DataLogger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2017821656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2017821655}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecb929f2c43485640a8f17a7a4dfd383, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentDirectoryName: BattingLogs
+--- !u!4 &2017821657
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2017821655}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -687,3 +730,4 @@ SceneRoots:
   - {fileID: 990349748}
   - {fileID: 1874538694}
   - {fileID: 1312574163}
+  - {fileID: 2017821657}

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.1882762, g: 0.19113821, b: 0.19109797, a: 1}
+  m_IndirectSpecularColor: {r: 0.18827617, g: 0.19113809, b: 0.19109794, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -5328,51 +5328,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8652791052013691035, guid: 67eccdc7a909ac742bb3e315b799dcd2, type: 3}
   m_PrefabInstance: {fileID: 1695936486}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &916415293
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 916415295}
-  - component: {fileID: 916415294}
-  m_Layer: 0
-  m_Name: DataLogger
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &916415294
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 916415293}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ecb929f2c43485640a8f17a7a4dfd383, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  parentDirectoryName: BattingLogs
---- !u!4 &916415295
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 916415293}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &919781705
 GameObject:
   m_ObjectHideFlags: 0
@@ -7229,7 +7184,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1359254193}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.0005102087, y: 0.9983091, z: 0.057446547, w: 0.008866434}
+  m_LocalRotation: {x: -0.0005071863, y: 0.99830955, z: 0.057446577, w: 0.008813909}
   m_LocalPosition: {x: -15, y: 10, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -11899,7 +11854,6 @@ SceneRoots:
   - {fileID: 720914102}
   - {fileID: 585022513}
   - {fileID: 758118438}
-  - {fileID: 916415295}
   - {fileID: 1416859364}
   - {fileID: 25873369}
   - {fileID: 1458491640}
