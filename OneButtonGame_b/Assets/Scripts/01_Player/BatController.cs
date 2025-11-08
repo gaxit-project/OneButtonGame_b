@@ -110,12 +110,12 @@ public class BatController : MonoBehaviour
             SetStance(false);
         }
 
-        if (Input.GetButtonDown("Fire1"))
+        /*if (Input.GetButtonDown("Fire1"))
         {
             SetStance(isRightHanded);
             //StartSwingSequence().Forget();
             StartCoroutine(ColliderOn());
-        }
+        }*/
     }
 
     public void SetInputEnabled(bool enabled)
@@ -169,7 +169,7 @@ public class BatController : MonoBehaviour
         swingCts = new CancellationTokenSource();
         CancellationToken token = swingCts.Token;
 
-        try
+        /*try
         {
             Transform idle = isRightHanded ? rightIdleStance : leftIdleStance;
             Transform takeBack = isRightHanded ? rightTakeBackStance : leftTakeBackStance;
@@ -228,7 +228,7 @@ public class BatController : MonoBehaviour
 
             swingCts?.Dispose();
             swingCts = null;
-        }
+        }*/
     }
 
     private async UniTask MoveAndRotateBatAsync(Vector3 targetLocalPosition, Quaternion targetLocalRotation, float duration, CancellationToken token, float playerYRotationAmount)
