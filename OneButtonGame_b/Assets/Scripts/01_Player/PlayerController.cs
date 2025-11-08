@@ -95,7 +95,7 @@ public class PlayerController : MonoBehaviour
             }
 
             controller.Move(move * moveSpeed * Time.deltaTime);
-            
+
             float animationSpeed = Mathf.Abs(x);
             if (animator != null) animator.SetFloat("moveSpeed", animationSpeed);
 
@@ -112,13 +112,13 @@ public class PlayerController : MonoBehaviour
     }
 
     // プレイヤーがX軸方向に動かないように補正
-    /*private void LateUpdate()
+    private void LateUpdate()
     {
         Vector3 currentPosition = transform.position;
         currentPosition.y = 0f;
         currentPosition.z = 0f;
         transform.position = currentPosition;
-    }*/
+    }
 
     /// <summary>
     /// GameManagerからプレイヤーの操作可否を設定
