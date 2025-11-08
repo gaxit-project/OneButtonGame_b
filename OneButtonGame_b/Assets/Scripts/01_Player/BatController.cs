@@ -73,7 +73,7 @@ public class BatController : MonoBehaviour
         if (playerController == null) playerController = GetComponent<PlayerController>();
 
         OnStanceChanged += HandleStanceChange;
-        if(playerController != null) playerController.SetAnimationStance(isRightHanded);
+        if (playerController != null) playerController.SetAnimationStance(isRightHanded);
 
         //if(playerController != null) playerInitialRotation = playerController.transform.rotation;
 
@@ -83,7 +83,7 @@ public class BatController : MonoBehaviour
 
     void Start()
     {
-        if(rightHandedStance != null && leftHandedStance != null)
+        if (rightHandedStance != null && leftHandedStance != null)
         {
             SetStance(isRightHanded);
         }
@@ -101,11 +101,11 @@ public class BatController : MonoBehaviour
         // ‘ÅÈ‚ÌØ‚è‘Ö‚¦
         float horizontalInput = Input.GetAxis("Horizontal");
 
-        if(horizontalInput > 0 && !isRightHanded)
+        if (horizontalInput > 0 && !isRightHanded)
         {
             SetStance(true);
         }
-        else if(horizontalInput < 0 && isRightHanded)
+        else if (horizontalInput < 0 && isRightHanded)
         {
             SetStance(false);
         }
@@ -113,7 +113,7 @@ public class BatController : MonoBehaviour
         if (Input.GetButtonDown("Fire1"))
         {
             SetStance(isRightHanded);
-            StartSwingSequence().Forget();
+            //StartSwingSequence().Forget();
             StartCoroutine(ColliderOn());
         }
     }
@@ -122,7 +122,7 @@ public class BatController : MonoBehaviour
     {
         canInput = enabled;
 
-        if(!enabled && isSwinging) swingCts?.Cancel();
+        if (!enabled && isSwinging) swingCts?.Cancel();
     }
 
     /// <summary>
@@ -139,7 +139,7 @@ public class BatController : MonoBehaviour
         transform.localPosition = targetStance.localPosition;
         transform.localRotation = targetStance.localRotation;
 
-        if(playerController != null)
+        if (playerController != null)
         {
             playerController.transform.rotation = isRight ? playerRightIdleRotation : playerLeftIdleRotation;
         }
@@ -176,10 +176,10 @@ public class BatController : MonoBehaviour
             Transform impact = isRightHanded ? rightImpactStance : leftImpactStance;
             Transform follow = isRightHanded ? rightFollowThroughStance : leftFollowThroughStance;
 
-            Vector3 targetIdlePos = idle.localPosition;         Quaternion targetIdleRot = idle.localRotation;
+            Vector3 targetIdlePos = idle.localPosition; Quaternion targetIdleRot = idle.localRotation;
             Vector3 targetTakeBackPos = takeBack.localPosition; Quaternion targetTakeBackRot = takeBack.localRotation;
-            Vector3 targetImpactPos = impact.localPosition;     Quaternion targetImpactRot = impact.localRotation;
-            Vector3 targetFollowPos = follow.localPosition;     Quaternion targetFollowRot = follow.localRotation;
+            Vector3 targetImpactPos = impact.localPosition; Quaternion targetImpactRot = impact.localRotation;
+            Vector3 targetFollowPos = follow.localPosition; Quaternion targetFollowRot = follow.localRotation;
 
             float currentSwingRotationAngle = isRightHanded ? playerSwingRotationAngle : -playerSwingRotationAngle;
             float rotationToTakeBack = -currentSwingRotationAngle * 0.2f;
@@ -239,29 +239,29 @@ public class BatController : MonoBehaviour
 
         float playerRotationSpeed = 0f;
 
-        if(duration > 0)
+        if (duration > 0)
         {
             playerRotationSpeed = playerYRotationAmount / duration;
         }
 
-        if(duration <= 0)
+        if (duration <= 0)
         {
             transform.localPosition = targetLocalPosition;
             transform.localRotation = targetLocalRotation;
-            if(playerController != null && playerYRotationAmount != 0)
+            if (playerController != null && playerYRotationAmount != 0)
             {
                 playerController.transform.Rotate(0, playerYRotationAmount, 0, Space.World);
             }
 
             return;
-            
+
         }
 
-        while(elapsedTime < duration)
+        while (elapsedTime < duration)
         {
             token.ThrowIfCancellationRequested();
 
-            if(playerController != null && playerYRotationAmount != 0)
+            if (playerController != null && playerYRotationAmount != 0)
             {
                 float incrementalAngle = playerRotationSpeed * Time.deltaTime;
 
