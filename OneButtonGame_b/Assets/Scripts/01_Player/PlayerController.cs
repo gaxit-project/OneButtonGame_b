@@ -88,7 +88,9 @@ public class PlayerController : MonoBehaviour
         if (isInputEnabled)
         {
             float x = Input.GetAxis("Horizontal");
-            Vector3 move = Vector3.right * x;
+            float deadZone = 0.2f;
+            float speedToSet = (Mathf.Abs(x) < deadZone) ? 0f : x;
+            Vector3 move = Vector3.right * speedToSet;
             if (move.magnitude > 1f)
             {
                 move.Normalize();
@@ -111,8 +113,12 @@ public class PlayerController : MonoBehaviour
                 controller.Move(move * moveSpeed * Time.deltaTime);
             }
 
-            float animationSpeed = Mathf.Abs(x);
-            if (animator != null) animator.SetFloat("moveSpeed", animationSpeed);
+            //float animationSpeed = Mathf.Abs(x);
+
+            if (animator != null)
+            {
+                animator.SetFloat("moveSpeed", speedToSet);
+            }
 
             if (Input.GetButtonDown("Fire1") && !isSwinging)
             {

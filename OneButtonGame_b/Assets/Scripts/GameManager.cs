@@ -28,6 +28,7 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI bossExplanationText;
     public GameObject coreExplanationPanel;
     public TextMeshProUGUI coreExplanationText;
+    public GameObject loadingPanel;
 
 
     [Header("リザルトシーン名")]
@@ -98,6 +99,7 @@ public class GameManager : MonoBehaviour
         coreStatusPanel = GameObject.Find("CoreStatus");
         bossExplanationPanel = GameObject.Find("BossExplanationPanel");
         coreExplanationPanel = GameObject.Find("CoreExplanationPanel");
+        loadingPanel = GameObject.Find("LoadingPanel");
     }
 
 
@@ -160,6 +162,7 @@ public class GameManager : MonoBehaviour
         coreStatusPanel = FindUIElementByTag<Transform>("CoreStatusPanel")?.gameObject;
         coreStatusText = FindUIElementByTag<TextMeshProUGUI>("CoreStatusText");
         fpsText = FindUIElementByTag<TextMeshProUGUI>("FPSText");
+        loadingPanel = FindUIElementByTag<Transform>("LoadingPanel")?.gameObject;
 
         bossExplanationPanel = GameObject.Find("BossExplanationPanel");
         if (bossExplanationPanel != null)
@@ -185,10 +188,14 @@ public class GameManager : MonoBehaviour
             coreExplanationText = null;
         }
 
+        SetActiveIfNotNull(loadingPanel, true);
+
         BossController[] allBosses = FindObjectsOfType<BossController>();
         activeBosses = new List<BossController>(allBosses);
 
         if (timerText != null) UpdateTimerUI();
+
+
 
         SetGameUIActive(false);
         SetActiveIfNotNull(countdownText?.gameObject, false);
@@ -246,6 +253,7 @@ public class GameManager : MonoBehaviour
         bossExplanationText = null;
         coreExplanationPanel = null;
         coreExplanationText = null;
+        loadingPanel = null;
 
         playerController = null;
         canonController = null;
@@ -333,6 +341,9 @@ public class GameManager : MonoBehaviour
             if (cameraController != null && allViewMovieDuration > 0 && !movieSkip)
             {
                 Debug.Log("イントロムービー開始");
+
+                SetActiveIfNotNull(loadingPanel, false);
+
                 cameraController.StartAllViewMovie();
 
                 await UniTask.Delay(TimeSpan.FromSeconds(allViewMovieDuration));

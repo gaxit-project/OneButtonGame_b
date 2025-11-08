@@ -21,6 +21,7 @@ TagManager:
   - CoreStatusPanel
   - FxTemporaire
   - TimerPanel
+  - LoadingPanel
   layers:
   - Default
   - TransparentFX
