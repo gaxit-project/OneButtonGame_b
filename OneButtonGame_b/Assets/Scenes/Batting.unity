@@ -1209,13 +1209,33 @@ PrefabInstance:
       value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 2741603725416346755, guid: e36b780bb78527042976572132ca8f2a, type: 3}
+      propertyPath: OtherBoss1
+      value: 
+      objectReference: {fileID: 1213082883}
+    - target: {fileID: 2741603725416346755, guid: e36b780bb78527042976572132ca8f2a, type: 3}
+      propertyPath: OtherBoss2
+      value: 
+      objectReference: {fileID: 248090677}
+    - target: {fileID: 2741603725416346755, guid: e36b780bb78527042976572132ca8f2a, type: 3}
       propertyPath: healthText
       value: 
       objectReference: {fileID: 300861691}
     - target: {fileID: 2741603725416346755, guid: e36b780bb78527042976572132ca8f2a, type: 3}
+      propertyPath: AnotherBoss1
+      value: 
+      objectReference: {fileID: 1213082882}
+    - target: {fileID: 2741603725416346755, guid: e36b780bb78527042976572132ca8f2a, type: 3}
+      propertyPath: AnotherBoss2
+      value: 
+      objectReference: {fileID: 248090678}
+    - target: {fileID: 2741603725416346755, guid: e36b780bb78527042976572132ca8f2a, type: 3}
       propertyPath: damageDisplay
       value: 
       objectReference: {fileID: 1864356638}
+    - target: {fileID: 2741603725416346755, guid: e36b780bb78527042976572132ca8f2a, type: 3}
+      propertyPath: CanonController
+      value: 
+      objectReference: {fileID: 585022511}
     - target: {fileID: 2741603725416346755, guid: e36b780bb78527042976572132ca8f2a, type: 3}
       propertyPath: canonController
       value: 
@@ -1317,6 +1337,22 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e36b780bb78527042976572132ca8f2a, type: 3}
+--- !u!114 &152792773 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2741603725416346755, guid: e36b780bb78527042976572132ca8f2a, type: 3}
+  m_PrefabInstance: {fileID: 152792772}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 152792774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc7977cf34625d341b7fb3211df5fc68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &152792774 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4866066939302226835, guid: e36b780bb78527042976572132ca8f2a, type: 3}
+  m_PrefabInstance: {fileID: 152792772}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &154229655
 GameObject:
   m_ObjectHideFlags: 0
@@ -1841,13 +1877,33 @@ PrefabInstance:
       value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 5929230929691727137, guid: 58a0bebde930bb446b806c0b5d0fed0a, type: 3}
+      propertyPath: OtherBoss1
+      value: 
+      objectReference: {fileID: 1213082883}
+    - target: {fileID: 5929230929691727137, guid: 58a0bebde930bb446b806c0b5d0fed0a, type: 3}
+      propertyPath: OtherBoss2
+      value: 
+      objectReference: {fileID: 152792774}
+    - target: {fileID: 5929230929691727137, guid: 58a0bebde930bb446b806c0b5d0fed0a, type: 3}
       propertyPath: healthText
       value: 
       objectReference: {fileID: 449362924}
     - target: {fileID: 5929230929691727137, guid: 58a0bebde930bb446b806c0b5d0fed0a, type: 3}
+      propertyPath: AnotherBoss1
+      value: 
+      objectReference: {fileID: 1213082882}
+    - target: {fileID: 5929230929691727137, guid: 58a0bebde930bb446b806c0b5d0fed0a, type: 3}
+      propertyPath: AnotherBoss2
+      value: 
+      objectReference: {fileID: 152792773}
+    - target: {fileID: 5929230929691727137, guid: 58a0bebde930bb446b806c0b5d0fed0a, type: 3}
       propertyPath: damageDisplay
       value: 
       objectReference: {fileID: 1514249887}
+    - target: {fileID: 5929230929691727137, guid: 58a0bebde930bb446b806c0b5d0fed0a, type: 3}
+      propertyPath: CanonController
+      value: 
+      objectReference: {fileID: 585022511}
     - target: {fileID: 5929230929691727137, guid: 58a0bebde930bb446b806c0b5d0fed0a, type: 3}
       propertyPath: canonController
       value: 
@@ -1945,6 +2001,22 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 58a0bebde930bb446b806c0b5d0fed0a, type: 3}
+--- !u!1 &248090677 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4922633288675393353, guid: 58a0bebde930bb446b806c0b5d0fed0a, type: 3}
+  m_PrefabInstance: {fileID: 248090676}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &248090678 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5929230929691727137, guid: 58a0bebde930bb446b806c0b5d0fed0a, type: 3}
+  m_PrefabInstance: {fileID: 248090676}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 248090677}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc7977cf34625d341b7fb3211df5fc68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &252003700
 GameObject:
   m_ObjectHideFlags: 0
@@ -5169,7 +5241,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5234630380846166485, guid: 604623a2410f16f43ab902289b692433, type: 3}
   m_PrefabInstance: {fileID: 1213082881}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1213082883}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 155930486a2e8924ea40bce111daaefc, type: 3}
@@ -6469,13 +6541,33 @@ PrefabInstance:
       value: 400
       objectReference: {fileID: 0}
     - target: {fileID: 2225373241625268831, guid: 604623a2410f16f43ab902289b692433, type: 3}
+      propertyPath: OtherBoss1
+      value: 
+      objectReference: {fileID: 152792774}
+    - target: {fileID: 2225373241625268831, guid: 604623a2410f16f43ab902289b692433, type: 3}
+      propertyPath: OtherBoss2
+      value: 
+      objectReference: {fileID: 248090677}
+    - target: {fileID: 2225373241625268831, guid: 604623a2410f16f43ab902289b692433, type: 3}
       propertyPath: healthText
       value: 
       objectReference: {fileID: 989053375}
     - target: {fileID: 2225373241625268831, guid: 604623a2410f16f43ab902289b692433, type: 3}
+      propertyPath: AnotherBoss1
+      value: 
+      objectReference: {fileID: 152792773}
+    - target: {fileID: 2225373241625268831, guid: 604623a2410f16f43ab902289b692433, type: 3}
+      propertyPath: AnotherBoss2
+      value: 
+      objectReference: {fileID: 248090678}
+    - target: {fileID: 2225373241625268831, guid: 604623a2410f16f43ab902289b692433, type: 3}
       propertyPath: damageDisplay
       value: 
       objectReference: {fileID: 870464265}
+    - target: {fileID: 2225373241625268831, guid: 604623a2410f16f43ab902289b692433, type: 3}
+      propertyPath: CanonController
+      value: 
+      objectReference: {fileID: 585022511}
     - target: {fileID: 2225373241625268831, guid: 604623a2410f16f43ab902289b692433, type: 3}
       propertyPath: canonController
       value: 
@@ -6577,6 +6669,22 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 604623a2410f16f43ab902289b692433, type: 3}
+--- !u!114 &1213082882 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2225373241625268831, guid: 604623a2410f16f43ab902289b692433, type: 3}
+  m_PrefabInstance: {fileID: 1213082881}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1213082883}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc7977cf34625d341b7fb3211df5fc68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &1213082883 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4741984893379413449, guid: 604623a2410f16f43ab902289b692433, type: 3}
+  m_PrefabInstance: {fileID: 1213082881}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1220461587 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4535851181414813074, guid: cf5a51482ef4cdf4a88228e9fd8c9038, type: 3}
@@ -8391,7 +8499,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6550669469375198909, guid: 58a0bebde930bb446b806c0b5d0fed0a, type: 3}
   m_PrefabInstance: {fileID: 248090676}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 248090677}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 155930486a2e8924ea40bce111daaefc, type: 3}
@@ -9887,7 +9995,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4550915056635328681, guid: e36b780bb78527042976572132ca8f2a, type: 3}
   m_PrefabInstance: {fileID: 152792772}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 152792774}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 155930486a2e8924ea40bce111daaefc, type: 3}
