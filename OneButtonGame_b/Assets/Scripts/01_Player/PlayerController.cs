@@ -88,7 +88,7 @@ public class PlayerController : MonoBehaviour
         if (isInputEnabled)
         {
             float x = Input.GetAxis("Horizontal");
-            float deadZone = 0.5f;
+            float deadZone = 0.2f;
             float speedToSet = (Mathf.Abs(x) < deadZone) ? 0f : x;
             Vector3 move = Vector3.right * speedToSet;
             if (move.magnitude > 1f)
