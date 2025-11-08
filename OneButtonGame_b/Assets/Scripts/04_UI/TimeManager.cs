@@ -4,55 +4,34 @@ using UnityEngine;
 
 public class TimeManager : MonoBehaviour
 {
-    public GameManager gameManager;
+    //public GameManager gameManager;
 
     private bool isPaused = false;
     private bool isSlowing = false;
-    public Ball ball;
+    private bool onece = true;
 
     void Update()
     {
-
-        if (ball.justHit && !isPaused && !isSlowing)
+        if (!GameManager.Instance.IsGameActive && !isPaused && !isSlowing && Input.GetButtonDown("Fire1"))
         {
-            StartCoroutine(TimeLate());
+            if (Time.timeScale <= 2f)
+            {
+                Time.timeScale = Time.timeScale * 2;
+            }
+            else
+            {
+                Time.timeScale = 1f;
+            }
         }
 
-        if (!gameManager.IsGameActive && !isPaused && !isSlowing && Input.GetKeyDown("Fire1"))
+        if (GameManager.Instance.IsGameActive && Time.timeScale != 1f && onece)
         {
-            Time.timeScale = 3f;
-        }
-        else if (gameManager.IsGameActive && !isPaused && !isSlowing && Input.GetKey("Fire1"))
-        {
+            onece = false;
             Time.timeScale = 1f;
         }
-
-        if (!isPaused && !isSlowing && Input.GetKeyUp(KeyCode.O))
-        {
-            Time.timeScale = 1f;
-        }
-
-        /*if (Input.GetKeyDown(KeyCode.P))
-        {
-            Pause();
-        }*/
     }
-    /*
-    public void Pause()   //ˆê“x–Ú‚Í’âŽ~“ñ“x–Ú‚ÍÄŠJ
-    {
-        if (isPaused == false)
-        {
-            Time.timeScale = 0f;
-            isPaused = true;
-        }
-        else
-        {
-            Time.timeScale = 1f;
-            isPaused = false;
-        }
-    }*/
 
-    IEnumerator TimeLate()
+    /*public IEnumerator TimeLate()
     {
         isSlowing = true;
 
@@ -65,9 +44,14 @@ public class TimeManager : MonoBehaviour
 
         Time.timeScale = 1f;
         Time.fixedDeltaTime = originalFixedDeltaTime;
-
-        ball.justHit = false;
         isSlowing = false;
+    }*/
+
+    private void OnDestroy()
+    {
+        Time.timeScale = 1f;
+        Time.fixedDeltaTime = 0.02f;
     }
 
 }
+

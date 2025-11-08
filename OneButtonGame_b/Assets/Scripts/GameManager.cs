@@ -92,7 +92,12 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        timerPanel = GameObject.Find("TimerPanel");
+        playerHealthPanel = GameObject.Find("PlayerHearts");
+        BossHpPanel = GameObject.Find("BossHP");
+        coreStatusPanel = GameObject.Find("CoreStatus");
+        bossExplanationPanel = GameObject.Find("BossExplanationPanel");
+        coreExplanationPanel = GameObject.Find("CoreExplanationPanel");
     }
 
 
@@ -108,7 +113,6 @@ public class GameManager : MonoBehaviour
                 remainingTime = 0;
                 IsGameActive = false;
                 Debug.Log("時間切れ！ゲームオーバー");
-
                 AudioController.instance.ToGameOver();
             }
 
@@ -250,14 +254,14 @@ public class GameManager : MonoBehaviour
 
     private void CancelAndDisposeToken()
     {
-        if(gameLoopCancellationTokenSource != null)
+        if (gameLoopCancellationTokenSource != null)
         {
             if (!gameLoopCancellationTokenSource.IsCancellationRequested)
             {
                 gameLoopCancellationTokenSource?.Cancel();
             }
             gameLoopCancellationTokenSource?.Dispose();
-            gameLoopCancellationTokenSource= null;
+            gameLoopCancellationTokenSource = null;
         }
     }
 
@@ -291,7 +295,7 @@ public class GameManager : MonoBehaviour
             return null;
         }
 
-         return component;
+        return component;
     }
 
     private void SetGameUIActive(bool isActive)
@@ -302,7 +306,7 @@ public class GameManager : MonoBehaviour
         SetActiveIfNotNull(BossHpPanel, isActive);
         SetActiveIfNotNull(coreStatusPanel, isActive);
         SetActiveIfNotNull(coreStatusText?.gameObject, isActive);
-        SetActiveIfNotNull(fpsText?.gameObject, isActive);;
+        SetActiveIfNotNull(fpsText?.gameObject, isActive); ;
     }
 
     private void SetActiveIfNotNull(GameObject obj, bool isActive)
@@ -346,7 +350,7 @@ public class GameManager : MonoBehaviour
 
                 if (bossExplanationText != null && !string.IsNullOrEmpty(bossFullExplanationText))
                 {
-                    await UniTask.Delay(TimeSpan.FromSeconds(1.0f),cancellationToken: cancellationToken);
+                    await UniTask.Delay(TimeSpan.FromSeconds(1.0f), cancellationToken: cancellationToken);
                     bossExplanationText.gameObject.SetActive(true);
                     int totalChars = bossFullExplanationText.Length;
                     bossExplanationText.maxVisibleCharacters = 0;
@@ -393,7 +397,7 @@ public class GameManager : MonoBehaviour
                 await UniTask.Delay(TimeSpan.FromSeconds(allViewMovieDuration));
             }
 
-            if(cameraController != null && middleViewMovieDuration > 0 && !movieSkip)
+            if (cameraController != null && middleViewMovieDuration > 0 && !movieSkip)
             {
                 Debug.Log("中間ムービー");
                 cameraController.StartMiddleViewMovie();
@@ -407,11 +411,11 @@ public class GameManager : MonoBehaviour
 
                 cameraController.StartOrbitMovie();
 
-                if(coreExplanationPanel != null) coreExplanationPanel.gameObject.SetActive(true);
+                if (coreExplanationPanel != null) coreExplanationPanel.gameObject.SetActive(true);
 
                 float textDisplayStartTime = Time.time;
 
-                if(coreExplanationText != null && !string.IsNullOrEmpty(coreFullExplanationText))
+                if (coreExplanationText != null && !string.IsNullOrEmpty(coreFullExplanationText))
                 {
                     await UniTask.Delay(TimeSpan.FromSeconds(0.5f));
                     coreExplanationText.gameObject.SetActive(true);
@@ -421,7 +425,7 @@ public class GameManager : MonoBehaviour
                     float charDisplayIntervalSeconds = coreExplanationTextDuration / totalChars;
                     TimeSpan interval = TimeSpan.FromSeconds(charDisplayIntervalSeconds);
 
-                    for(int i = 0; i < totalChars; i++)
+                    for (int i = 0; i < totalChars; i++)
                     {
                         if (cancellationToken.IsCancellationRequested) throw new OperationCanceledException();
 
@@ -433,7 +437,7 @@ public class GameManager : MonoBehaviour
 
                 float textDisplayElapsedTime = Time.time - textDisplayStartTime;
                 float remainingOrbitTime = orbitMovieDuration - textDisplayElapsedTime;
-                if(remainingOrbitTime > 0)
+                if (remainingOrbitTime > 0)
                 {
                     await UniTask.Delay(TimeSpan.FromSeconds(remainingOrbitTime), cancellationToken: cancellationToken);
                 }
@@ -450,7 +454,7 @@ public class GameManager : MonoBehaviour
 
             //if (movieSkip) cameraController.ResetCamera();
 
-            
+
 
             // ゲームカメラに切り替え
             if (cameraController != null)
@@ -551,14 +555,12 @@ public class GameManager : MonoBehaviour
 
             await dyingBoss.DieAsync();
 
-            if(cameraController != null)
+            if (cameraController != null)
             {
                 cameraController.ResetCamera();
 
                 await UniTask.Delay(TimeSpan.FromSeconds(1.5f), cancellationToken: this.GetCancellationTokenOnDestroy());
             }
-
-            
 
             if (!IsGameActive && activeBosses.Count <= 0)
             {
@@ -582,16 +584,7 @@ public class GameManager : MonoBehaviour
         catch (Exception ex)
         {
             Debug.LogError($"ボスの死亡処理[{dyingBoss.name}]中にエラー: {ex.Message}");
-
-            if (!IsGameActive && activeBosses.Count <= 0)
-            {
-                Debug.LogWarning("エラーが発生しましたが、最後のボスと判定されたためリザルトへ遷移します。");
-                if (AudioController.instance != null)
-                {
-                    AudioController.instance.ToResult();
-                }
-            }
-        }   
+        }
     }
 
     public void BossDefeated(BossController defeatBoss)
