@@ -24475,7 +24475,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3290993381302377785}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.42590857, y: 0.55776614, z: -0.62514305, w: -0.34160656}
+  m_LocalRotation: {x: -0.42590997, y: 0.55776364, z: -0.62514454, w: -0.3416063}
   m_LocalPosition: {x: 4.749996, y: 2.510001, z: 0.0000023325183}
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 0
@@ -24622,7 +24622,6 @@ MonoBehaviour:
   justHit: 0
   lateHit: 0
   targetObject: {fileID: 343850694289639230}
-  timeManager: {fileID: 7031077728845637069, guid: a1d83e34a0c39c44cae68d1b20d243a9, type: 3}
 --- !u!1 &4203137104879261155
 GameObject:
   m_ObjectHideFlags: 0

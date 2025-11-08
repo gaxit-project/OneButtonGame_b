@@ -15,7 +15,7 @@ public class AudioController : MonoBehaviour
     public static AudioController instance; // ƒVƒ“ƒOƒ‹ƒgƒ“‚Ö
     private Pause pauseController;
     private CameraController cameraController;
-    public bool isGameOver = false;
+
     private void Awake()
     {
         if (instance == null)
@@ -79,7 +79,6 @@ public class AudioController : MonoBehaviour
 
     public void ToBatting()
     {
-        isGameOver = false;
         SoundManager.instance.PlaySE(0);
         Thread.Sleep(200);
         SceneManager.LoadScene("Batting");
@@ -102,14 +101,12 @@ public class AudioController : MonoBehaviour
 
     public void ToGameOver()
     {
-        isGameOver = true;
         Thread.Sleep(200);
         SceneManager.LoadScene("GameOver");
         SoundManager.instance.PlayBGM("GameOver");
     }
     void Start()
     {
-        SceneManager.LoadScene("Title");
         SoundManager.instance.PlayBGM("Title");
     }
 }

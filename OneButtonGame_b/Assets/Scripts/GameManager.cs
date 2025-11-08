@@ -47,7 +47,6 @@ public class GameManager : MonoBehaviour
 
     [Header("デバッグ用")]
     public bool movieSkip = false;
-    public bool Copy;
 
     private string bossFullExplanationText = "";
     private string coreFullExplanationText = "";
@@ -93,19 +92,13 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-         timerPanel = GameObject.Find("TimerPanel");
-         playerHealthPanel = GameObject.Find("PlayerHearts");
-         BossHpPanel = GameObject.Find("BossHP");
-         coreStatusPanel = GameObject.Find("CoreStatus");
-         bossExplanationPanel = GameObject.Find("");
-         coreExplanationPanel = GameObject.Find("");
+        
     }
 
 
     // Update is called once per frame
     void Update()
     {
-        Copy = IsGameActive;
         if (IsGameActive)
         {
             remainingTime -= Time.deltaTime;
@@ -115,6 +108,7 @@ public class GameManager : MonoBehaviour
                 remainingTime = 0;
                 IsGameActive = false;
                 Debug.Log("時間切れ！ゲームオーバー");
+
                 AudioController.instance.ToGameOver();
             }
 
@@ -564,6 +558,8 @@ public class GameManager : MonoBehaviour
                 await UniTask.Delay(TimeSpan.FromSeconds(1.5f), cancellationToken: this.GetCancellationTokenOnDestroy());
             }
 
+            
+
             if (!IsGameActive && activeBosses.Count <= 0)
             {
                 Debug.Log("最後のボスの死亡演出完了。リザルトシーンへ遷移");
@@ -586,6 +582,15 @@ public class GameManager : MonoBehaviour
         catch (Exception ex)
         {
             Debug.LogError($"ボスの死亡処理[{dyingBoss.name}]中にエラー: {ex.Message}");
+
+            if (!IsGameActive && activeBosses.Count <= 0)
+            {
+                Debug.LogWarning("エラーが発生しましたが、最後のボスと判定されたためリザルトへ遷移します。");
+                if (AudioController.instance != null)
+                {
+                    AudioController.instance.ToResult();
+                }
+            }
         }   
     }
 
